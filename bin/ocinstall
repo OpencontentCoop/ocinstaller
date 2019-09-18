@@ -11,7 +11,7 @@ $script = eZScript::instance([
 ]);
 
 $script->startup();
-$options = $script->getOptions('[data_dir:][languages:][cleandata_dir:][cleanup][only-base][only-data]',
+$options = $script->getOptions('[data_dir:][languages:][cleandata_dir:][cleanup][exlude-extension-schemas][only-data]',
     '',
     array(
         'data_dir' => "Directory of installer data",
