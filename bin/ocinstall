@@ -55,19 +55,19 @@ try {
     $languageList = explode(',', $languages);
 
     $dataDir = $options['data_dir'];
-    if ($dataDir && !is_dir($dataDir)){
+    if ($dataDir && !is_dir($dataDir)) {
         throw new Exception("Directory $dataDir not found");
     }
 
     // install
     $installer = new \Opencontent\Installer\Installer($db, $dataDir);
 
-    if ($options['verbose']){
+    if ($options['verbose']) {
         $installer->getLogger()->isVerbose = true;
     }
 
     $installer->installSchema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory, $installDfsSchema);
-    if ($cleanDb){
+    if ($cleanDb) {
         $solr = new eZSolr();
         $solr->cleanup();
     }
@@ -77,9 +77,14 @@ try {
     $installer->install();
 
 } catch (Throwable $e) {
-    $db->rollback();
-    $cli->error($e->getMessage() . ' ' . $e->getFile() . '#' . $e->getLine());
-    print $e->getTraceAsString();
+    if ($db->TransactionCounter > 0) {
+        $db->rollback();
+    }
+
+    $cli->error($e->getMessage() . ' in ' . $e->getFile() . '#' . $e->getLine());
+
+    if ($options['debug'])
+        $cli->output($e->getTraceAsString());
 }
 
 $script->shutdown();
