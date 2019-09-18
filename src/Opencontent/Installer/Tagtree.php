@@ -22,7 +22,7 @@ class TagTree extends AbstractStepInstaller implements InterfaceStepInstaller
         $this->remoteHost = array_shift($parts);
         $this->rootTag = array_pop($parts);
 
-        $this->logger->info("Import tag tree " . $this->rootTag);
+        $this->logger->info("Install tag tree " . $this->rootTag);
 
         $client = new TagClient(
             $this->remoteHost,

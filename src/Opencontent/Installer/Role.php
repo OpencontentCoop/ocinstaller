@@ -11,7 +11,7 @@ class Role extends AbstractStepInstaller implements InterfaceStepInstaller
         $identifier = $this->step['identifier'];
         $roleDefinition = $this->ioTools->getJsonContents("roles/{$identifier}.yml");
 
-        $this->logger->info("Create role " . $identifier);
+        $this->logger->info("Install role " . $identifier);
 
         $name = $roleDefinition['name'];
         $role = eZRole::fetchByName($name);
@@ -33,6 +33,7 @@ class Role extends AbstractStepInstaller implements InterfaceStepInstaller
 
         if (isset($this->step['apply_to'])){
             foreach ($this->step['apply_to'] as $userId){
+                $this->logger->info(" - assign to $userId");
                 $role->assignToUser($userId);
             }
         }

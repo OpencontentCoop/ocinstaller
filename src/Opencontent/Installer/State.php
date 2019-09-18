@@ -28,7 +28,7 @@ class State extends AbstractStepInstaller implements InterfaceStepInstaller
         $groupNames = $this->stateDefinition['group_name'];
         $states = $this->stateDefinition['states'];
 
-        $this->logger->info("Create state group " . $this->stateDefinition['group_identifier']);
+        $this->logger->info("Install state group " . $this->stateDefinition['group_identifier']);
 
         $stateGroup = eZContentObjectStateGroup::fetchByIdentifier($groupIdentifier);
         if (!$stateGroup instanceof eZContentObjectStateGroup) {

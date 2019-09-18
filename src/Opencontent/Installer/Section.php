@@ -19,7 +19,7 @@ class Section extends AbstractStepInstaller implements InterfaceStepInstaller
         $identifier = $this->sectionDefinition['identifier'];
         $navigationPart = $this->sectionDefinition['navigation_part'];
 
-        $this->logger->info("Create section " . $identifier);
+        $this->logger->info("Install section " . $identifier);
 
         $section = eZSection::fetchByIdentifier($identifier, false);
         if (isset($section['id'])) {

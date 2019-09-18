@@ -22,7 +22,7 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
 
         $content = $this->ioTools->getJsonContents("contents/{$this->identifier}.yml");
 
-        $this->logger->info("Create content " . $this->identifier);
+        $this->logger->info("Install content " . $this->identifier);
 
         $contentRepository = new ContentRepository();
         $contentRepository->setEnvironment(EnvironmentLoader::loadPreset('content'));

@@ -140,7 +140,7 @@ class Installer
     protected function loadDataVariables()
     {
         if (isset($this->installerData['variables'])) {
-            $this->logger->info("Load vars");
+            $this->logger->info("Load installer variables");
 
             foreach ($this->installerData['variables'] as $variable) {
                 $this->installerVars[$variable['name']] = $variable['value'];

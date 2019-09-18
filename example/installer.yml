@@ -113,3 +113,17 @@ steps:
         identifier: Agenda-Moderators
         apply_to:
             - $content_Moderatori_object
+    -
+        type: workflow
+        identifier: Post-publish
+        trigger:
+            module: content
+            function: publish
+            connection_type: after
+    -
+        type: workflow
+        identifier: Pre-publish
+        trigger:
+            module: content
+            function: publish
+            connection_type: before

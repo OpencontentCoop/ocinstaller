@@ -15,7 +15,7 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
         $sourcePath = "classes/{$this->identifier}.yml";
         $definitionJsonFile = $this->createJsonFile($sourcePath);
 
-        $this->logger->info("Create class $this->identifier");
+        $this->logger->info("Install class $this->identifier");
         $tools = new OCClassTools($this->identifier, true, array(), $definitionJsonFile);
         $tools->sync();
 
