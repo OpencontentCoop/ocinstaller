@@ -68,6 +68,7 @@ try {
 
     $installer->installSchema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory, $installDfsSchema);
     if ($cleanDb) {
+        $installer->getLogger()->info("Cleanup solr");
         $solr = new eZSolr();
         $solr->cleanup();
     }
@@ -75,6 +76,9 @@ try {
     \eZINI::instance('file.ini')->setVariable('ClusteringSettings', 'FileHandler', $fileHandler);
 
     $installer->install();
+
+    $cacheHelper = new eZCacheHelper($cli, $script);
+    $cacheHelper->clearItems(eZCache::fetchList(), false);
 
 } catch (Throwable $e) {
     if ($db->TransactionCounter > 0) {
