@@ -1,0 +1,21 @@
+{
+    "name": "opencontent/ocinstaller",
+    "description": "Opencontent Installer",
+    "authors": [        
+        {
+            "name": "OpenContent",
+            "homepage": "http://www.opencontent.it"
+        }
+    ],
+    "license": "GPL-2.0",    
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-0": {"Opencontent\\Installer\\": "src/"}
+    },    
+    "config": {
+        "bin-dir": "bin"
+    },
+    "bin": [
+        "bin/ocinstall"
+    ]
+}

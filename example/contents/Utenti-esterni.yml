@@ -1,0 +1,13 @@
+metadata:
+  remoteId: $identifier_openpa_agenda_external_users
+  classIdentifier: user_group
+  sectionIdentifier: agenda
+  languages:
+    - ita-IT
+  parentNodes:
+    - $content_Agenda_node
+data:
+  ita-IT:
+    name: Utenti esterni
+  eng-GB:
+    name: External users

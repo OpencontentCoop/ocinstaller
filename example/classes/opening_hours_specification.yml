@@ -1,0 +1,861 @@
+ID: '514'
+SerializedNameList: 'a:2:{s:6:"ita-IT";s:26:"Orario/Intervallo di tempo";s:16:"always-available";s:6:"ita-IT";}'
+NameList:
+    NameList:
+        ita-IT: 'Orario/Intervallo di tempo'
+        always-available: ita-IT
+    HasDirtyData: false
+    DefaultLanguage: null
+DescriptionList:
+    NameList:
+        ita-IT: 'Rappresenta un intervallo temporale, come gli orari di apertura di un ufficio o la validità di un biglietto'
+        always-available: ita-IT
+    HasDirtyData: false
+    DefaultLanguage: null
+Identifier: opening_hours_specification
+ContentObjectName: '<name>'
+Version: '0'
+VersionCount: 1
+CreatorID: '14'
+ModifierID: '2314'
+Created: '1559827826'
+Modified: '1567582708'
+InGroups:
+    -
+        ContentClassID: '514'
+        ContentClassVersion: '0'
+        GroupID: '106'
+        GroupName: AccessCondition
+        PersistentDataDirty: false
+    -
+        ContentClassID: '514'
+        ContentClassVersion: '0'
+        GroupID: '107'
+        GroupName: 'Costi - POT'
+        PersistentDataDirty: false
+AllGroups:
+    -
+        ID: '1'
+        Name: Content
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1031216928'
+        Modified: '1033922106'
+        PersistentDataDirty: false
+    -
+        ID: '2'
+        Name: Users
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1031216941'
+        Modified: '1033922113'
+        PersistentDataDirty: false
+    -
+        ID: '3'
+        Name: Media
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1032009743'
+        Modified: '1033922120'
+        PersistentDataDirty: false
+    -
+        ID: '4'
+        Name: Setup
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1081858024'
+        Modified: '1081858024'
+        PersistentDataDirty: false
+    -
+        ID: '104'
+        Name: CPSV-AP_IT
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1559827216'
+        Modified: '1559827216'
+        PersistentDataDirty: false
+    -
+        ID: '106'
+        Name: AccessCondition
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1559827826'
+        Modified: '1559827826'
+        PersistentDataDirty: false
+    -
+        ID: '107'
+        Name: 'Costi - POT'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1559827826'
+        Modified: '1559827826'
+        PersistentDataDirty: false
+    -
+        ID: '108'
+        Name: 'Organizzazione (COV)'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1559827974'
+        Modified: '1559827974'
+        PersistentDataDirty: false
+    -
+        ID: '110'
+        Name: 'Ruoli - RO'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1559828246'
+        Modified: '1559828246'
+        PersistentDataDirty: false
+    -
+        ID: '112'
+        Name: 'Luoghi (CLV)'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1559848651'
+        Modified: '1559848651'
+        PersistentDataDirty: false
+    -
+        ID: '114'
+        Name: 'Amministrazione trasparente'
+        CreatorID: '14'
+        ModifierID: '2252'
+        Created: '1561100428'
+        Modified: '1566886387'
+        PersistentDataDirty: false
+    -
+        ID: '115'
+        Name: Territorio
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1561101886'
+        Modified: '1561101886'
+        PersistentDataDirty: false
+    -
+        ID: '116'
+        Name: Politica
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1561369658'
+        Modified: '1561369658'
+        PersistentDataDirty: false
+    -
+        ID: '117'
+        Name: 'Eventi (CPEV)'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1561380092'
+        Modified: '1561380092'
+        PersistentDataDirty: false
+    -
+        ID: '118'
+        Name: 'Persone (CPV)'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1563904949'
+        Modified: '1563904956'
+        PersistentDataDirty: false
+    -
+        ID: '119'
+        Name: 'Dataset (DCAT)'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1564566413'
+        Modified: '1564566428'
+        PersistentDataDirty: false
+    -
+        ID: '122'
+        Name: Social
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '123'
+        Name: Organizzazione
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '124'
+        Name: Comune
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '125'
+        Name: Classificazioni
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '126'
+        Name: Allegati
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '127'
+        Name: 'Contenitori base '
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '128'
+        Name: Intranet
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '129'
+        Name: Albo
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '130'
+        Name: SensorCivico
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '131'
+        Name: 'Amministrazione Trasparenza'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '132'
+        Name: Comunicazione
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '133'
+        Name: Apps
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '134'
+        Name: 'Comuni e Comunità'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '135'
+        Name: Cultura
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '136'
+        Name: OpenData
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '137'
+        Name: 'CJW Newsletter'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '138'
+        Name: Atti
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '139'
+        Name: 'Documenti Comuni'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '140'
+        Name: 'Oggetti Figli (allegati, immagini, news)'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '141'
+        Name: 'Contenitori base (homepage, pagine)'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '142'
+        Name: 'Strutture, organi e persone'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '143'
+        Name: SensoRcivico
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '144'
+        Name: Futuri
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '145'
+        Name: 'Futuro Territorio'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '146'
+        Name: 'Futuro Contenuti interni'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '147'
+        Name: 'Futuro Intranet'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '148'
+        Name: 'Comunicazione ed Albo'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '149'
+        Name: 'Futuro Organizzazione'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '150'
+        Name: 'Nuovo gruppo'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '151'
+        Name: __da_eliminare
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '152'
+        Name: 'Futuro Politica'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '153'
+        Name: Consorzio
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '154'
+        Name: OCMaps
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '155'
+        Name: 'Contenuti principali'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '156'
+        Name: 'Struttura sito'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '157'
+        Name: 'Oggetti Figli (Allegati, news, immagini)'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+    -
+        ID: '158'
+        Name: 'Bacheca lavoro'
+        CreatorID: '14'
+        ModifierID: '14'
+        Created: '1567757258'
+        Modified: '1567757258'
+        PersistentDataDirty: false
+IsContainer: '1'
+CanInstantiateLanguages: null
+LanguageMask: '3'
+PersistentDataDirty: false
+SerializedDescriptionList: 'a:2:{s:6:"ita-IT";s:108:"Rappresenta un intervallo temporale, come gli orari di apertura di un ufficio o la validità di un biglietto";s:16:"always-available";s:6:"ita-IT";}'
+URLAliasName: ''
+RemoteID: 4f95808a8b7872798ef97de30702ae67
+AlwaysAvailable: '1'
+InitialLanguageID: '2'
+SortField: '1'
+SortOrder: '1'
+DataMap:
+    -
+        name:
+            Content: null
+            DisplayInfo: null
+            ID: '4861'
+            Version: '0'
+            ContentClassID: '514'
+            Identifier: name
+            SerializedNameList: 'a:2:{s:6:"ita-IT";s:4:"Nome";s:16:"always-available";s:6:"ita-IT";}'
+            NameList:
+                NameList:
+                    ita-IT: Nome
+                    always-available: ita-IT
+                HasDirtyData: false
+                DefaultLanguage: null
+            DescriptionList:
+                NameList:
+                    ita-IT: 'automatico: prende quello di  Punto di Contatto da cui viene generato'
+                    always-available: ita-IT
+                HasDirtyData: false
+                DefaultLanguage: null
+            DataTypeString: ezstring
+            Position: '1'
+            IsSearchable: '1'
+            IsRequired: '1'
+            IsInformationCollector: '0'
+            Module: null
+            PersistentDataDirty: false
+            SerializedDescriptionList: 'a:2:{s:6:"ita-IT";s:69:"automatico: prende quello di  Punto di Contatto da cui viene generato";s:16:"always-available";s:6:"ita-IT";}'
+            CanTranslate: '1'
+            DataInt1: '0'
+            DataInt2: '0'
+            DataInt3: '0'
+            DataInt4: '0'
+            DataFloat1: '0'
+            DataFloat2: '0'
+            DataFloat3: '0'
+            DataFloat4: '0'
+            DataText1: ''
+            DataText2: ''
+            DataText3: ''
+            DataText4: ''
+            DataText5: ''
+            SerializedDataText: 'a:0:{}'
+            Category: ''
+            DataTextI18nList:
+                NameList: {  }
+                HasDirtyData: false
+                DefaultLanguage: null
+        valid_from:
+            Content: null
+            DisplayInfo: null
+            ID: '4862'
+            Version: '0'
+            ContentClassID: '514'
+            Identifier: valid_from
+            SerializedNameList: 'a:2:{s:6:"ita-IT";s:10:"Valido dal";s:16:"always-available";s:6:"ita-IT";}'
+            NameList:
+                NameList:
+                    ita-IT: 'Valido dal'
+                    always-available: ita-IT
+                HasDirtyData: false
+                DefaultLanguage: null
+            DescriptionList:
+                NameList:
+                    ita-IT: ''
+                    always-available: ita-IT
+                HasDirtyData: false
+                DefaultLanguage: null
+            DataTypeString: ezdate
+            Position: '2'
+            IsSearchable: '1'
+            IsRequired: '1'
+            IsInformationCollector: '0'
+            Module: null
+            PersistentDataDirty: false
+            SerializedDescriptionList: 'a:2:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";}'
+            CanTranslate: '1'
+            DataInt1: '0'
+            DataInt2: '0'
+            DataInt3: '0'
+            DataInt4: '0'
+            DataFloat1: '0'
+            DataFloat2: '0'
+            DataFloat3: '0'
+            DataFloat4: '0'
+            DataText1: ''
+            DataText2: ''
+            DataText3: ''
+            DataText4: ''
+            DataText5: ''
+            SerializedDataText: 'a:0:{}'
+            Category: ''
+            DataTextI18nList:
+                NameList: {  }
+                HasDirtyData: false
+                DefaultLanguage: null
+        valid_through:
+            Content: null
+            DisplayInfo: null
+            ID: '4863'
+            Version: '0'
+            ContentClassID: '514'
+            Identifier: valid_through
+            SerializedNameList: 'a:2:{s:6:"ita-IT";s:9:"Valido al";s:16:"always-available";s:6:"ita-IT";}'
+            NameList:
+                NameList:
+                    ita-IT: 'Valido al'
+                    always-available: ita-IT
+                HasDirtyData: false
+                DefaultLanguage: null
+            DescriptionList:
+                NameList:
+                    ita-IT: ''
+                    always-available: ita-IT
+                HasDirtyData: false
+                DefaultLanguage: null
+            DataTypeString: ezdate
+            Position: '3'
+            IsSearchable: '1'
+            IsRequired: '0'
+            IsInformationCollector: '0'
+            Module: null
+            PersistentDataDirty: false
+            SerializedDescriptionList: 'a:2:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";}'
+            CanTranslate: '1'
+            DataInt1: '0'
+            DataInt2: '0'
+            DataInt3: '0'
+            DataInt4: '0'
+            DataFloat1: '0'
+            DataFloat2: '0'
+            DataFloat3: '0'
+            DataFloat4: '0'
+            DataText1: ''
+            DataText2: ''
+            DataText3: ''
+            DataText4: ''
+            DataText5: ''
+            SerializedDataText: 'a:0:{}'
+            Category: ''
+            DataTextI18nList:
+                NameList: {  }
+                HasDirtyData: false
+                DefaultLanguage: null
+        opening_hours:
+            Content: null
+            DisplayInfo: null
+            ID: '4865'
+            Version: '0'
+            ContentClassID: '514'
+            Identifier: opening_hours
+            SerializedNameList: 'a:2:{s:6:"ita-IT";s:17:"Orari di apertura";s:16:"always-available";s:6:"ita-IT";}'
+            NameList:
+                NameList:
+                    ita-IT: 'Orari di apertura'
+                    always-available: ita-IT
+                HasDirtyData: false
+                DefaultLanguage: null
+            DescriptionList:
+                NameList:
+                    ita-IT: 'Descrivere gli orari di apertura e chiusura'
+                    always-available: ita-IT
+                HasDirtyData: false
+                DefaultLanguage: null
+            DataTypeString: ezmatrix
+            Position: '4'
+            IsSearchable: '1'
+            IsRequired: '0'
+            IsInformationCollector: '0'
+            Module: null
+            PersistentDataDirty: false
+            SerializedDescriptionList: 'a:2:{s:6:"ita-IT";s:43:"Descrivere gli orari di apertura e chiusura";s:16:"always-available";s:6:"ita-IT";}'
+            CanTranslate: '1'
+            DataInt1: '2'
+            DataInt2: '0'
+            DataInt3: '0'
+            DataInt4: '0'
+            DataFloat1: '0'
+            DataFloat2: '0'
+            DataFloat3: '0'
+            DataFloat4: '0'
+            DataText1: ''
+            DataText2: ''
+            DataText3: ''
+            DataText4: ''
+            DataText5: "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<ezmatrix><column-name id=\"monday\" idx=\"0\">Lunedì</column-name><column-name id=\"tuesday\" idx=\"1\">Martedì</column-name><column-name id=\"wednesday\" idx=\"2\">Mercoledì</column-name><column-name id=\"thursday\" idx=\"3\">Giovedì</column-name><column-name id=\"friday\" idx=\"4\">Venerdì</column-name><column-name id=\"saturday\" idx=\"5\">Sabato</column-name><column-name id=\"sunday\" idx=\"6\">Domenica</column-name></ezmatrix>\n"
+            SerializedDataText: 'a:0:{}'
+            Category: ''
+            DataTextI18nList:
+                NameList: {  }
+                HasDirtyData: false
+                DefaultLanguage: null
+        note:
+            Content: null
+            DisplayInfo: null
+            ID: '4866'
+            Version: '0'
+            ContentClassID: '514'
+            Identifier: note
+            SerializedNameList: 'a:2:{s:6:"ita-IT";s:4:"Note";s:16:"always-available";s:6:"ita-IT";}'
+            NameList:
+                NameList:
+                    ita-IT: Note
+                    always-available: ita-IT
+                HasDirtyData: false
+                DefaultLanguage: null
+            DescriptionList:
+                NameList:
+                    ita-IT: ''
+                    always-available: ita-IT
+                HasDirtyData: false
+                DefaultLanguage: null
+            DataTypeString: ezxmltext
+            Position: '5'
+            IsSearchable: '1'
+            IsRequired: '0'
+            IsInformationCollector: '0'
+            Module: null
+            PersistentDataDirty: false
+            SerializedDescriptionList: 'a:2:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";}'
+            CanTranslate: '1'
+            DataInt1: '5'
+            DataInt2: '0'
+            DataInt3: '0'
+            DataInt4: '0'
+            DataFloat1: '0'
+            DataFloat2: '0'
+            DataFloat3: '0'
+            DataFloat4: '0'
+            DataText1: ''
+            DataText2: ''
+            DataText3: ''
+            DataText4: ''
+            DataText5: ''
+            SerializedDataText: 'a:0:{}'
+            Category: ''
+            DataTextI18nList:
+                NameList: {  }
+                HasDirtyData: false
+                DefaultLanguage: null
+        stagionalita:
+            Content: null
+            DisplayInfo: null
+            ID: '4867'
+            Version: '0'
+            ContentClassID: '514'
+            Identifier: stagionalita
+            SerializedNameList: 'a:2:{s:6:"ita-IT";s:13:"Stagionalità";s:16:"always-available";s:6:"ita-IT";}'
+            NameList:
+                NameList:
+                    ita-IT: Stagionalità
+                    always-available: ita-IT
+                HasDirtyData: false
+                DefaultLanguage: null
+            DescriptionList:
+                NameList:
+                    ita-IT: ''
+                    always-available: ita-IT
+                HasDirtyData: false
+                DefaultLanguage: null
+            DataTypeString: ezselection
+            Position: '6'
+            IsSearchable: '1'
+            IsRequired: '1'
+            IsInformationCollector: '0'
+            Module: null
+            PersistentDataDirty: false
+            SerializedDescriptionList: 'a:2:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";}'
+            CanTranslate: '1'
+            DataInt1: '0'
+            DataInt2: '0'
+            DataInt3: '0'
+            DataInt4: '0'
+            DataFloat1: '0'
+            DataFloat2: '0'
+            DataFloat3: '0'
+            DataFloat4: '0'
+            DataText1: ''
+            DataText2: ''
+            DataText3: ''
+            DataText4: ''
+            DataText5: "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<ezselection><options><option id=\"0\" name=\"Unico\"/><option id=\"1\" name=\"Invernale\"/><option id=\"2\" name=\"Estivo\"/></options></ezselection>\n"
+            SerializedDataText: 'a:0:{}'
+            Category: ''
+            DataTextI18nList:
+                NameList: {  }
+                HasDirtyData: false
+                DefaultLanguage: null
+        closure:
+            Content: null
+            DisplayInfo: null
+            ID: '4868'
+            Version: '0'
+            ContentClassID: '514'
+            Identifier: closure
+            SerializedNameList: 'a:2:{s:6:"ita-IT";s:19:"Periodo di chiusura";s:16:"always-available";s:6:"ita-IT";}'
+            NameList:
+                NameList:
+                    ita-IT: 'Periodo di chiusura'
+                    always-available: ita-IT
+                HasDirtyData: false
+                DefaultLanguage: null
+            DescriptionList:
+                NameList:
+                    ita-IT: 'Indicare i singoli giorni di chiusura, uno per riga'
+                    always-available: ita-IT
+                HasDirtyData: false
+                DefaultLanguage: null
+            DataTypeString: ezmatrix
+            Position: '7'
+            IsSearchable: '1'
+            IsRequired: '0'
+            IsInformationCollector: '0'
+            Module: null
+            PersistentDataDirty: false
+            SerializedDescriptionList: 'a:2:{s:6:"ita-IT";s:51:"Indicare i singoli giorni di chiusura, uno per riga";s:16:"always-available";s:6:"ita-IT";}'
+            CanTranslate: '1'
+            DataInt1: '1'
+            DataInt2: '0'
+            DataInt3: '0'
+            DataInt4: '0'
+            DataFloat1: '0'
+            DataFloat2: '0'
+            DataFloat3: '0'
+            DataFloat4: '0'
+            DataText1: ''
+            DataText2: ''
+            DataText3: ''
+            DataText4: ''
+            DataText5: "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<ezmatrix><column-name id=\"day\" idx=\"0\">Giorno di chiusura</column-name></ezmatrix>\n"
+            SerializedDataText: 'a:2:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";}'
+            Category: ''
+            DataTextI18nList:
+                NameList:
+                    ita-IT: ''
+                    always-available: ita-IT
+                HasDirtyData: false
+                DefaultLanguage: null
+        place:
+            Content: null
+            DisplayInfo: null
+            ID: '5953'
+            Version: '0'
+            ContentClassID: '514'
+            Identifier: place
+            SerializedNameList: 'a:2:{s:6:"ita-IT";s:26:"Luoghi e punti di contatto";s:16:"always-available";s:6:"ita-IT";}'
+            NameList:
+                NameList:
+                    ita-IT: 'Luoghi e punti di contatto'
+                    always-available: ita-IT
+                HasDirtyData: false
+                DefaultLanguage: null
+            DescriptionList:
+                NameList:
+                    ita-IT: ''
+                    always-available: ita-IT
+                HasDirtyData: false
+                DefaultLanguage: null
+            DataTypeString: openpareverserelationlist
+            Position: '8'
+            IsSearchable: '0'
+            IsRequired: '0'
+            IsInformationCollector: '0'
+            Module: null
+            PersistentDataDirty: false
+            SerializedDescriptionList: 'a:2:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";}'
+            CanTranslate: '1'
+            DataInt1: '0'
+            DataInt2: '0'
+            DataInt3: '0'
+            DataInt4: '0'
+            DataFloat1: '0'
+            DataFloat2: '0'
+            DataFloat3: '0'
+            DataFloat4: '0'
+            DataText1: ''
+            DataText2: ''
+            DataText3: ''
+            DataText4: ''
+            DataText5: '{"attribute_id_list":[5585,5897],"sort":"name","order":"asc","limit":4}'
+            SerializedDataText: 'a:2:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";}'
+            Category: ''
+            DataTextI18nList:
+                NameList:
+                    ita-IT: ''
+                    always-available: ita-IT
+                HasDirtyData: false
+                DefaultLanguage: null

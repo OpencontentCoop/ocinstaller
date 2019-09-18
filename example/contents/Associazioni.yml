@@ -1,0 +1,13 @@
+metadata:
+  remoteId: $identifier_openpa_agenda_associations
+  classIdentifier: user_group
+  sectionIdentifier: agenda
+  languages:
+    - ita-IT
+  parentNodes:
+    - $content_Agenda_node
+data:
+  ita-IT:
+    name: Associazioni
+  eng-GB:
+    name: Organizations
