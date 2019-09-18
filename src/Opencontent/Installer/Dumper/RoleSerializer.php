@@ -94,6 +94,8 @@ class RoleSerializer implements \JsonSerializable
 
     private function parseLimitationValues($identifier, $values)
     {
+        $trans = \eZCharTransform::instance();
+
         switch ($identifier) {
             case 'ParentClass':
             case 'Class':
@@ -101,7 +103,7 @@ class RoleSerializer implements \JsonSerializable
                 foreach ($values as $value) {
                     $classIdentifier = eZContentClass::classIdentifierByID($value);
                     if ($classIdentifier) {
-                        $classIdentifiers[] = $classIdentifier;
+                        $classIdentifiers[] = '$class_' . $classIdentifier;
                     } else {
                         throw new Exception("$identifier $value not found");
                     }
@@ -115,7 +117,8 @@ class RoleSerializer implements \JsonSerializable
                 foreach ($values as $value) {
                     $node = eZContentObjectTreeNode::fetch($value);
                     if ($node) {
-                        $nodes[] = $this->serializeNode($node);
+                        $name = $trans->transformByGroup( $node->attribute('name'), 'urlalias' );
+                        $nodes[] = '$content_' . $name . '__node';
                     } else {
                         throw new Exception("$identifier $value not found");
                     }
@@ -129,7 +132,8 @@ class RoleSerializer implements \JsonSerializable
                 foreach ($values as $value) {
                     $node = eZContentObjectTreeNode::fetchByPath($value);
                     if ($node) {
-                        $nodes[] = $this->serializeNode($node);
+                        $name = $trans->transformByGroup( $node->attribute('name'), 'urlalias' );
+                        $nodes[] = '$content_' . $name . '__node';
                     } else {
                         throw new Exception("$identifier $value not found");
                     }
@@ -143,7 +147,7 @@ class RoleSerializer implements \JsonSerializable
                 foreach ($values as $value) {
                     $section = eZSection::fetch($value);
                     if ($section instanceof eZSection) {
-                        $sectionIdentifiers[] = $section->attribute('identifier');
+                        $sectionIdentifiers[] = '$section_' . $section->attribute('identifier');
                     } else {
                         throw new Exception("$identifier $value not found");
                     }
@@ -159,7 +163,8 @@ class RoleSerializer implements \JsonSerializable
                     foreach ($values as $value) {
                         $state = eZContentObjectState::fetchById($value);
                         if ($state) {
-                            $stateIdentifiers[] = $state->attribute('identifier');
+                            $groupIdentifier = str_replace('StateGroup_', '', $identifier);
+                            $stateIdentifiers[] = '$state_' . $groupIdentifier . '_' . $state->attribute('identifier');
                         } else {
                             throw new Exception("$identifier $value not found");
                         }
@@ -170,17 +175,6 @@ class RoleSerializer implements \JsonSerializable
 
                 return $values;
         }
-    }
-
-    private function serializeNode(eZContentObjectTreeNode $node)
-    {
-        return array(
-            'node_id' => $node->attribute('node_id'),
-            'name' => $node->attribute('name'),
-            'node_remote_id' => $node->attribute('remote_id'),
-            'object_id' => $node->attribute('contentobject_id'),
-            'object_remote_id' => $node->attribute('object')->attribute('remote_id'),
-        );
     }
 
 }

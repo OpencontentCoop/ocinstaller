@@ -1,85 +1,115 @@
-name: Sample installer
-version: 1.0
-
+name: 'Sample installer'
+version: 1
 variables:
-  - name: identifier
-    value: rivadelgarda
-  - name: envvar
-    value: env(istance)
-  - name: root_node
-    value: ini(NodeSettings,RootNode,content.ini)
-
+    -
+        name: identifier
+        value: 'OpenPABase::getCurrentSiteaccessIdentifier'
+    -
+        name: envvar
+        value: env(istance)
+    -
+        name: root_node
+        value: 'ini(NodeSettings,RootNode,content.ini)'
+    -
+        name: anonymous_user
+        value: 'ini(UserSettings,AnonymousUserID,site.ini)'
+    -
+        name: members
+        value: 11
 steps:
-  - type: tagtree
-    source: https://www.comune.ala.tn.it/api/opendata/v2/tags_tree/Eventi
-
-  - type: section
-    identifier: agenda
-
-  - type: state
-    identifier: moderation
-
-  - type: state
-    identifier: privacy
-
-  - type: state
-    identifier: programma_eventi
-
-  - type: class
-    identifier: image
-
-  - type: class
-    identifier: opening_hours_specification
-
-  - type: class
-    identifier: online_contact_point
-
-  - type: class
-    identifier: topic
-
-  - type: class
-    identifier: private_organization
-
-  - type: class
-    identifier: place
-
-  - type: class
-    identifier: offer
-
-  - type: class
-    identifier: agenda_root
-
-  - type: class
-    identifier: agenda_calendar
-
-  - type: class
-    identifier: programma_eventi
-
-  - type: class
-    identifier: event_calendar
-
-  - type: class
-    identifier: folder
-
-  - type: content
-    identifier: Agenda
-    swap_with: $root_node
-    remove_swapped: true
-
-  - type: content
-    identifier: Calendario
-
-  - type: content
-    identifier: Associazioni
-
-  - type: content
-    identifier: Calendari-tematici
-
-  - type: content
-    identifier: Moderatori
-
-  - type: content
-    identifier: Programmi
-
-  - type: content
-    identifier: Utenti-esterni
+    -
+        type: tagtree
+        source: 'https://www.comune.ala.tn.it/api/opendata/v2/tags_tree/Eventi'
+    -
+        type: section
+        identifier: agenda
+    -
+        type: state
+        identifier: moderation
+    -
+        type: state
+        identifier: privacy
+    -
+        type: state
+        identifier: programma_eventi
+    -
+        type: class
+        identifier: image
+    -
+        type: class
+        identifier: opening_hours_specification
+    -
+        type: class
+        identifier: online_contact_point
+    -
+        type: class
+        identifier: topic
+    -
+        type: class
+        identifier: private_organization
+    -
+        type: class
+        identifier: place
+    -
+        type: class
+        identifier: offer
+    -
+        type: class
+        identifier: agenda_root
+    -
+        type: class
+        identifier: agenda_calendar
+    -
+        type: class
+        identifier: programma_eventi
+    -
+        type: class
+        identifier: event_calendar
+    -
+        type: class
+        identifier: folder
+    -
+        type: content
+        identifier: Agenda
+        swap_with: $root_node
+        remove_swapped: true
+    -
+        type: content
+        identifier: Calendario
+    -
+        type: content
+        identifier: Associazioni
+    -
+        type: content
+        identifier: Calendari-tematici
+    -
+        type: content
+        identifier: Moderatori
+    -
+        type: content
+        identifier: Programmi
+    -
+        type: content
+        identifier: Utenti-esterni
+    -
+        type: role
+        identifier: Agenda-Anonymous
+        apply_to:
+            - $anonymous_user
+            - $members
+            - $content_Moderatori_object
+            - $content_Utenti-esterni_object
+            - $content_Associazioni_object
+    -
+        type: role
+        identifier: Agenda-Member
+        apply_to:
+            - $members
+            - $content_Moderatori_object
+            - $content_Utenti-esterni_object
+            - $content_Associazioni_object
+    -
+        type: role
+        identifier: Agenda-Moderators
+        apply_to:
+            - $content_Moderatori_object

@@ -24,13 +24,16 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
 
     private $activeExtensions;
 
-    public function __construct($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory)
+    private $installDfsSchema;
+
+    public function __construct($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory, $installDfsSchema)
     {
         $this->cleanDb = $cleanDb;
         $this->installBaseSchema = $installBaseSchema;
         $this->installExtensionsSchema = $installExtensionsSchema;
         $this->primaryLanguageCode = array_shift($languageList);
         $this->extraLanguageCodes = $languageList;
+        $this->installDfsSchema = $installDfsSchema;
 
         $cleanDataDirectoryDefault = 'vendor/opencontent/ocinstaller/cleandata';
         $this->cleanDataDirectory = $cleanDataDirectory ? $cleanDataDirectory : $cleanDataDirectoryDefault;
@@ -52,8 +55,9 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
 
             $baseSchema = $this->cleanDataDirectory . '/db_schema.dba';
             $baseData = $this->cleanDataDirectory . '/db_data.dba'; //admin change_password
+            $dfsSchema = $this->cleanDataDirectory . '/db_dfs_schema.dba';
 
-            $this->installSchemaAndData($baseSchema, $baseData);
+            $this->installSchemaAndData($baseSchema, $baseData, $dfsSchema);
 
             $activeExtensions = ['ezmbpaex'];
             if ($this->installExtensionsSchema) {
@@ -94,25 +98,47 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
         return $result;
     }
 
-    private function installSchemaAndData($baseSchema, $baseData)
+    private function installSchemaAndData($baseSchema, $baseData, $dfsSchema)
     {
         $this->logger->info("Install schema " . $baseSchema);
         $schemaArray = eZDbSchema::read($baseSchema, true);
-
-        $this->logger->info("Install schema " . $baseData);
-        $dataArray = eZDbSchema::read($baseData, true);
-
-        $schemaArray = array_merge($schemaArray, $dataArray);
         $schemaArray['type'] = strtolower($this->db->databaseName());
         $schemaArray['instance'] = $this->db;
-
         $dbSchema = eZDbSchema::instance($schemaArray);
         $params = array(
             'schema' => true,
+            'data' => false
+        );
+        if (!$dbSchema->insertSchema($params)) {
+            throw new Exception("Unknown error");
+        }
+
+        $dfsSchemaArray = [];
+        if ($this->installDfsSchema){
+            $this->logger->info("Install schema " . $dfsSchema);
+            $dfsSchemaArray = eZDbSchema::read($dfsSchema, true);
+            $dfsSchemaArray['type'] = strtolower($this->db->databaseName());
+            $dfsSchemaArray['instance'] = $this->db;
+            $dbDfsSchema = eZDbSchema::instance($dfsSchemaArray);
+            $params = array(
+                'schema' => true,
+                'data' => false
+            );
+            if (!$dbDfsSchema->insertSchema($params)) {
+                throw new Exception("Unknown error");
+            }
+        }
+
+        $this->logger->info("Install schema " . $baseData);
+        $dataArray = eZDbSchema::read($baseData, true);
+        $dataArray['type'] = strtolower($this->db->databaseName());
+        $dataArray['instance'] = $this->db;
+        $dbDataSchema = eZDbSchema::instance($dataArray);
+        $params = array(
+            'schema' => false,
             'data' => true
         );
-
-        if (!$dbSchema->insertSchema($params)) {
+        if (!$dbDataSchema->insertSchema($params)) {
             throw new Exception("Unknown error");
         }
     }

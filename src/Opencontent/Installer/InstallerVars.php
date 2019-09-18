@@ -29,7 +29,10 @@ class InstallerVars extends \ArrayObject
     public function offsetSet($name, $value)
     {
         $value = $this->parseVarValue($value);
-        $this->logger->warning(" -> $" . $name . ": $value");
+
+        if ($this->logger->isVerbose)
+            $this->logger->warning(" -> $" . $name . ": $value");
+
         parent::offsetSet($name, $value);
     }
 
@@ -44,9 +47,16 @@ class InstallerVars extends \ArrayObject
 
     protected function parseVarValue($value)
     {
+        if (strpos($value, '::') !== false) {
+            list($class, $method) = explode('::', $value);
+            if (method_exists($class, $method)){
+                $value = $class::{$method}();
+            }
+        }
+
         if (strpos($value, 'env(') !== false) {
             $envVariable = substr($value, 4, -1);
-            $value = $_ENV[$envVariable];
+            $value = isset($_ENV[$envVariable]) ? $_ENV[$envVariable] : false;
         }
 
         if (strpos($value, 'ini(') !== false) {

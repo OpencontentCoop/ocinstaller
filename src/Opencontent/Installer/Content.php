@@ -14,25 +14,29 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
 
     private $removeSwapped;
 
-    public function __construct($step)
-    {
-        $this->identifier = $step['identifier'];
-        $this->swapWith = isset($step['swap_with']) ? $step['swap_with'] : false;
-        $this->removeSwapped = isset($step['remove_swapped']) && $step['remove_swapped'] == true;
-    }
-
     public function install()
     {
+        $this->identifier = $this->step['identifier'];
+        $this->swapWith = isset($this->step['swap_with']) ? $this->step['swap_with'] : false;
+        $this->removeSwapped = isset($this->step['remove_swapped']) && $this->step['remove_swapped'] == true;
+
         $content = $this->ioTools->getJsonContents("contents/{$this->identifier}.yml");
 
         $this->logger->info("Create content " . $this->identifier);
 
         $contentRepository = new ContentRepository();
         $contentRepository->setEnvironment(EnvironmentLoader::loadPreset('content'));
-        $result = $contentRepository->create($content);
+
+        $isUpdate = false;
+        if (isset($content['metadata']['remoteId']) && \eZContentObject::fetchByRemoteID($content['metadata']['remoteId'])){
+            $result = $contentRepository->update($content);
+            $isUpdate = true;
+        }else {
+            $result = $contentRepository->create($content);
+        }
 
         $nodeId = $result['content']['metadata']['mainNodeId'];
-        if ($this->swapWith){
+        if ($this->swapWith && $isUpdate === false){
             $nodeId = $this->swap($nodeId);
         }
 
@@ -41,11 +45,6 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
         $this->installerVars['content_' . $this->identifier . '_node'] = $node->attribute('node_id');
         $this->installerVars['content_' . $this->identifier . '_object'] = $node->attribute('contentobject_id');
         $this->installerVars['content_' . $this->identifier . '_path_string'] = $node->attribute('path_string');
-
-
-        if ($this->swapWith){
-            $this->swap($node->attribute('node_id'));
-        }
     }
 
     private function swap($nodeId)

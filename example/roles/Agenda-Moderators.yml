@@ -1,0 +1,110 @@
+name: 'Agenda Moderators'
+policies:
+    -
+        ModuleName: agenda
+        FunctionName: '*'
+        Limitation: {  }
+    -
+        ModuleName: content
+        FunctionName: create
+        Limitation:
+            Class:
+                - $class_iniziativa
+            Section:
+                - $section_agenda
+            ParentClass:
+                - $class_event_calendar
+    -
+        ModuleName: content
+        FunctionName: create
+        Limitation:
+            Class:
+                - $class_comment
+                - $class_event
+                - $class_associazione
+                - $class_programma_eventi
+            Section:
+                - $section_agenda
+    -
+        ModuleName: content
+        FunctionName: create
+        Limitation:
+            Class:
+                - $class_image
+            Section:
+                - $section_media
+    -
+        ModuleName: content
+        FunctionName: edit
+        Limitation:
+            Class:
+                - $class_comment
+                - $class_image
+                - $class_event
+                - $class_associazione
+                - $class_iniziativa
+                - $class_programma_eventi
+            Section:
+                - $section_agenda
+    -
+        ModuleName: content
+        FunctionName: read
+        Limitation:
+            Class:
+                - $class_comment
+                - $class_event
+                - $class_associazione
+                - $class_iniziativa
+                - $class_programma_eventi
+                - $class_agenda_calendar
+            Section:
+                - $section_agenda
+    -
+        ModuleName: content
+        FunctionName: read
+        Limitation:
+            Class:
+                - $class_associazione
+                - $class_iniziativa
+                - $class_agenda_calendar
+    -
+        ModuleName: editorialstuff
+        FunctionName: full_dashboard
+        Limitation: {  }
+    -
+        ModuleName: editorialstuff
+        FunctionName: media
+        Limitation: {  }
+    -
+        ModuleName: ezoe
+        FunctionName: editor
+        Limitation: {  }
+    -
+        ModuleName: state
+        FunctionName: assign
+        Limitation:
+            Class:
+                - $class_associazione
+    -
+        ModuleName: state
+        FunctionName: assign
+        Limitation:
+            Class:
+                - $class_comment
+                - $class_event
+                - $class_associazione
+                - $class_programma_eventi
+            Section:
+                - $section_agenda
+    -
+        ModuleName: user
+        FunctionName: password
+        Limitation: {  }
+    -
+        ModuleName: user
+        FunctionName: preferences
+        Limitation: {  }
+    -
+        ModuleName: user
+        FunctionName: selfedit
+        Limitation: {  }

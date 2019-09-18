@@ -15,16 +15,12 @@ class State extends AbstractStepInstaller implements InterfaceStepInstaller
 
     private $identifier;
 
-    public function __construct($step)
-    {
-        $this->identifier = $step['identifier'];
-    }
-
     /**
      * @throws Exception
      */
     public function install()
     {
+        $this->identifier = $this->step['identifier'];
         $stateDefinition = $this->ioTools->getJsonContents("states/{$this->identifier}.yml");
         $this->stateDefinition = $stateDefinition;
 

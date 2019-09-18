@@ -2,8 +2,6 @@
 
 require 'autoload.php';
 
-use Symfony\Component\Yaml\Yaml;
-
 $script = eZScript::instance([
     'description' => "Dump class in yml",
     'use-session' => false,
@@ -42,6 +40,16 @@ if ($json) {
     $dumper = \Opencontent\Installer\Dumper\ContentClass::fromJSON($json);
     if ($options['data_dir']) {
         $dumper->store($options['data_dir']);
+
+        $output = new ezcConsoleOutput();
+        $question = ezcConsoleQuestionDialog::YesNoQuestion($output, "Append to installer.yml", "y");
+        if (ezcConsoleDialogViewer::displayDialog($question) == "y") {
+            \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data_dir'], [
+                'type' => 'class',
+                'identifier' => $dumper->getIdentifier()
+            ]);
+        }
+
     } else {
         print_r($dumper->getData());
     }

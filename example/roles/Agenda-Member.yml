@@ -1,0 +1,32 @@
+name: 'Agenda Member'
+policies:
+    -
+        ModuleName: content
+        FunctionName: create
+        Limitation:
+            Class:
+                - $class_comment
+            Section:
+                - $section_agenda
+            ParentClass:
+                - $class_event
+    -
+        ModuleName: content
+        FunctionName: edit
+        Limitation:
+            Class:
+                - $class_comment
+            Owner:
+                - '1'
+            Section:
+                - $section_agenda
+    -
+        ModuleName: content
+        FunctionName: read
+        Limitation:
+            Class:
+                - $class_comment
+            Owner:
+                - '1'
+            Section:
+                - $section_agenda

@@ -9,11 +9,6 @@ class Section extends AbstractStepInstaller implements InterfaceStepInstaller
 {
     private $sectionDefinition;
 
-    public function __construct($step)
-    {
-        $this->step = $step;
-    }
-
     public function install()
     {
         $identifier = $this->step['identifier'];
@@ -41,6 +36,6 @@ class Section extends AbstractStepInstaller implements InterfaceStepInstaller
             throw new Exception("Section $identifier not found");
         }
 
-        $this->installerVars['state_' . $section->attribute('identifier')] = $section->attribute('id');
+        $this->installerVars['section_' . $section->attribute('identifier')] = $section->attribute('id');
     }
 }

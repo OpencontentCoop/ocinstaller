@@ -30,6 +30,8 @@ if ($options['url']) {
     $contentNames = $dataArray['metadata']['name'];
     $contentName = current($contentNames);
 
+    $trans = eZCharTransform::instance();
+    $contentName = $trans->transformByGroup($contentName, 'urlalias');
     $filename = $contentName . '.yml';
 
     $metadataValues = [
@@ -41,8 +43,8 @@ if ($options['url']) {
         'parentNodes'
     ];
     $cleanMetadata = [];
-    foreach ($dataArray['metadata'] as $key => $value){
-        if (in_array($key, $metadataValues)){
+    foreach ($dataArray['metadata'] as $key => $value) {
+        if (in_array($key, $metadataValues)) {
             $cleanMetadata[$key] = $value;
         }
     }
@@ -54,11 +56,21 @@ if ($options['url']) {
 
     $dataYaml = Yaml::dump($cleanDataArray, 10);
 
-    if ($options['data_dir']){
+    if ($options['data_dir']) {
         $directory = rtrim($options['data_dir'], '/') . '/contents';
         eZDir::mkdir($directory, false, true);
         eZFile::create($filename, $directory, $dataYaml);
         $cli->output($directory . '/' . $filename);
+
+        $output = new ezcConsoleOutput();
+        $question = ezcConsoleQuestionDialog::YesNoQuestion($output, "Append to installer.yml", "y");
+        if (ezcConsoleDialogViewer::displayDialog($question) == "y") {
+            \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data_dir'], [
+                'type' => 'content',
+                'identifier' => $contentName
+            ]);
+        }
+
     }
 
 }

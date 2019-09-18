@@ -9,13 +9,9 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
 {
     private $identifier;
 
-    public function __construct($step)
-    {
-        $this->identifier = $step['identifier'];
-    }
-
     public function install()
     {
+        $this->identifier = $this->step['identifier'];
         $sourcePath = "classes/{$this->identifier}.yml";
         $definitionJsonFile = $this->createJsonFile($sourcePath);
 

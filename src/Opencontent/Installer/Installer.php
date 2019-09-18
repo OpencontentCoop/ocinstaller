@@ -73,9 +73,9 @@ class Installer
         return $this->logger;
     }
 
-    public function installSchema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory)
+    public function installSchema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory, $installDfsSchema)
     {
-        $installer = $this->installerFactory->factory(new Schema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory));
+        $installer = $this->installerFactory->factory(new Schema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory, $installDfsSchema));
         $installer->install();
     }
 
@@ -91,31 +91,31 @@ class Installer
             switch ($step['type']) {
 
                 case 'tagtree':
-                    $installer = new TagTree($step);
+                    $installer = new TagTree();
                     break;
 
                 case 'state':
-                    $installer = new State($step);
+                    $installer = new State();
                     break;
 
                 case 'section':
-                    $installer = new Section($step);
+                    $installer = new Section();
                     break;
 
                 case 'class':
-                    $installer = new ContentClass($step);
+                    $installer = new ContentClass();
                     break;
 
                 case 'content':
-                    $installer = new Content($step);
+                    $installer = new Content();
                     break;
 
                 case 'role':
-                    $installer = new Role($step);
+                    $installer = new Role();
                     break;
 
                 case 'workflow':
-                    $installer = new Workflow($step);
+                    $installer = new Workflow();
                     break;
 
                 default:
@@ -124,6 +124,7 @@ class Installer
 
             if ($installer instanceof InterfaceStepInstaller) {
                 $installer = $this->installerFactory->factory($installer);
+                $installer->setStep($step);
                 $installer->install();
             }
         }

@@ -92,6 +92,12 @@ abstract class AbstractStepInstaller
      */
     public function setStep($step)
     {
+        if ($this->installerVars) {
+            $stepString = json_encode($step);
+            $stepString = $this->installerVars->filter($stepString);
+            $step = json_decode($stepString, true);
+        }
+
         $this->step = $step;
     }
 

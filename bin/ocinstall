@@ -6,12 +6,13 @@ require 'autoload.php';
 $script = eZScript::instance([
     'description' => "Installer",
     'use-session' => false,
+    'use-extensions' => true,
     'use-modules' => false,
     'debug-timing' => true
 ]);
 
 $script->startup();
-$options = $script->getOptions('[data_dir:][languages:][cleandata_dir:][cleanup][exlude-extension-schemas][only-data]',
+$options = $script->getOptions('[data_dir:][languages:][cleandata_dir:][cleanup][exlude-extension-schemas][only-data][install_dfs_schema]',
     '',
     array(
         'data_dir' => "Directory of installer data",
@@ -20,25 +21,35 @@ $options = $script->getOptions('[data_dir:][languages:][cleandata_dir:][cleanup]
         'only-data' => "Install only data without base and extension schema",
         'languages' => "Comma separates language code list, first is primary (default is: eng-GB,ita-IT,ger-DE)",
         'cleandata_dir' => "Override directory of clean db_schema.dba and db_data.dba files",
+        'install_dfs_schema' => "Install dfs schema in main db"
     )
 );
-$script->initialize();
-$cli = eZCLI::instance();
-$output = new ezcConsoleOutput();
 
-eZDB::setErrorHandling(eZDB::ERROR_HANDLING_EXCEPTIONS);
+$fileHandler = \eZINI::instance('file.ini')->variable('ClusteringSettings', 'FileHandler');
+\eZINI::instance('file.ini')->setVariable('ClusteringSettings', 'FileHandler', 'eZFSFileHandler');
+\eZINI::instance()->setVariable('ContentSettings', 'ViewCaching', 'disabled');
+\eZINI::instance()->setVariable('TemplateSettings', 'TemplateCache', 'disabled');
+\eZINI::instance()->setVariable('TemplateSettings', 'TemplateCompile', 'disabled');
+\eZINI::instance()->setVariable('OverrideSettings', 'Cache', 'disabled');
+
+
+$cli = eZCLI::instance();
+$script->initialize();
+$output = new ezcConsoleOutput();
 
 /** @var eZDBInterface $db */
 $db = eZDB::instance();
+eZDB::setErrorHandling(eZDB::ERROR_HANDLING_EXCEPTIONS);
+//eZDebug::setHandleType(eZDebug::HANDLE_EXCEPTION);
 
 try {
-
     // parameters
     $cleanDb = $options['cleanup'];
     $installBaseSchema = !$options['only-data'];
     $installExtensionsSchema = !$options['exlude-extension-schemas'];
+    $installDfsSchema = $options['install_dfs_schema'];
 
-    $cleanDataDirectory = $options['cleandata_dir'] ? rtrim($options['cleandata_dir']) : $cleanDataDirectoryDefault;
+    $cleanDataDirectory = $options['cleandata_dir'] ? rtrim($options['cleandata_dir']) : false;
 
     $languages = $options['languages'] ? $options['languages'] : 'eng-GB,ita-IT,ger-DE';
     $languageList = explode(',', $languages);
@@ -55,9 +66,11 @@ try {
         $installer->getLogger()->isVerbose = true;
     }
 
-    $installer->installSchema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory);
-    $installer->install();
+    $installer->installSchema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory, $installDfsSchema);
 
+    \eZINI::instance('file.ini')->setVariable('ClusteringSettings', 'FileHandler', $fileHandler);
+
+    $installer->install();
 
 } catch (Throwable $e) {
     $db->rollback();

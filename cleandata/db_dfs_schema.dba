@@ -1,0 +1,184 @@
+<?php
+// This array contains the database schema
+$schema = array (
+  'ezdfsfile' =>
+  array (
+    'name' => 'ezdfsfile',
+    'fields' =>
+    array (
+      'datatype' =>
+      array (
+        'length' => 255,
+        'type' => 'varchar',
+        'not_null' => '1',
+        'default' => 'application/octet-stream',
+      ),
+      'expired' =>
+      array (
+        'length' => 11,
+        'type' => 'int',
+        'not_null' => '1',
+        'default' => 0,
+      ),
+      'mtime' =>
+      array (
+        'length' => 11,
+        'type' => 'int',
+        'not_null' => '1',
+        'default' => 0,
+      ),
+      'name' =>
+      array (
+        'type' => 'longtext',
+        'not_null' => '1',
+        'default' => false,
+      ),
+      'name_hash' =>
+      array (
+        'length' => 32,
+        'type' => 'char',
+        'not_null' => '1',
+        'default' => '',
+      ),
+      'name_trunk' =>
+      array (
+        'type' => 'longtext',
+        'not_null' => '1',
+        'default' => false,
+      ),
+      'scope' =>
+      array (
+        'length' => 20,
+        'type' => 'varchar',
+        'not_null' => '1',
+        'default' => '',
+      ),
+      'size' =>
+      array (
+        'length' => 11,
+        'type' => 'int',
+        'not_null' => '1',
+        'default' => 0,
+      ),
+    ),
+    'indexes' =>
+    array (
+      'PRIMARY' =>
+      array (
+        'type' => 'primary',
+        'fields' =>
+        array (
+          0 => 'name_hash',
+        ),
+      ),
+      'ezdfsfile_mtime' =>
+      array (
+        'type' => 'non-unique',
+        'fields' =>
+        array (
+          0 => 'mtime',
+        ),
+      ),
+      'ezdfsfile_name' =>
+      array (
+        'type' => 'non-unique',
+        'fields' =>
+        array (
+          0 => 'name',
+        ),
+      ),
+    ),
+  ),
+  'ezdfsfile_cache' =>
+  array (
+    'name' => 'ezdfsfile_cache',
+    'fields' =>
+    array (
+      'datatype' =>
+      array (
+        'length' => 255,
+        'type' => 'varchar',
+        'not_null' => '1',
+        'default' => 'application/octet-stream',
+      ),
+      'expired' =>
+      array (
+        'length' => 11,
+        'type' => 'int',
+        'not_null' => '1',
+        'default' => 0,
+      ),
+      'mtime' =>
+      array (
+        'length' => 11,
+        'type' => 'int',
+        'not_null' => '1',
+        'default' => 0,
+      ),
+      'name' =>
+      array (
+        'type' => 'longtext',
+        'not_null' => '1',
+        'default' => false,
+      ),
+      'name_hash' =>
+      array (
+        'length' => 32,
+        'type' => 'char',
+        'not_null' => '1',
+        'default' => '',
+      ),
+      'name_trunk' =>
+      array (
+        'type' => 'longtext',
+        'not_null' => '1',
+        'default' => false,
+      ),
+      'scope' =>
+      array (
+        'length' => 20,
+        'type' => 'varchar',
+        'not_null' => '1',
+        'default' => '',
+      ),
+      'size' =>
+      array (
+        'length' => 11,
+        'type' => 'int',
+        'not_null' => '1',
+        'default' => 0,
+      ),
+    ),
+    'indexes' =>
+    array (
+      'PRIMARY' =>
+      array (
+        'type' => 'primary',
+        'fields' =>
+        array (
+          0 => 'name_hash',
+        ),
+      ),
+      'ezdfsfile_cache_mtime' =>
+      array (
+        'type' => 'non-unique',
+        'fields' =>
+        array (
+          0 => 'mtime',
+        ),
+      ),
+      'ezdfsfile_cache_name' =>
+      array (
+        'type' => 'non-unique',
+        'fields' =>
+        array (
+          0 => 'name',
+        ),
+      ),
+    ),
+  ),
+  '_info' =>
+  array (
+    'format' => 'generic',
+  ),
+);
