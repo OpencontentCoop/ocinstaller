@@ -1,19 +1,21 @@
 <?php
 
-use Opencontent\Opendata\Rest\Client\HttpClient;
+namespace Opencontent\Installer;
+
 use Opencontent\Opendata\Api\Structs\TagStruct;
 use Opencontent\Opendata\Api\TagRepository;
+use Exception;
 
-class OpenContentTagTreeInstaller
+class TagTree extends AbstractStepInstaller implements InterfaceStepInstaller
 {
     private $remoteHost;
 
     private $rootTag;
 
-    public $verbose = false;
 
-    public function __construct($remoteUrl)
+    public function __construct($step)
     {
+        $remoteUrl = $step['source'];
         $parts = explode('/api/opendata/v2/tags_tree/', $remoteUrl);
         $this->remoteHost = array_shift($parts);
         $this->rootTag = array_pop($parts);
@@ -22,8 +24,10 @@ class OpenContentTagTreeInstaller
     /**
      * @throws Exception
      */
-    public function import()
+    public function install()
     {
+        $this->logger->log("Import tag tree " . $this->rootTag);
+
         $client = new TagClient(
             $this->remoteHost,
             null,
@@ -54,9 +58,9 @@ class OpenContentTagTreeInstaller
 
         $result = $tagRepository->create($struct);
         if ($result['message'] == 'success') {
-            if ($this->verbose) eZCLI::instance()->warning(str_pad('', $recursionLevel, '  ', STR_PAD_LEFT) . ' |- ' . $name);
+            $this->logger->warning(str_pad('', $recursionLevel, '  ', STR_PAD_LEFT) . ' |- ' . $name);
         } elseif ($result['message'] == 'already exists') {
-            if ($this->verbose) eZCLI::instance()->output(str_pad('', $recursionLevel, '  ', STR_PAD_LEFT) . ' |- ' . $name);
+            $this->logger->log(str_pad('', $recursionLevel, '  ', STR_PAD_LEFT) . ' |- ' . $name);
         }
         $tag = $result['tag'];
 
@@ -82,17 +86,3 @@ class OpenContentTagTreeInstaller
     }
 }
 
-class TagClient extends HttpClient
-{
-    public function readTag($name)
-    {
-        return $this->request('GET', $this->buildUrl($name));
-    }
-
-    protected function buildUrl($path)
-    {
-        $request = $this->server . $this->apiEndPointBase . '/' . $this->apiEnvironmentPreset . '/' . urlencode($path);
-
-        return $request;
-    }
-}
