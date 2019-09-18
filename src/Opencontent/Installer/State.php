@@ -13,11 +13,11 @@ class State extends AbstractStepInstaller implements InterfaceStepInstaller
 {
     private $stateDefinition;
 
+    private $identifier;
+
     public function __construct($step)
     {
-        $identifier = $step['identifier'];
-        $stateDefinition = $this->ioTools->getJsonContents("states/{$identifier}.yml");
-        $this->stateDefinition = $stateDefinition;
+        $this->identifier = $step['identifier'];
     }
 
     /**
@@ -25,11 +25,14 @@ class State extends AbstractStepInstaller implements InterfaceStepInstaller
      */
     public function install()
     {
+        $stateDefinition = $this->ioTools->getJsonContents("states/{$this->identifier}.yml");
+        $this->stateDefinition = $stateDefinition;
+
         $groupIdentifier = $this->stateDefinition['group_identifier'];
         $groupNames = $this->stateDefinition['group_name'];
         $states = $this->stateDefinition['states'];
 
-        $this->logger->log("Create state group " . $this->stateDefinition['group_identifier']);
+        $this->logger->info("Create state group " . $this->stateDefinition['group_identifier']);
 
         $stateGroup = eZContentObjectStateGroup::fetchByIdentifier($groupIdentifier);
         if (!$stateGroup instanceof eZContentObjectStateGroup) {
@@ -85,6 +88,7 @@ class State extends AbstractStepInstaller implements InterfaceStepInstaller
                 }
                 $stateObject->store();
             }
+            $this->installerVars['state_' . $stateGroup->attribute('identifier') . '_' . $stateObject->attribute('identifier')] = $stateObject->attribute('id');
         }
 
         OCOpenDataStateRepositoryCache::clearCache();

@@ -1,1804 +1,904 @@
-ID: '437'
-SerializedNameList: 'a:3:{s:6:"ita-IT";s:11:"Agenda Root";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:11:"Agenda Root";}'
-NameList:
-    NameList:
-        ita-IT: 'Agenda Root'
-        always-available: ita-IT
-        eng-GB: 'Agenda Root'
-    HasDirtyData: false
-    DefaultLanguage: null
-DescriptionList:
-    NameList:
-        ita-IT: 'Contenitore delle configurazioni e degli eventi di ComunWeb Agenda'
-        always-available: ita-IT
-        eng-GB: 'Contenitore delle configurazioni e degli eventi di ComunWeb Agenda'
-    HasDirtyData: false
-    DefaultLanguage: null
-Identifier: agenda_root
-ContentObjectName: '<name>'
-Version: '0'
-VersionCount: 1
-CreatorID: '14'
-ModifierID: '14'
-Created: '1485533525'
-Modified: '1566902797'
-InGroups:
-    -
-        ContentClassID: '437'
-        ContentClassVersion: '0'
-        GroupID: '58'
-        GroupName: OpenAgenda
-        PersistentDataDirty: false
-AllGroups:
-    -
-        ID: '1'
-        Name: Content
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1031216928'
-        Modified: '1033922106'
-        PersistentDataDirty: false
-    -
-        ID: '2'
-        Name: Users
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1031216941'
-        Modified: '1033922113'
-        PersistentDataDirty: false
-    -
-        ID: '3'
-        Name: Media
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1032009743'
-        Modified: '1033922120'
-        PersistentDataDirty: false
-    -
-        ID: '4'
-        Name: Setup
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1081858024'
-        Modified: '1081858024'
-        PersistentDataDirty: false
-    -
-        ID: '15'
-        Name: Social
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1321948913'
-        Modified: '1321948913'
-        PersistentDataDirty: false
-    -
-        ID: '16'
-        Name: Organizzazione
-        CreatorID: '14'
-        ModifierID: '158'
-        Created: '1321948913'
-        Modified: '1322654066'
-        PersistentDataDirty: false
-    -
-        ID: '17'
-        Name: Comune
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1321948913'
-        Modified: '1395415377'
-        PersistentDataDirty: false
-    -
-        ID: '18'
-        Name: Classificazioni
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1321948913'
-        Modified: '1321948913'
-        PersistentDataDirty: false
-    -
-        ID: '20'
-        Name: Politica
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1321948914'
-        Modified: '1321948914'
-        PersistentDataDirty: false
-    -
-        ID: '21'
-        Name: Allegati
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1321948914'
-        Modified: '1395658832'
-        PersistentDataDirty: false
-    -
-        ID: '22'
-        Name: 'Contenitori base '
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1321948914'
-        Modified: '1395658790'
-        PersistentDataDirty: false
-    -
-        ID: '24'
-        Name: Territorio
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1321948918'
-        Modified: '1395415385'
-        PersistentDataDirty: false
-    -
-        ID: '28'
-        Name: Intranet
-        CreatorID: '158'
-        ModifierID: '158'
-        Created: '1322653106'
-        Modified: '1322653110'
-        PersistentDataDirty: false
-    -
-        ID: '30'
-        Name: Albo
-        CreatorID: '158'
-        ModifierID: '14'
-        Created: '1322653637'
-        Modified: '1398343631'
-        PersistentDataDirty: false
-    -
-        ID: '35'
-        Name: 'Amministrazione Trasparenza'
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1391430429'
-        Modified: '1391433006'
-        PersistentDataDirty: false
-    -
-        ID: '41'
-        Name: Comunicazione
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1398343270'
-        Modified: '1398343279'
-        PersistentDataDirty: false
-    -
-        ID: '42'
-        Name: Apps
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1404833578'
-        Modified: '1404833578'
-        PersistentDataDirty: false
-    -
-        ID: '43'
-        Name: 'Comuni e Comunità'
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1405752999'
-        Modified: '1405752999'
-        PersistentDataDirty: false
-    -
-        ID: '44'
-        Name: Cultura
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1405854390'
-        Modified: '1405854394'
-        PersistentDataDirty: false
-    -
-        ID: '45'
-        Name: 'Documenti Comuni'
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1413394116'
-        Modified: '1413394116'
-        PersistentDataDirty: false
-    -
-        ID: '46'
-        Name: Atti
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1413394116'
-        Modified: '1413394116'
-        PersistentDataDirty: false
-    -
-        ID: '47'
-        Name: 'Oggetti Figli (allegati, immagini, news)'
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1413394116'
-        Modified: '1413394116'
-        PersistentDataDirty: false
-    -
-        ID: '48'
-        Name: 'Contenitori base (homepage, pagine)'
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1413394116'
-        Modified: '1413394116'
-        PersistentDataDirty: false
-    -
-        ID: '49'
-        Name: Futuri
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1413394116'
-        Modified: '1413394116'
-        PersistentDataDirty: false
-    -
-        ID: '50'
-        Name: 'Futuro Politica'
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1413394116'
-        Modified: '1413394116'
-        PersistentDataDirty: false
-    -
-        ID: '51'
-        Name: 'Futuro Territorio'
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1413394116'
-        Modified: '1413394116'
-        PersistentDataDirty: false
-    -
-        ID: '52'
-        Name: 'Futuro Contenuti interni'
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1413394116'
-        Modified: '1413394116'
-        PersistentDataDirty: false
-    -
-        ID: '53'
-        Name: 'Futuro Intranet'
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1413394116'
-        Modified: '1413394116'
-        PersistentDataDirty: false
-    -
-        ID: '54'
-        Name: 'Comunicazione ed Albo'
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1413394116'
-        Modified: '1413394116'
-        PersistentDataDirty: false
-    -
-        ID: '55'
-        Name: 'Futuro Organizzazione'
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1413394117'
-        Modified: '1413394117'
-        PersistentDataDirty: false
-    -
-        ID: '56'
-        Name: Consorzio
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1413394117'
-        Modified: '1413394117'
-        PersistentDataDirty: false
-    -
-        ID: '57'
-        Name: 'Strutture, organi e persone'
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1413394117'
-        Modified: '1413394117'
-        PersistentDataDirty: false
-    -
-        ID: '58'
-        Name: SensorCivico
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1416110136'
-        Modified: '1416110136'
-        PersistentDataDirty: false
-    -
-        ID: '59'
-        Name: OpenData
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1423323206'
-        Modified: '1423323206'
-        PersistentDataDirty: false
-    -
-        ID: '60'
-        Name: 'CJW Newsletter'
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1423323206'
-        Modified: '1423323206'
-        PersistentDataDirty: false
-    -
-        ID: '61'
-        Name: OCMaps
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1479144050'
-        Modified: '1479144050'
-        PersistentDataDirty: false
-    -
-        ID: '62'
-        Name: SensoRcivico
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1479144050'
-        Modified: '1479144050'
-        PersistentDataDirty: false
-    -
-        ID: '63'
-        Name: __da_eliminare
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1479144050'
-        Modified: '1479144050'
-        PersistentDataDirty: false
-    -
-        ID: '64'
-        Name: 'Nuovo gruppo'
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1479144050'
-        Modified: '1479144050'
-        PersistentDataDirty: false
-    -
-        ID: '65'
-        Name: Agid
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1524479384'
-        Modified: '1524479384'
-        PersistentDataDirty: false
-    -
-        ID: '66'
-        Name: CPSV
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1524479385'
-        Modified: '1524479385'
-        PersistentDataDirty: false
-    -
-        ID: '67'
-        Name: 'Contenuti principali'
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1524495529'
-        Modified: '1524495529'
-        PersistentDataDirty: false
-    -
-        ID: '68'
-        Name: 'Struttura sito'
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1524495529'
-        Modified: '1524495529'
-        PersistentDataDirty: false
-    -
-        ID: '69'
-        Name: 'Oggetti Figli (Allegati, news, immagini)'
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1524495529'
-        Modified: '1524495529'
-        PersistentDataDirty: false
-    -
-        ID: '70'
-        Name: 'Bacheca lavoro'
-        CreatorID: '14'
-        ModifierID: '14'
-        Created: '1524495529'
-        Modified: '1524495529'
-        PersistentDataDirty: false
-IsContainer: '1'
-CanInstantiateLanguages: null
-LanguageMask: '7'
-PersistentDataDirty: false
-SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:66:"Contenitore delle configurazioni e degli eventi di ComunWeb Agenda";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:66:"Contenitore delle configurazioni e degli eventi di ComunWeb Agenda";}'
-URLAliasName: ''
-RemoteID: b8d01fc195aae1c4910303dc3c7090b4
-AlwaysAvailable: '1'
-InitialLanguageID: '2'
-SortField: '1'
-SortOrder: '1'
-DataMap:
-    -
-        name:
-            Content: null
-            DisplayInfo: null
-            ID: '4143'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: name
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:4:"Nome";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:4:"Name";}'
-            NameList:
-                NameList:
-                    ita-IT: Nome
-                    always-available: ita-IT
-                    eng-GB: Name
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezstring
-            Position: '1'
-            IsSearchable: '1'
-            IsRequired: '1'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            CanTranslate: '1'
-            DataInt1: '0'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: OpenAgenda
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:1:{s:6:"eng-GB";s:0:"";}'
-            Category: ''
-            DataTextI18nList:
-                NameList:
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        logo:
-            Content: null
-            DisplayInfo: null
-            ID: '4144'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: logo
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:4:"Logo";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:4:"Logo";}'
-            NameList:
-                NameList:
-                    ita-IT: Logo
-                    always-available: ita-IT
-                    eng-GB: Logo
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: 'Dimensioni 180px x 180px'
-                    always-available: ita-IT
-                    eng-GB: 'Size 180px x 180px'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezimage
-            Position: '2'
-            IsSearchable: '0'
-            IsRequired: '1'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:24:"Dimensioni 180px x 180px";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:18:"Size 180px x 180px";}'
-            CanTranslate: '1'
-            DataInt1: '0'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:1:{s:6:"eng-GB";s:0:"";}'
-            Category: ''
-            DataTextI18nList:
-                NameList:
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        logo_title:
-            Content: null
-            DisplayInfo: null
-            ID: '4146'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: logo_title
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:6:"Titolo";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:5:"Title";}'
-            NameList:
-                NameList:
-                    ita-IT: Titolo
-                    always-available: ita-IT
-                    eng-GB: Title
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezstring
-            Position: '3'
-            IsSearchable: '1'
-            IsRequired: '1'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            CanTranslate: '1'
-            DataInt1: '0'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:1:{s:6:"eng-GB";s:0:"";}'
-            Category: ''
-            DataTextI18nList:
-                NameList:
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        logo_subtitle:
-            Content: null
-            DisplayInfo: null
-            ID: '4147'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: logo_subtitle
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:11:"Sottotitolo";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:8:"Subtitle";}'
-            NameList:
-                NameList:
-                    ita-IT: Sottotitolo
-                    always-available: ita-IT
-                    eng-GB: Subtitle
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezstring
-            Position: '4'
-            IsSearchable: '1'
-            IsRequired: '1'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            CanTranslate: '1'
-            DataInt1: '0'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:1:{s:6:"eng-GB";s:0:"";}'
-            Category: ''
-            DataTextI18nList:
-                NameList:
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        banner:
-            Content: null
-            DisplayInfo: null
-            ID: '4148'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: banner
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:6:"Banner";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:6:"Banner";}'
-            NameList:
-                NameList:
-                    ita-IT: Banner
-                    always-available: ita-IT
-                    eng-GB: Banner
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: 'Dimensioni 1.920px × 480px'
-                    always-available: ita-IT
-                    eng-GB: 'Dimensioni 1.920px × 480px'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezimage
-            Position: '5'
-            IsSearchable: '0'
-            IsRequired: '0'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:27:"Dimensioni 1.920px × 480px";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:27:"Dimensioni 1.920px × 480px";}'
-            CanTranslate: '1'
-            DataInt1: '0'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:1:{s:6:"eng-GB";s:0:"";}'
-            Category: ''
-            DataTextI18nList:
-                NameList:
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        banner_title:
-            Content: null
-            DisplayInfo: null
-            ID: '4149'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: banner_title
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:13:"Titolo banner";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:12:"Banner title";}'
-            NameList:
-                NameList:
-                    ita-IT: 'Titolo banner'
-                    always-available: ita-IT
-                    eng-GB: 'Banner title'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezstring
-            Position: '6'
-            IsSearchable: '1'
-            IsRequired: '0'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            CanTranslate: '1'
-            DataInt1: '0'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:1:{s:6:"eng-GB";s:0:"";}'
-            Category: ''
-            DataTextI18nList:
-                NameList:
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        banner_subtitle:
-            Content: null
-            DisplayInfo: null
-            ID: '4150'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: banner_subtitle
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:17:"Sottotiolo banner";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:15:"Banner subtitle";}'
-            NameList:
-                NameList:
-                    ita-IT: 'Sottotiolo banner'
-                    always-available: ita-IT
-                    eng-GB: 'Banner subtitle'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezstring
-            Position: '7'
-            IsSearchable: '1'
-            IsRequired: '0'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            CanTranslate: '1'
-            DataInt1: '0'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:1:{s:6:"eng-GB";s:0:"";}'
-            Category: ''
-            DataTextI18nList:
-                NameList:
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        faq:
-            Content: null
-            DisplayInfo: null
-            ID: '4151'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: faq
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:3:"Faq";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:3:"Faq";}'
-            NameList:
-                NameList:
-                    ita-IT: Faq
-                    always-available: ita-IT
-                    eng-GB: Faq
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezxmltext
-            Position: '8'
-            IsSearchable: '1'
-            IsRequired: '0'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            CanTranslate: '1'
-            DataInt1: '10'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:1:{s:6:"eng-GB";s:0:"";}'
-            Category: ''
-            DataTextI18nList:
-                NameList:
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        privacy:
-            Content: null
-            DisplayInfo: null
-            ID: '4152'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: privacy
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:7:"Privacy";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:7:"Privacy";}'
-            NameList:
-                NameList:
-                    ita-IT: Privacy
-                    always-available: ita-IT
-                    eng-GB: Privacy
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezxmltext
-            Position: '9'
-            IsSearchable: '1'
-            IsRequired: '0'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            CanTranslate: '1'
-            DataInt1: '10'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:1:{s:6:"eng-GB";s:0:"";}'
-            Category: ''
-            DataTextI18nList:
-                NameList:
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        terms:
-            Content: null
-            DisplayInfo: null
-            ID: '4153'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: terms
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:19:"Termini di utilizzo";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:12:"Terms of Use";}'
-            NameList:
-                NameList:
-                    ita-IT: 'Termini di utilizzo'
-                    always-available: ita-IT
-                    eng-GB: 'Terms of Use'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezxmltext
-            Position: '10'
-            IsSearchable: '1'
-            IsRequired: '0'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            CanTranslate: '1'
-            DataInt1: '10'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:1:{s:6:"eng-GB";s:0:"";}'
-            Category: ''
-            DataTextI18nList:
-                NameList:
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        cookie:
-            Content: null
-            DisplayInfo: null
-            ID: '4154'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: cookie
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:37:"Informazioni sull''utilizzo dei cookie";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:13:"Cookie Policy";}'
-            NameList:
-                NameList:
-                    ita-IT: 'Informazioni sull''utilizzo dei cookie'
-                    always-available: ita-IT
-                    eng-GB: 'Cookie Policy'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezxmltext
-            Position: '11'
-            IsSearchable: '1'
-            IsRequired: '0'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            CanTranslate: '1'
-            DataInt1: '10'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:1:{s:6:"eng-GB";s:0:"";}'
-            Category: ''
-            DataTextI18nList:
-                NameList:
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        footer:
-            Content: null
-            DisplayInfo: null
-            ID: '4155'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: footer
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:12:"Testo footer";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:11:"Footer text";}'
-            NameList:
-                NameList:
-                    ita-IT: 'Testo footer'
-                    always-available: ita-IT
-                    eng-GB: 'Footer text'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezxmltext
-            Position: '12'
-            IsSearchable: '1'
-            IsRequired: '0'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            CanTranslate: '1'
-            DataInt1: '5'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:1:{s:6:"eng-GB";s:0:"";}'
-            Category: ''
-            DataTextI18nList:
-                NameList:
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        contacts:
-            Content: null
-            DisplayInfo: null
-            ID: '4156'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: contacts
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:8:"Contatti";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:8:"Contacts";}'
-            NameList:
-                NameList:
-                    ita-IT: Contatti
-                    always-available: ita-IT
-                    eng-GB: Contacts
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezxmltext
-            Position: '13'
-            IsSearchable: '1'
-            IsRequired: '0'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            CanTranslate: '1'
-            DataInt1: '5'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:1:{s:6:"eng-GB";s:0:"";}'
-            Category: ''
-            DataTextI18nList:
-                NameList:
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        collaboration_mode:
-            Content: null
-            DisplayInfo: null
-            ID: '4157'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: collaboration_mode
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:30:"Attiva modalità collaborativa";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:30:"Attiva modalità collaborativa";}'
-            NameList:
-                NameList:
-                    ita-IT: 'Attiva modalità collaborativa'
-                    always-available: ita-IT
-                    eng-GB: 'Attiva modalità collaborativa'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: 'La modalità collaborativa consente la visualizzazione delle associazioni registrate e il loro accesso al sistema per l''inserimento di nuovi contenuti'
-                    always-available: ita-IT
-                    eng-GB: 'La modalità collaborativa consente la visualizzazione delle associazioni registrate e il loro accesso al sistema per l''inserimento di nuovi contenuti'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezboolean
-            Position: '14'
-            IsSearchable: '0'
-            IsRequired: '0'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:150:"La modalità collaborativa consente la visualizzazione delle associazioni registrate e il loro accesso al sistema per l''inserimento di nuovi contenuti";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:150:"La modalità collaborativa consente la visualizzazione delle associazioni registrate e il loro accesso al sistema per l''inserimento di nuovi contenuti";}'
-            CanTranslate: '1'
-            DataInt1: '0'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:1:{s:6:"eng-GB";s:0:"";}'
-            Category: config
-            DataTextI18nList:
-                NameList:
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        enable_comment:
-            Content: null
-            DisplayInfo: null
-            ID: '4158'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: enable_comment
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:18:"Abilita i commenti";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:18:"Abilita i commenti";}'
-            NameList:
-                NameList:
-                    ita-IT: 'Abilita i commenti'
-                    always-available: ita-IT
-                    eng-GB: 'Abilita i commenti'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: 'Consente agli utenti registrati di commentare gli eventi'
-                    always-available: ita-IT
-                    eng-GB: 'Consente agli utenti registrati di commentare gli eventi'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezboolean
-            Position: '15'
-            IsSearchable: '0'
-            IsRequired: '0'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:56:"Consente agli utenti registrati di commentare gli eventi";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:56:"Consente agli utenti registrati di commentare gli eventi";}'
-            CanTranslate: '1'
-            DataInt1: '0'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:1:{s:6:"eng-GB";s:0:"";}'
-            Category: config
-            DataTextI18nList:
-                NameList:
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        layout:
-            Content: null
-            DisplayInfo: null
-            ID: '4381'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: layout
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:16:"Blocchi homepage";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:16:"Blocchi homepage";}'
-            NameList:
-                NameList:
-                    ita-IT: 'Blocchi homepage'
-                    always-available: ita-IT
-                    eng-GB: 'Blocchi homepage'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezpage
-            Position: '16'
-            IsSearchable: '0'
-            IsRequired: '0'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            CanTranslate: '1'
-            DataInt1: '0'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            Category: ''
-            DataTextI18nList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        hide_tags:
-            Content: null
-            DisplayInfo: null
-            ID: '4382'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: hide_tags
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:41:"Nascondi tipologie nell''agenda principale";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:41:"Nascondi tipologie nell''agenda principale";}'
-            NameList:
-                NameList:
-                    ita-IT: 'Nascondi tipologie nell''agenda principale'
-                    always-available: ita-IT
-                    eng-GB: 'Nascondi tipologie nell''agenda principale'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: eztags
-            Position: '17'
-            IsSearchable: '0'
-            IsRequired: '0'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            CanTranslate: '1'
-            DataInt1: '11'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: Tree
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            Category: view
-            DataTextI18nList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        hide_iniziative:
-            Content: null
-            DisplayInfo: null
-            ID: '4383'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: hide_iniziative
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:46:"Nascondi manifestazioni nell''agenda principale";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:46:"Nascondi manifestazioni nell''agenda principale";}'
-            NameList:
-                NameList:
-                    ita-IT: 'Nascondi manifestazioni nell''agenda principale'
-                    always-available: ita-IT
-                    eng-GB: 'Nascondi manifestazioni nell''agenda principale'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezobjectrelationlist
-            Position: '18'
-            IsSearchable: '0'
-            IsRequired: '0'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            CanTranslate: '1'
-            DataInt1: '0'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<related-objects><constraints><allowed-class contentclass-identifier=\"iniziativa\"/></constraints><type value=\"2\"/><selection_type value=\"0\"/><object_class value=\"\"/><contentobject-placement/></related-objects>\n"
-            SerializedDataText: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            Category: view
-            DataTextI18nList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        view_all:
-            Content: null
-            DisplayInfo: null
-            ID: '4384'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: view_all
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:57:"Imposta il filtro del calendario della homepage a "Tutti"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:57:"Imposta il filtro del calendario della homepage a "Tutti"";}'
-            NameList:
-                NameList:
-                    ita-IT: 'Imposta il filtro del calendario della homepage a "Tutti"'
-                    always-available: ita-IT
-                    eng-GB: 'Imposta il filtro del calendario della homepage a "Tutti"'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezboolean
-            Position: '19'
-            IsSearchable: '1'
-            IsRequired: '0'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            CanTranslate: '1'
-            DataInt1: '0'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            Category: view
-            DataTextI18nList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        enable_auto_registration:
-            Content: null
-            DisplayInfo: null
-            ID: '4385'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: enable_auto_registration
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:47:"Abilita l''auto registrazione delle associazioni";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:47:"Abilita l''auto registrazione delle associazioni";}'
-            NameList:
-                NameList:
-                    ita-IT: 'Abilita l''auto registrazione delle associazioni'
-                    always-available: ita-IT
-                    eng-GB: 'Abilita l''auto registrazione delle associazioni'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: 'Mostra il form di registrazione per le associazioni'
-                    always-available: ita-IT
-                    eng-GB: 'Mostra il form di registrazione per le associazioni'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezboolean
-            Position: '20'
-            IsSearchable: '1'
-            IsRequired: '0'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:51:"Mostra il form di registrazione per le associazioni";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:51:"Mostra il form di registrazione per le associazioni";}'
-            CanTranslate: '1'
-            DataInt1: '0'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            Category: config
-            DataTextI18nList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        enable_moderation:
-            Content: null
-            DisplayInfo: null
-            ID: '4386'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: enable_moderation
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:22:"Abilita la moderazione";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:22:"Abilita la moderazione";}'
-            NameList:
-                NameList:
-                    ita-IT: 'Abilita la moderazione'
-                    always-available: ita-IT
-                    eng-GB: 'Abilita la moderazione'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: 'Abilita la moderazione di tutti i nuovi eventi inseriti dalle associazioni'
-                    always-available: ita-IT
-                    eng-GB: 'Abilita la moderazione di tutti i nuovi eventi inseriti dalle associazioni'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezboolean
-            Position: '21'
-            IsSearchable: '1'
-            IsRequired: '0'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:74:"Abilita la moderazione di tutti i nuovi eventi inseriti dalle associazioni";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:74:"Abilita la moderazione di tutti i nuovi eventi inseriti dalle associazioni";}'
-            CanTranslate: '1'
-            DataInt1: '0'
-            DataInt2: '0'
-            DataInt3: '1'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            Category: config
-            DataTextI18nList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        testo_rubrica_associazioni:
-            Content: null
-            DisplayInfo: null
-            ID: '4387'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: testo_rubrica_associazioni
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:33:"Testo widget Rubrica associazioni";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:33:"Testo widget Rubrica associazioni";}'
-            NameList:
-                NameList:
-                    ita-IT: 'Testo widget Rubrica associazioni'
-                    always-available: ita-IT
-                    eng-GB: 'Testo widget Rubrica associazioni'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezstring
-            Position: '22'
-            IsSearchable: '1'
-            IsRequired: '0'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            CanTranslate: '1'
-            DataInt1: '0'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            Category: view
-            DataTextI18nList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        testo_download_programma:
-            Content: null
-            DisplayInfo: null
-            ID: '4388'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: testo_download_programma
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:22:"Testo widget Programma";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:22:"Testo widget Programma";}'
-            NameList:
-                NameList:
-                    ita-IT: 'Testo widget Programma'
-                    always-available: ita-IT
-                    eng-GB: 'Testo widget Programma'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezstring
-            Position: '23'
-            IsSearchable: '1'
-            IsRequired: '0'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            CanTranslate: '1'
-            DataInt1: '0'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            Category: view
-            DataTextI18nList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        testo_partecipa_associazioni:
-            Content: null
-            DisplayInfo: null
-            ID: '4389'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: testo_partecipa_associazioni
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:22:"Testo widget Partecipa";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:22:"Testo widget Partecipa";}'
-            NameList:
-                NameList:
-                    ita-IT: 'Testo widget Partecipa'
-                    always-available: ita-IT
-                    eng-GB: 'Testo widget Partecipa'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezstring
-            Position: '24'
-            IsSearchable: '1'
-            IsRequired: '0'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            CanTranslate: '1'
-            DataInt1: '0'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            Category: view
-            DataTextI18nList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        enable_header_only_logo:
-            Content: null
-            DisplayInfo: null
-            ID: '4145'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: enable_header_only_logo
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:27:"Attiva header con solo logo";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:27:"Attiva header con solo logo";}'
-            NameList:
-                NameList:
-                    ita-IT: 'Attiva header con solo logo'
-                    always-available: ita-IT
-                    eng-GB: 'Attiva header con solo logo'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: 'Mostra solo logo (nasconde Titolo e sottotitolo)'
-                    always-available: ita-IT
-                    eng-GB: 'Mostra solo logo (nasconde Titolo e sottotitolo)'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezboolean
-            Position: '25'
-            IsSearchable: '1'
-            IsRequired: '0'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:48:"Mostra solo logo (nasconde Titolo e sottotitolo)";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:48:"Mostra solo logo (nasconde Titolo e sottotitolo)";}'
-            CanTranslate: '1'
-            DataInt1: '0'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:1:{s:6:"eng-GB";s:0:"";}'
-            Category: ''
-            DataTextI18nList:
-                NameList:
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        enable_registration:
-            Content: null
-            DisplayInfo: null
-            ID: '4392'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: enable_registration
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:21:"Abilita registrazione";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:21:"Abilita registrazione";}'
-            NameList:
-                NameList:
-                    ita-IT: 'Abilita registrazione'
-                    always-available: ita-IT
-                    eng-GB: 'Abilita registrazione'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezboolean
-            Position: '26'
-            IsSearchable: '1'
-            IsRequired: '0'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            CanTranslate: '1'
-            DataInt1: '0'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            Category: config
-            DataTextI18nList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-        enable_login:
-            Content: null
-            DisplayInfo: null
-            ID: '4393'
-            Version: '0'
-            ContentClassID: '437'
-            Identifier: enable_login
-            SerializedNameList: 'a:3:{s:6:"ita-IT";s:13:"Abilita login";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:13:"Abilita login";}'
-            NameList:
-                NameList:
-                    ita-IT: 'Abilita login'
-                    always-available: ita-IT
-                    eng-GB: 'Abilita login'
-                HasDirtyData: false
-                DefaultLanguage: null
-            DescriptionList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
-            DataTypeString: ezboolean
-            Position: '27'
-            IsSearchable: '1'
-            IsRequired: '0'
-            IsInformationCollector: '0'
-            Module: null
-            PersistentDataDirty: false
-            SerializedDescriptionList: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            CanTranslate: '1'
-            DataInt1: '0'
-            DataInt2: '0'
-            DataInt3: '0'
-            DataInt4: '0'
-            DataFloat1: '0'
-            DataFloat2: '0'
-            DataFloat3: '0'
-            DataFloat4: '0'
-            DataText1: ''
-            DataText2: ''
-            DataText3: ''
-            DataText4: ''
-            DataText5: ''
-            SerializedDataText: 'a:3:{s:6:"ita-IT";s:0:"";s:16:"always-available";s:6:"ita-IT";s:6:"eng-GB";s:0:"";}'
-            Category: config
-            DataTextI18nList:
-                NameList:
-                    ita-IT: ''
-                    always-available: ita-IT
-                    eng-GB: ''
-                HasDirtyData: false
-                DefaultLanguage: null
+identifier: agenda_root
+contentobject_name: '<name>'
+serialized_name_list:
+    ita-IT: 'Agenda Root'
+    always-available: ita-IT
+    eng-GB: 'Agenda Root'
+serialized_description_list:
+    ita-IT: 'Contenitore delle configurazioni e degli eventi di ComunWeb Agenda'
+    always-available: ita-IT
+    eng-GB: 'Contenitore delle configurazioni e degli eventi di ComunWeb Agenda'
+url_alias_name: ''
+always_available: '1'
+sort_field: '1'
+sort_order: '1'
+is_container: '1'
+data_map:
+    name:
+        identifier: name
+        serialized_description_list:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+        serialized_name_list:
+            ita-IT: Nome
+            always-available: ita-IT
+            eng-GB: Name
+        data_type_string: ezstring
+        placement: '1'
+        is_searchable: '1'
+        is_required: '1'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '0'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: OpenAgenda
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: ''
+        serialized_data_text:
+            eng-GB: ''
+    logo:
+        identifier: logo
+        serialized_description_list:
+            ita-IT: 'Dimensioni 180px x 180px'
+            always-available: ita-IT
+            eng-GB: 'Size 180px x 180px'
+        serialized_name_list:
+            ita-IT: Logo
+            always-available: ita-IT
+            eng-GB: Logo
+        data_type_string: ezimage
+        placement: '2'
+        is_searchable: '0'
+        is_required: '1'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '0'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: ''
+        serialized_data_text:
+            eng-GB: ''
+    logo_title:
+        identifier: logo_title
+        serialized_description_list:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+        serialized_name_list:
+            ita-IT: Titolo
+            always-available: ita-IT
+            eng-GB: Title
+        data_type_string: ezstring
+        placement: '3'
+        is_searchable: '1'
+        is_required: '1'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '0'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: ''
+        serialized_data_text:
+            eng-GB: ''
+    logo_subtitle:
+        identifier: logo_subtitle
+        serialized_description_list:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+        serialized_name_list:
+            ita-IT: Sottotitolo
+            always-available: ita-IT
+            eng-GB: Subtitle
+        data_type_string: ezstring
+        placement: '4'
+        is_searchable: '1'
+        is_required: '1'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '0'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: ''
+        serialized_data_text:
+            eng-GB: ''
+    banner:
+        identifier: banner
+        serialized_description_list:
+            ita-IT: 'Dimensioni 1.920px × 480px'
+            always-available: ita-IT
+            eng-GB: 'Dimensioni 1.920px × 480px'
+        serialized_name_list:
+            ita-IT: Banner
+            always-available: ita-IT
+            eng-GB: Banner
+        data_type_string: ezimage
+        placement: '5'
+        is_searchable: '0'
+        is_required: '0'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '0'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: ''
+        serialized_data_text:
+            eng-GB: ''
+    banner_title:
+        identifier: banner_title
+        serialized_description_list:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+        serialized_name_list:
+            ita-IT: 'Titolo banner'
+            always-available: ita-IT
+            eng-GB: 'Banner title'
+        data_type_string: ezstring
+        placement: '6'
+        is_searchable: '1'
+        is_required: '0'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '0'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: ''
+        serialized_data_text:
+            eng-GB: ''
+    banner_subtitle:
+        identifier: banner_subtitle
+        serialized_description_list:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+        serialized_name_list:
+            ita-IT: 'Sottotiolo banner'
+            always-available: ita-IT
+            eng-GB: 'Banner subtitle'
+        data_type_string: ezstring
+        placement: '7'
+        is_searchable: '1'
+        is_required: '0'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '0'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: ''
+        serialized_data_text:
+            eng-GB: ''
+    faq:
+        identifier: faq
+        serialized_description_list:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+        serialized_name_list:
+            ita-IT: Faq
+            always-available: ita-IT
+            eng-GB: Faq
+        data_type_string: ezxmltext
+        placement: '8'
+        is_searchable: '1'
+        is_required: '0'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '10'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: ''
+        serialized_data_text:
+            eng-GB: ''
+    privacy:
+        identifier: privacy
+        serialized_description_list:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+        serialized_name_list:
+            ita-IT: Privacy
+            always-available: ita-IT
+            eng-GB: Privacy
+        data_type_string: ezxmltext
+        placement: '9'
+        is_searchable: '1'
+        is_required: '0'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '10'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: ''
+        serialized_data_text:
+            eng-GB: ''
+    terms:
+        identifier: terms
+        serialized_description_list:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+        serialized_name_list:
+            ita-IT: 'Termini di utilizzo'
+            always-available: ita-IT
+            eng-GB: 'Terms of Use'
+        data_type_string: ezxmltext
+        placement: '10'
+        is_searchable: '1'
+        is_required: '0'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '10'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: ''
+        serialized_data_text:
+            eng-GB: ''
+    cookie:
+        identifier: cookie
+        serialized_description_list:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+        serialized_name_list:
+            ita-IT: 'Informazioni sull''utilizzo dei cookie'
+            always-available: ita-IT
+            eng-GB: 'Cookie Policy'
+        data_type_string: ezxmltext
+        placement: '11'
+        is_searchable: '1'
+        is_required: '0'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '10'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: ''
+        serialized_data_text:
+            eng-GB: ''
+    footer:
+        identifier: footer
+        serialized_description_list:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+        serialized_name_list:
+            ita-IT: 'Testo footer'
+            always-available: ita-IT
+            eng-GB: 'Footer text'
+        data_type_string: ezxmltext
+        placement: '12'
+        is_searchable: '1'
+        is_required: '0'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '5'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: ''
+        serialized_data_text:
+            eng-GB: ''
+    contacts:
+        identifier: contacts
+        serialized_description_list:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+        serialized_name_list:
+            ita-IT: Contatti
+            always-available: ita-IT
+            eng-GB: Contacts
+        data_type_string: ezxmltext
+        placement: '13'
+        is_searchable: '1'
+        is_required: '0'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '5'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: ''
+        serialized_data_text:
+            eng-GB: ''
+    collaboration_mode:
+        identifier: collaboration_mode
+        serialized_description_list:
+            ita-IT: 'La modalità collaborativa consente la visualizzazione delle associazioni registrate e il loro accesso al sistema per l''inserimento di nuovi contenuti'
+            always-available: ita-IT
+            eng-GB: 'La modalità collaborativa consente la visualizzazione delle associazioni registrate e il loro accesso al sistema per l''inserimento di nuovi contenuti'
+        serialized_name_list:
+            ita-IT: 'Attiva modalità collaborativa'
+            always-available: ita-IT
+            eng-GB: 'Attiva modalità collaborativa'
+        data_type_string: ezboolean
+        placement: '14'
+        is_searchable: '0'
+        is_required: '0'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '0'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: config
+        serialized_data_text:
+            eng-GB: ''
+    enable_comment:
+        identifier: enable_comment
+        serialized_description_list:
+            ita-IT: 'Consente agli utenti registrati di commentare gli eventi'
+            always-available: ita-IT
+            eng-GB: 'Consente agli utenti registrati di commentare gli eventi'
+        serialized_name_list:
+            ita-IT: 'Abilita i commenti'
+            always-available: ita-IT
+            eng-GB: 'Abilita i commenti'
+        data_type_string: ezboolean
+        placement: '15'
+        is_searchable: '0'
+        is_required: '0'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '0'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: config
+        serialized_data_text:
+            eng-GB: ''
+    layout:
+        identifier: layout
+        serialized_description_list:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+        serialized_name_list:
+            ita-IT: 'Blocchi homepage'
+            always-available: ita-IT
+            eng-GB: 'Blocchi homepage'
+        data_type_string: ezpage
+        placement: '16'
+        is_searchable: '0'
+        is_required: '0'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '0'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: ''
+        serialized_data_text:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+    hide_tags:
+        identifier: hide_tags
+        serialized_description_list:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+        serialized_name_list:
+            ita-IT: 'Nascondi tipologie nell''agenda principale'
+            always-available: ita-IT
+            eng-GB: 'Nascondi tipologie nell''agenda principale'
+        data_type_string: eztags
+        placement: '17'
+        is_searchable: '0'
+        is_required: '0'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '11'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: Tree
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: view
+        serialized_data_text:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+    hide_iniziative:
+        identifier: hide_iniziative
+        serialized_description_list:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+        serialized_name_list:
+            ita-IT: 'Nascondi manifestazioni nell''agenda principale'
+            always-available: ita-IT
+            eng-GB: 'Nascondi manifestazioni nell''agenda principale'
+        data_type_string: ezobjectrelationlist
+        placement: '18'
+        is_searchable: '0'
+        is_required: '0'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '0'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<related-objects><constraints><allowed-class contentclass-identifier=\"iniziativa\"/></constraints><type value=\"2\"/><selection_type value=\"0\"/><object_class value=\"\"/><contentobject-placement/></related-objects>\n"
+        category: view
+        serialized_data_text:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+    view_all:
+        identifier: view_all
+        serialized_description_list:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+        serialized_name_list:
+            ita-IT: 'Imposta il filtro del calendario della homepage a "Tutti"'
+            always-available: ita-IT
+            eng-GB: 'Imposta il filtro del calendario della homepage a "Tutti"'
+        data_type_string: ezboolean
+        placement: '19'
+        is_searchable: '1'
+        is_required: '0'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '0'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: view
+        serialized_data_text:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+    enable_auto_registration:
+        identifier: enable_auto_registration
+        serialized_description_list:
+            ita-IT: 'Mostra il form di registrazione per le associazioni'
+            always-available: ita-IT
+            eng-GB: 'Mostra il form di registrazione per le associazioni'
+        serialized_name_list:
+            ita-IT: 'Abilita l''auto registrazione delle associazioni'
+            always-available: ita-IT
+            eng-GB: 'Abilita l''auto registrazione delle associazioni'
+        data_type_string: ezboolean
+        placement: '20'
+        is_searchable: '1'
+        is_required: '0'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '0'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: config
+        serialized_data_text:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+    enable_moderation:
+        identifier: enable_moderation
+        serialized_description_list:
+            ita-IT: 'Abilita la moderazione di tutti i nuovi eventi inseriti dalle associazioni'
+            always-available: ita-IT
+            eng-GB: 'Abilita la moderazione di tutti i nuovi eventi inseriti dalle associazioni'
+        serialized_name_list:
+            ita-IT: 'Abilita la moderazione'
+            always-available: ita-IT
+            eng-GB: 'Abilita la moderazione'
+        data_type_string: ezboolean
+        placement: '21'
+        is_searchable: '1'
+        is_required: '0'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '0'
+        data_int2: '0'
+        data_int3: '1'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: config
+        serialized_data_text:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+    testo_rubrica_associazioni:
+        identifier: testo_rubrica_associazioni
+        serialized_description_list:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+        serialized_name_list:
+            ita-IT: 'Testo widget Rubrica associazioni'
+            always-available: ita-IT
+            eng-GB: 'Testo widget Rubrica associazioni'
+        data_type_string: ezstring
+        placement: '22'
+        is_searchable: '1'
+        is_required: '0'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '0'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: view
+        serialized_data_text:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+    testo_download_programma:
+        identifier: testo_download_programma
+        serialized_description_list:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+        serialized_name_list:
+            ita-IT: 'Testo widget Programma'
+            always-available: ita-IT
+            eng-GB: 'Testo widget Programma'
+        data_type_string: ezstring
+        placement: '23'
+        is_searchable: '1'
+        is_required: '0'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '0'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: view
+        serialized_data_text:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+    testo_partecipa_associazioni:
+        identifier: testo_partecipa_associazioni
+        serialized_description_list:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+        serialized_name_list:
+            ita-IT: 'Testo widget Partecipa'
+            always-available: ita-IT
+            eng-GB: 'Testo widget Partecipa'
+        data_type_string: ezstring
+        placement: '24'
+        is_searchable: '1'
+        is_required: '0'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '0'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: view
+        serialized_data_text:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+    enable_header_only_logo:
+        identifier: enable_header_only_logo
+        serialized_description_list:
+            ita-IT: 'Mostra solo logo (nasconde Titolo e sottotitolo)'
+            always-available: ita-IT
+            eng-GB: 'Mostra solo logo (nasconde Titolo e sottotitolo)'
+        serialized_name_list:
+            ita-IT: 'Attiva header con solo logo'
+            always-available: ita-IT
+            eng-GB: 'Attiva header con solo logo'
+        data_type_string: ezboolean
+        placement: '25'
+        is_searchable: '1'
+        is_required: '0'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '0'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: ''
+        serialized_data_text:
+            eng-GB: ''
+    enable_registration:
+        identifier: enable_registration
+        serialized_description_list:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+        serialized_name_list:
+            ita-IT: 'Abilita registrazione'
+            always-available: ita-IT
+            eng-GB: 'Abilita registrazione'
+        data_type_string: ezboolean
+        placement: '26'
+        is_searchable: '1'
+        is_required: '0'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '0'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: config
+        serialized_data_text:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+    enable_login:
+        identifier: enable_login
+        serialized_description_list:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+        serialized_name_list:
+            ita-IT: 'Abilita login'
+            always-available: ita-IT
+            eng-GB: 'Abilita login'
+        data_type_string: ezboolean
+        placement: '27'
+        is_searchable: '1'
+        is_required: '0'
+        is_information_collector: '0'
+        can_translate: '1'
+        data_int1: '0'
+        data_int2: '0'
+        data_int3: '0'
+        data_int4: '0'
+        data_float1: '0'
+        data_float2: '0'
+        data_float3: '0'
+        data_float4: '0'
+        data_text1: ''
+        data_text2: ''
+        data_text3: ''
+        data_text4: ''
+        data_text5: ''
+        category: config
+        serialized_data_text:
+            ita-IT: ''
+            always-available: ita-IT
+            eng-GB: ''
+groups:
+    - OpenAgenda

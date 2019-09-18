@@ -25,19 +25,26 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
     {
         $content = $this->ioTools->getJsonContents("contents/{$this->identifier}.yml");
 
-        $this->logger->log("Create content " . $this->identifier);
+        $this->logger->info("Create content " . $this->identifier);
 
         $contentRepository = new ContentRepository();
         $contentRepository->setEnvironment(EnvironmentLoader::loadPreset('content'));
         $result = $contentRepository->create($content);
 
-        $id = $result['content']['metadata']['id'];
         $nodeId = $result['content']['metadata']['mainNodeId'];
-        $this->installerVars['content_' . $this->identifier . '_node'] = $nodeId;
-        $this->installerVars['content_' . $this->identifier . '_object'] = $id;
+        if ($this->swapWith){
+            $nodeId = $this->swap($nodeId);
+        }
+
+        $node = \eZContentObjectTreeNode::fetch($nodeId);
+
+        $this->installerVars['content_' . $this->identifier . '_node'] = $node->attribute('node_id');
+        $this->installerVars['content_' . $this->identifier . '_object'] = $node->attribute('contentobject_id');
+        $this->installerVars['content_' . $this->identifier . '_path_string'] = $node->attribute('path_string');
+
 
         if ($this->swapWith){
-            $this->swap($nodeId);
+            $this->swap($node->attribute('node_id'));
         }
     }
 
@@ -45,10 +52,15 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
     {
         $source = $nodeId;
         $target = $this->swapWith;
+
+        $this->logger->info(" - swap with " . $target);
+
         eZContentOperationCollection::swapNode($source, $target, array($source, $target));
-        $this->installerVars['content_' . $this->identifier . '_node'] = $target;
         if ($this->removeSwapped){
+            $this->logger->info(" - remove " . $nodeId);
             eZContentOperationCollection::deleteObject(array($nodeId));
         }
+
+        return $target;
     }
 }

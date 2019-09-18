@@ -6,6 +6,7 @@ use eZDbSchema;
 use eZExtension;
 use eZLocale;
 use eZContentLanguage;
+use eZINI;
 
 class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
 {
@@ -20,7 +21,9 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
     private $extraLanguageCodes;
 
     private $cleanDataDirectory;
-    
+
+    private $activeExtensions;
+
     public function __construct($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory)
     {
         $this->cleanDb = $cleanDb;
@@ -31,7 +34,12 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
 
         $cleanDataDirectoryDefault = 'vendor/opencontent/ocinstaller/cleandata';
         $this->cleanDataDirectory = $cleanDataDirectory ? $cleanDataDirectory : $cleanDataDirectoryDefault;
+        $this->activeExtensions = eZExtension::activeExtensions();
 
+        $ini = eZINI::instance('dbschema.ini');
+        $schemaPaths = $ini->variable('SchemaSettings', 'SchemaPaths');
+        $schemaPaths['postgresql'] = __DIR__  . '/ezpgsqlschema.php';
+        $ini->setVariable('SchemaSettings', 'SchemaPaths', $schemaPaths);
     }
 
     public function install()
@@ -47,13 +55,11 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
 
             $this->installSchemaAndData($baseSchema, $baseData);
 
+            $activeExtensions = ['ezmbpaex'];
             if ($this->installExtensionsSchema) {
-
-                $activeExtensions = ['ezmbpaex'];
-
                 $activeExtensions = array_merge(
                     $activeExtensions,
-                    eZExtension::activeExtensions()
+                    $this->activeExtensions
                 );
             }
             $this->installExtensionsSchema($activeExtensions);
@@ -66,7 +72,7 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
 
     private function cleanup()
     {
-        $this->logger->log('Cleanup db');
+        $this->logger->info('Cleanup db');
         $relationTypes = $this->db->supportedRelationTypes();
         $result = true;
         $matchRegexp = "#^ez|^sql|^oc|^cjw|tmp_notification_rule_s#";
@@ -90,10 +96,10 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
 
     private function installSchemaAndData($baseSchema, $baseData)
     {
-        $this->logger->log("Install schema " . $baseSchema);
+        $this->logger->info("Install schema " . $baseSchema);
         $schemaArray = eZDbSchema::read($baseSchema, true);
 
-        $this->logger->log("Install schema " . $baseData);
+        $this->logger->info("Install schema " . $baseData);
         $dataArray = eZDbSchema::read($baseData, true);
 
         $schemaArray = array_merge($schemaArray, $dataArray);
@@ -122,7 +128,7 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
 
             if (file_exists($extensionSchema)) {
 
-                $this->logger->log("Install schema " . $extensionSchema);
+                $this->logger->info("Install schema " . $extensionSchema);
 
                 $extensionSchemaArray = eZDbSchema::read($extensionSchema, true);
                 $extensionSchemaArray['type'] = strtolower($this->db->databaseName());
@@ -149,7 +155,7 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
 
         // Make sure objects use the selected main language instead of eng-GB
         if ($primaryLanguageLocaleCode != 'eng-GB') {
-            $this->logger->log("Set primary content language " . $primaryLanguageLocaleCode);
+            $this->logger->info("Set primary content language " . $primaryLanguageLocaleCode);
 
             $extraLanguageCodes[] = 'eng-GB';
 
@@ -318,7 +324,7 @@ language_locale='eng-GB'";
             $languageObj = eZContentLanguage::fetchByLocale($languageObject->localeCode());
             // Add it if it is missing (most likely)
             if (!$languageObj) {
-                $this->logger->log("Add content language " . $languageObject->localeCode());
+                $this->logger->info("Add content language " . $languageObject->localeCode());
                 eZContentLanguage::addLanguage($languageObject->localeCode(), $languageObject->internationalLanguageName());
             }
         }
@@ -331,7 +337,7 @@ language_locale='eng-GB'";
 
     private function expiryPassword()
     {
-        $this->logger->log("Set all passwords expired");
+        $this->logger->info("Set all passwords expired");
         $updateSql = "UPDATE ezx_mbpaex SET password_last_updated = -1, passwordlifetime = 365";
         $this->db->query($updateSql);
     }

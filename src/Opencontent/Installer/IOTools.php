@@ -45,26 +45,4 @@ class IOTools
 
         return false;
     }
-
-    public function createJsonFile($source)
-    {
-        $data = $this->getJsonContents($source);
-
-        if ($data) {
-            $filePath = $this->getFile($source);
-            $destinationFilePath = substr($filePath, 0, -4) . '.json';
-            eZFile::create(basename($destinationFilePath), dirname($destinationFilePath), json_encode($data));
-
-            return $destinationFilePath;
-        }
-
-        return false;
-    }
-
-    public function removeJsonFile($source)
-    {
-        $filePath = eZSys::rootDir() . '/' . $this->dataDir . '/' . $source;
-        $destinationFilePath = substr($filePath, 0, -4) . '.json';
-        @unlink($destinationFilePath);
-    }
 }

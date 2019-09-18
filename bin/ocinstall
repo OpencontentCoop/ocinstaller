@@ -50,6 +50,11 @@ try {
 
     // install
     $installer = new \Opencontent\Installer\Installer($db, $dataDir);
+
+    if ($options['verbose']){
+        $installer->getLogger()->isVerbose = true;
+    }
+
     $installer->installSchema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory);
     $installer->install();
 

@@ -26,7 +26,7 @@ class TagTree extends AbstractStepInstaller implements InterfaceStepInstaller
      */
     public function install()
     {
-        $this->logger->log("Import tag tree " . $this->rootTag);
+        $this->logger->info("Import tag tree " . $this->rootTag);
 
         $client = new TagClient(
             $this->remoteHost,
@@ -35,7 +35,9 @@ class TagTree extends AbstractStepInstaller implements InterfaceStepInstaller
             'tags_tree'
         );
         $remoteRoot = $client->readTag($this->rootTag);
-        $this->recursiveCreateTag($remoteRoot, 0);
+        $tag = $this->recursiveCreateTag($remoteRoot, 0);
+
+        $this->installerVars['tagtree_' . $this->rootTag] = $tag->id;
     }
 
     /**
@@ -58,9 +60,9 @@ class TagTree extends AbstractStepInstaller implements InterfaceStepInstaller
 
         $result = $tagRepository->create($struct);
         if ($result['message'] == 'success') {
-            $this->logger->warning(str_pad('', $recursionLevel, '  ', STR_PAD_LEFT) . ' |- ' . $name);
+            $this->logger->debug(str_pad('', $recursionLevel, '  ', STR_PAD_LEFT) . ' |- ' . $name);
         } elseif ($result['message'] == 'already exists') {
-            $this->logger->log(str_pad('', $recursionLevel, '  ', STR_PAD_LEFT) . ' |- ' . $name);
+            $this->logger->debug(str_pad('', $recursionLevel, '  ', STR_PAD_LEFT) . ' |- ' . $name);
         }
         $tag = $result['tag'];
 
@@ -71,6 +73,7 @@ class TagTree extends AbstractStepInstaller implements InterfaceStepInstaller
      * @param $remoteTag
      * @param int $localeParentTagLocation
      * @param int $recursionLevel
+     * @return \Opencontent\Opendata\Api\Values\Tag
      * @throws Exception
      */
     function recursiveCreateTag($remoteTag, $localeParentTagLocation = 0, $recursionLevel = 0)
@@ -83,6 +86,8 @@ class TagTree extends AbstractStepInstaller implements InterfaceStepInstaller
                 --$recursionLevel;
             }
         }
+
+        return $tag;
     }
 }
 

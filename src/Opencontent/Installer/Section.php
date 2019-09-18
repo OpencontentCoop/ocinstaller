@@ -9,21 +9,22 @@ class Section extends AbstractStepInstaller implements InterfaceStepInstaller
 {
     private $sectionDefinition;
 
-
     public function __construct($step)
     {
-        $identifier = $step['identifier'];
-        $sectionDefinition = $this->ioTools->getJsonContents("sections/{$identifier}.yml");
-        $this->sectionDefinition = $sectionDefinition;
+        $this->step = $step;
     }
 
     public function install()
     {
+        $identifier = $this->step['identifier'];
+        $sectionDefinition = $this->ioTools->getJsonContents("sections/{$identifier}.yml");
+        $this->sectionDefinition = $sectionDefinition;
+
         $name = $this->sectionDefinition['name'];
         $identifier = $this->sectionDefinition['identifier'];
         $navigationPart = $this->sectionDefinition['navigation_part'];
 
-        $this->logger->log("Create section " . $identifier);
+        $this->logger->info("Create section " . $identifier);
 
         $section = eZSection::fetchByIdentifier($identifier, false);
         if (isset($section['id'])) {
@@ -39,5 +40,7 @@ class Section extends AbstractStepInstaller implements InterfaceStepInstaller
         if (!$section instanceof eZSection) {
             throw new Exception("Section $identifier not found");
         }
+
+        $this->installerVars['state_' . $section->attribute('identifier')] = $section->attribute('id');
     }
 }

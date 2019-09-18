@@ -53,7 +53,7 @@ class Installer
         $this->validateData();
         $this->installerData = Yaml::parse(file_get_contents($this->dataDir . '/installer.yml'));
 
-        $this->log("Install " . $this->installerData['name'] . ' version ' . $this->installerData['version']);
+        $this->logger->info("Install " . $this->installerData['name'] . ' version ' . $this->installerData['version']);
 
         $this->ioTools = new IOTools($this->dataDir, $this->installerVars);
 
@@ -65,17 +65,18 @@ class Installer
         );
     }
 
+    /**
+     * @return Logger
+     */
+    public function getLogger()
+    {
+        return $this->logger;
+    }
+
     public function installSchema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory)
     {
         $installer = $this->installerFactory->factory(new Schema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory));
         $installer->install();
-    }
-
-    protected function validateData()
-    {
-        if (!file_exists($this->dataDir . '/installer.yml')) {
-            throw new Exception("File {$this->dataDir}/installer.yml not found");
-        }
     }
 
     public function install()
@@ -90,43 +91,55 @@ class Installer
             switch ($step['type']) {
 
                 case 'tagtree':
-                    $this->installTagTree($step);
+                    $installer = new TagTree($step);
                     break;
 
                 case 'state':
-                    $this->installState($step);
+                    $installer = new State($step);
                     break;
 
                 case 'section':
-                    $this->installSection($step);
+                    $installer = new Section($step);
                     break;
 
                 case 'class':
-                    $this->installClass($step);
+                    $installer = new ContentClass($step);
                     break;
 
                 case 'content':
-                    $this->installContent($step);
+                    $installer = new Content($step);
                     break;
 
                 case 'role':
-                    $this->installRole($step);
+                    $installer = new Role($step);
                     break;
 
                 case 'workflow':
-                    $this->installWorkflow($step);
+                    $installer = new Workflow($step);
                     break;
 
                 default:
                     throw new Exception("Step type " . $step['type'] . ' not handled');
             }
+
+            if ($installer instanceof InterfaceStepInstaller) {
+                $installer = $this->installerFactory->factory($installer);
+                $installer->install();
+            }
+        }
+    }
+
+    protected function validateData()
+    {
+        if (!file_exists($this->dataDir . '/installer.yml')) {
+            throw new Exception("File {$this->dataDir}/installer.yml not found");
         }
     }
 
     protected function loadDataVariables()
     {
         if (isset($this->installerData['variables'])) {
-            $this->logger->log("Load installer vars:");
+            $this->logger->info("Load vars");
 
             foreach ($this->installerData['variables'] as $variable) {
                 $this->installerVars[$variable['name']] = $variable['value'];
@@ -135,47 +148,5 @@ class Installer
 
         $stepsData = $this->installerVars->filter(json_encode($this->installerData['steps']));
         $this->installerData['steps'] = json_decode($stepsData, true);
-    }
-
-    protected function installTagTree($step)
-    {
-        $installer = $this->installerFactory->factory(new TagTree($step));
-        $installer->install();
-    }
-
-    protected function installState($step)
-    {
-        $installer = $this->installerFactory->factory(new State($step));
-        $installer->install();
-    }
-
-    protected function installSection($step)
-    {
-        $installer = $this->installerFactory->factory(new Section($step));
-        $installer->install();
-    }
-
-    protected function installClass($step)
-    {
-        $installer = $this->installerFactory->factory(new ContentClass($step));
-        $installer->install();
-    }
-
-    protected function installContent($step)
-    {
-        $installer = $this->installerFactory->factory(new Content($step));
-        $installer->install();
-    }
-
-    protected function installRole($step)
-    {
-        $installer = $this->installerFactory->factory(new Role($step));
-        $installer->install();
-    }
-
-    protected function installWorkflow($step)
-    {
-        $installer = $this->installerFactory->factory(new Workflow($step));
-        $installer->install();
     }
 }

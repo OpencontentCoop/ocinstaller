@@ -15,7 +15,8 @@ $script->startup();
 $options = $script->getOptions('[url:][data_dir:]',
     '',
     array(
-        'url' => "Remote url class definition",
+        'url' => "Remote url or file path class definition",
+        'id' => "Local content class id",
         'data_dir' => "Directory of installer data",
     )
 );
@@ -24,19 +25,37 @@ $cli = eZCLI::instance();
 
 if ($options['url']) {
 
-    $data = file_get_contents($options['url']);
-    $dataArray = json_decode($data, true);
+    $json = file_get_contents($options['url']);
 
-    $filename = $dataArray['Identifier'] . '.yml';
-    $dataYaml = Yaml::dump($dataArray, 10);
+} elseif ($options['id']) {
 
-    if ($options['data_dir']){
-        $directory = rtrim($options['data_dir'], '/') . '/classes';
-        eZDir::mkdir($directory, false, true);
-        eZFile::create($filename, $directory, $dataYaml);
-        $cli->output($directory . '/' . $filename);
-    }
+    $tools = new OCClassTools((int)$options['id']);
+    $result = $tools->getLocale();
+    $result->attribute('data_map');
+    $result->fetchGroupList();
+    $result->fetchAllGroups();
 
+    $json = json_encode($result);
 }
+
+if ($json) {
+    $dumper = \Opencontent\Installer\Dumper\ContentClass::fromJSON($json);
+    if ($options['data_dir']) {
+        $dumper->store($options['data_dir']);
+    } else {
+        print_r($dumper->getData());
+    }
+}
+
+//$installerFactory = new \Opencontent\Installer\StepInstallerFactory(
+//    new \Opencontent\Installer\Logger(),
+//    new \Opencontent\Installer\InstallerVars(),
+//    new \Opencontent\Installer\IOTools($options['data_dir'], new \Opencontent\Installer\InstallerVars()),
+//    []
+//);
+//
+//$test = new \Opencontent\Installer\ContentClass(['identifier' => $dumper->getIdentifier()]);
+//$installer = $installerFactory->factory($test);
+//$installer->install();
 
 $script->shutdown();

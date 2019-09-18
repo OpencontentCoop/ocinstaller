@@ -29,7 +29,7 @@ class InstallerVars extends \ArrayObject
     public function offsetSet($name, $value)
     {
         $value = $this->parseVarValue($value);
-        $this->logger->log(" - $name: $value");
+        $this->logger->warning(" -> $" . $name . ": $value");
         parent::offsetSet($name, $value);
     }
 
