@@ -16,7 +16,7 @@ $options = $script->getOptions('[data_dir:][languages:][cleandata_dir:][cleanup]
     array(
         'data_dir' => "Directory of installer data",
         'cleanup' => "Cleanup db before install",
-        'only-base' => "Install only base without extension schema",
+        'exlude-extension-schemas' => "Install only base without extension schema",
         'only-data' => "Install only data without base and extension schema",
         'languages' => "Comma separates language code list, first is primary (default is: eng-GB,ita-IT,ger-DE)",
         'cleandata_dir' => "Override directory of clean db_schema.dba and db_data.dba files",
@@ -36,7 +36,7 @@ try {
     // parameters
     $cleanDb = $options['cleanup'];
     $installBaseSchema = !$options['only-data'];
-    $installExtensionsSchema = !$options['only-base'];
+    $installExtensionsSchema = !$options['exlude-extension-schemas'];
 
     $cleanDataDirectory = $options['cleandata_dir'] ? rtrim($options['cleandata_dir']) : $cleanDataDirectoryDefault;
 
