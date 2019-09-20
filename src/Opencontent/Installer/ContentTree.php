@@ -30,7 +30,7 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
         $this->logger->info("Install contenttree " . $this->identifier . " from $remoteHost");
 
         $client = new HttpClient($remoteHost);
-        $remoteRoot = $client->browse($root);
+        $remoteRoot = $client->browse($root, 100);
         foreach ($remoteRoot['children'] as $childNode) {
             $child = $client->read($childNode['id']);
 
