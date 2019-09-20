@@ -79,7 +79,7 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
         $this->logger->info('Cleanup db');
         $relationTypes = $this->db->supportedRelationTypes();
         $result = true;
-        $matchRegexp = "#^ez|^sql|^oc|^cjw|tmp_notification_rule_s#";
+        $matchRegexp = "#^ez|^sql|^oc|^openpa|^cjw|tmp_notification_rule_s#";
         foreach ($relationTypes as $relationType) {
             $relationItems = $this->db->relationList($relationType);
             foreach ($relationItems as $relationItem) {
