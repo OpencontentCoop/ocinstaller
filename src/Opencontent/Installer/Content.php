@@ -14,6 +14,15 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
 
     private $removeSwapped;
 
+    public function dryRun()
+    {
+        $identifier = $this->step['identifier'];
+        $this->logger->info("Install content " . $identifier);
+        $this->installerVars['content_' . $identifier . '_node'] = 0;
+        $this->installerVars['content_' . $identifier . '_object'] = 0;
+        $this->installerVars['content_' . $identifier . '_path_string'] = 0;
+    }
+
     public function install()
     {
         $this->identifier = $this->step['identifier'];

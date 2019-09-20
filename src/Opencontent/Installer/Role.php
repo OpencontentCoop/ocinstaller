@@ -6,6 +6,17 @@ use eZRole;
 
 class Role extends AbstractStepInstaller implements InterfaceStepInstaller
 {
+    public function dryRun()
+    {
+        $identifier = $this->step['identifier'];
+        $roleDefinition = $this->ioTools->getJsonContents("roles/{$identifier}.yml");
+        $name = $roleDefinition['name'];
+        $trans = \eZCharTransform::instance();
+        $roleIdentifier = $trans->transformByGroup($name, 'urlalias');
+        $this->logger->info("Install role " . $identifier);
+        $this->installerVars['role_' . $roleIdentifier] = 0;
+    }
+
     public function install()
     {
         $identifier = $this->step['identifier'];

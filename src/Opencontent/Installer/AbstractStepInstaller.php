@@ -95,6 +95,7 @@ abstract class AbstractStepInstaller
         if ($this->installerVars) {
             $stepString = json_encode($step);
             $stepString = $this->installerVars->filter($stepString);
+            $this->installerVars->validate($stepString, isset($step['identifier']) ? $step['identifier'] : '');
             $step = json_decode($stepString, true);
         }
 

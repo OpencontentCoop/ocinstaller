@@ -39,8 +39,10 @@ class IOTools
         if (file_exists($filePath)) {
             $data = file_get_contents($filePath);
             $data = $this->installerVars->filter($data);
+            $json = Yaml::parse($data);
+            $this->installerVars->validate($json, $source);
 
-            return Yaml::parse($data);
+            return $json;
         }
 
         return false;

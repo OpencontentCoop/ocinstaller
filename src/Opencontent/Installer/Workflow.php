@@ -12,6 +12,13 @@ use eZWorkflowFunctions;
 
 class Workflow extends AbstractStepInstaller implements InterfaceStepInstaller
 {
+    public function dryRun()
+    {
+        $identifier = $this->step['identifier'];
+        $definition = $this->ioTools->getJsonContents("workflows/{$identifier}.yml");
+        $this->logger->info("Install workflow " . $definition['name']);
+    }
+
     public function install()
     {
         $identifier = $this->step['identifier'];

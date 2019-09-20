@@ -41,31 +41,66 @@ class InstallerVars extends \ArrayObject
         foreach ($this as $name => $value) {
             $data = str_replace('$' . $name, $value, $data);
         }
-
         return $data;
     }
 
-    protected function parseVarValue($value)
+    public function parseVarValue($value)
     {
-        if (strpos($value, '::') !== false) {
-            list($class, $method) = explode('::', $value);
-            if (method_exists($class, $method)){
-                $value = $class::{$method}();
+        if (is_string($value)) {
+            if (strpos($value, '::') !== false) {
+                list($class, $method) = explode('::', $value);
+                if (method_exists($class, $method)) {
+                    $value = $class::{$method}();
+                }
+            }
+
+            if (strpos($value, 'env(') !== false) {
+                $envVariable = substr($value, 4, -1);
+                $value = isset($_ENV[$envVariable]) ? $_ENV[$envVariable] : false;
+            }
+
+            if (strpos($value, 'ini(') !== false) {
+                $iniVariable = substr($value, 4, -1);
+                list($group, $variable, $file) = explode(',', $iniVariable);
+                $value = \eZINI::instance($file)->variable($group, $variable);
+            }
+
+            if (strpos($value, 'tag(') !== false) {
+                $tagUrl = substr($value, 4, -1);
+                $tag = \eZTagsObject::fetchByUrl($tagUrl);
+                if ($tag instanceof \eZTagsObject){
+                    $value = $tag->attribute('id');
+                }else{
+                    $tag = 0;
+                }
             }
         }
 
-        if (strpos($value, 'env(') !== false) {
-            $envVariable = substr($value, 4, -1);
-            $value = isset($_ENV[$envVariable]) ? $_ENV[$envVariable] : false;
-        }
-
-        if (strpos($value, 'ini(') !== false) {
-            $iniVariable = substr($value, 4, -1);
-            list($group, $variable, $file) = explode(',', $iniVariable);
-            $value = \eZINI::instance($file)->variable($group, $variable);
-        }
-
         return $value;
+    }
+
+    public function validate($data, $context = '')
+    {
+        if (is_string($data)){
+            $dataString = $data;
+        }else {
+            $dataString = json_encode($data);
+        }
+        if (strpos($dataString, '$') !== false){
+            $unknowVars = [];
+            //@todo
+            $tokens = explode(',', $dataString);
+            foreach ($tokens as $temp_token){
+                $retokens = explode(':', $temp_token);
+                foreach ($retokens as $token) {
+                    if (strpos($token, '$') !== false) {
+                        $token = str_replace([',', '}', '{', '"', ']', '['], '', $token);
+                        $unknowVars[] = $token;
+                    }
+                }
+            }
+            throw new \Exception("[$context] Unresolved variables: " . implode(', ', $unknowVars));
+        }
     }
 
 }

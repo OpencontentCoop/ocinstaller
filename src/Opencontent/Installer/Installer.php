@@ -35,7 +35,11 @@ class Installer
      */
     private $installerFactory;
 
-
+    /**
+     * @var bool 
+     */
+    private $dryRun = false;
+    
     /**
      * OpenContentInstaller constructor.
      * @param eZDBInterface $db
@@ -76,7 +80,11 @@ class Installer
     public function installSchema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory, $installDfsSchema)
     {
         $installer = $this->installerFactory->factory(new Schema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory, $installDfsSchema));
-        $installer->install();
+        if ($this->dryRun){
+            $installer->dryRun();
+        }else {
+            $installer->install();
+        }
     }
 
     public function install()
@@ -118,6 +126,10 @@ class Installer
                     $installer = new Workflow();
                     break;
 
+                case 'contenttree':
+                    $installer = new ContentTree();
+                    break;
+
                 default:
                     throw new Exception("Step type " . $step['type'] . ' not handled');
             }
@@ -125,7 +137,11 @@ class Installer
             if ($installer instanceof InterfaceStepInstaller) {
                 $installer = $this->installerFactory->factory($installer);
                 $installer->setStep($step);
-                $installer->install();
+                if ($this->dryRun){
+                    $installer->dryRun();
+                }else {
+                    $installer->install();
+                }
             }
         }
     }
@@ -146,8 +162,16 @@ class Installer
                 $this->installerVars[$variable['name']] = $variable['value'];
             }
         }
+    }
 
-        $stepsData = $this->installerVars->filter(json_encode($this->installerData['steps']));
-        $this->installerData['steps'] = json_decode($stepsData, true);
+    public function setDryRun()
+    {
+        $this->logger->info("Dry-run mode enabled");
+        $this->dryRun = true;
+    }
+
+    public function isDryRun()
+    {
+        return $this->dryRun === true;
     }
 }

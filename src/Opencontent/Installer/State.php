@@ -15,6 +15,16 @@ class State extends AbstractStepInstaller implements InterfaceStepInstaller
 
     private $identifier;
 
+    public function dryRun()
+    {
+        $identifier = $this->step['identifier'];
+        $stateDefinition = $this->ioTools->getJsonContents("states/{$identifier}.yml");
+        $this->logger->info("Install state group " . $stateDefinition['group_identifier']);
+        foreach ($stateDefinition['states'] as $state) {
+            $this->installerVars['state_' . $stateDefinition['group_identifier'] . '_' . $state['identifier']] = 0;
+        }
+    }
+    
     /**
      * @throws Exception
      */

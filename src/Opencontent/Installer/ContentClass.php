@@ -9,6 +9,13 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
 {
     private $identifier;
 
+    public function dryRun()
+    {
+        $identifier = $this->step['identifier'];
+        $this->logger->info("Install class $identifier");
+        $this->installerVars['class_' . $identifier] = 0;
+    }
+
     public function install()
     {
         $this->identifier = $this->step['identifier'];
@@ -48,7 +55,7 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
         $hydrateData = [];
         foreach (\Opencontent\Installer\Dumper\ContentClass::$properties as $source => $target){
             if (isset($data[$source])){
-                $value = $data[$source];
+                $value = $this->installerVars->parseVarValue($data[$source]);
                 if (strpos($source, 'serialized_') !== false){
                     $value = serialize($value);
                 }
@@ -76,7 +83,7 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
         $hydrateData = [];
         foreach (\Opencontent\Installer\Dumper\ContentClass::$fields as $source => $target){
             if (isset($data[$source])){
-                $value = $data[$source];
+                $value = $this->installerVars->parseVarValue($data[$source]);
                 if (strpos($source, 'serialized_') !== false){
                     $value = serialize($value);
                 }

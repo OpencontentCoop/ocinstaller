@@ -12,6 +12,15 @@ class TagTree extends AbstractStepInstaller implements InterfaceStepInstaller
 
     private $rootTag;
 
+    public function dryRun()
+    {
+        $remoteUrl = $this->step['source'];
+        $parts = explode('/api/opendata/v2/tags_tree/', $remoteUrl);
+        $rootTag = array_pop($parts);
+        $this->logger->info("Install tag tree " . $rootTag);
+        $this->installerVars['tagtree_' . $rootTag] = 0;
+    }
+
     /**
      * @throws Exception
      */
@@ -22,7 +31,7 @@ class TagTree extends AbstractStepInstaller implements InterfaceStepInstaller
         $this->remoteHost = array_shift($parts);
         $this->rootTag = array_pop($parts);
 
-        $this->logger->info("Install tag tree " . $this->rootTag);
+        $this->logger->info("Install tag tree " . $this->rootTag . " from " . $this->remoteHost);
 
         $client = new TagClient(
             $this->remoteHost,

@@ -12,7 +12,7 @@ $script = eZScript::instance([
 ]);
 
 $script->startup();
-$options = $script->getOptions('[data_dir:][languages:][cleandata_dir:][cleanup][exlude-extension-schemas][only-data][embed_dfs_schema]',
+$options = $script->getOptions('[data_dir:][languages:][cleandata_dir:][cleanup][exlude-extension-schemas][only-data][embed_dfs_schema][dry-run]',
     '',
     array(
         'data_dir' => "Directory of installer data",
@@ -21,7 +21,8 @@ $options = $script->getOptions('[data_dir:][languages:][cleandata_dir:][cleanup]
         'only-data' => "Install only data without base and extension schema",
         'languages' => "Comma separates language code list, first is primary (default is: eng-GB,ita-IT,ger-DE)",
         'cleandata_dir' => "Override directory of clean db_schema.dba and db_data.dba files",
-        'embed_dfs_schema' => "Install dfs schema in main db"
+        'embed_dfs_schema' => "Install dfs schema in main db",
+        'dry-run' => "Only check vars",
     )
 );
 
@@ -66,26 +67,34 @@ try {
         $installer->getLogger()->isVerbose = true;
     }
 
+    if ($options['dry-run']) {
+        $installer->setDryRun();
+    }
+
     $installer->installSchema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory, $installDfsSchema);
     if ($cleanDb) {
         $installer->getLogger()->info("Cleanup solr");
-        $solr = new eZSolr();
-        $solr->cleanup();
+        if (!$installer->isDryRun()) {
+            $solr = new eZSolr();
+            $solr->cleanup(true, true);
+        }
     }
 
     \eZINI::instance('file.ini')->setVariable('ClusteringSettings', 'FileHandler', $fileHandler);
 
     $installer->install();
 
-    $cacheHelper = new eZCacheHelper($cli, $script);
-    $cacheHelper->clearItems(eZCache::fetchList(), false);
+    if (!$installer->isDryRun()) {
+        $cacheHelper = new eZCacheHelper($cli, $script);
+        $cacheHelper->clearItems(eZCache::fetchList(), false);
+    }
 
 } catch (Throwable $e) {
     if ($db->TransactionCounter > 0) {
         $db->rollback();
     }
 
-    $cli->error($e->getMessage() . ' in ' . $e->getFile() . '#' . $e->getLine());
+    $cli->error($e->getMessage());
 
     if ($options['debug'])
         $cli->output($e->getTraceAsString());

@@ -45,6 +45,38 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
         $ini->setVariable('SchemaSettings', 'SchemaPaths', $schemaPaths);
     }
 
+    public function dryRun()
+    {
+        if ($this->cleanDb) {
+            $this->logger->info('Cleanup db');
+        }
+
+        $baseSchema = $this->cleanDataDirectory . '/db_schema.dba';
+        $baseData = $this->cleanDataDirectory . '/db_data.dba'; //admin change_password
+        $dfsSchema = $this->cleanDataDirectory . '/db_dfs_schema.dba';
+
+        $this->logger->info("Install schema " . $baseSchema);
+        if ($this->installDfsSchema){
+            $this->logger->info("Install schema " . $dfsSchema);
+        }
+        $this->logger->info("Install schema " . $baseData);
+
+        $activeExtensions = ['ezmbpaex'];
+        if ($this->installExtensionsSchema) {
+            $activeExtensions = array_merge(
+                $activeExtensions,
+                $this->activeExtensions
+            );
+        }
+        $extensionsDir = eZExtension::baseDirectory();
+        foreach (array_unique($activeExtensions) as $activeExtension) {
+            $extensionSchema = $extensionsDir . '/' . $activeExtension . '/share/db_schema.dba';
+            if (file_exists($extensionSchema)) {
+                $this->logger->info("Install schema " . $extensionSchema);
+            }
+        }
+    }
+
     public function install()
     {
         if ($this->cleanDb) {
