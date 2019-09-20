@@ -170,6 +170,11 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
                     throw new Exception("Unknown error");
                 }
             }
+
+            if ($activeExtension == 'ocmultibinary') {
+                $this->db->query("ALTER TABLE ezbinaryfile DROP CONSTRAINT ezbinaryfile_pkey;");
+                $this->db->query("ALTER TABLE ONLY ezbinaryfile ADD CONSTRAINT ezbinaryfile_pkey PRIMARY KEY (contentobject_attribute_id , version, filename );");
+            }
         }
     }
 
