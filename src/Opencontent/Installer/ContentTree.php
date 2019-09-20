@@ -32,23 +32,27 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
         $client = new HttpClient($remoteHost);
         $remoteRoot = $client->browse($root, 100);
         foreach ($remoteRoot['children'] as $childNode) {
-            $child = $client->read($childNode['id']);
+            try {
+                $child = $client->read($childNode['id']);
 
-            $contentNames = $child['metadata']['name'];
-            $contentName = current($contentNames);
-            $this->logger->info(" - $contentName");
+                $contentNames = $child['metadata']['name'];
+                $contentName = current($contentNames);
+                $this->logger->info(" - $contentName");
 
-            $client->import($child, $contentRepository, function (PayloadBuilder $payload) use ($parentNodeId) {
-                $payload->setParentNodes([$parentNodeId]);
-                $payload->unSetData('image');
-                $payload->unSetData('managed_by_area');
-                $payload->unSetData('managed_by_political_body');
-                $payload->unSetData('help');
-                unset($payload['metadata']['assignedNodes']);
-                unset($payload['metadata']['classDefinition']);
+                $client->import($child, $contentRepository, function (PayloadBuilder $payload) use ($parentNodeId) {
+                    $payload->setParentNodes([$parentNodeId]);
+                    $payload->unSetData('image');
+                    $payload->unSetData('managed_by_area');
+                    $payload->unSetData('managed_by_political_body');
+                    $payload->unSetData('help');
+                    unset($payload['metadata']['assignedNodes']);
+                    unset($payload['metadata']['classDefinition']);
 
-                return $payload;
-            });
+                    return $payload;
+                });
+            }catch (\Exception $e){
+                $this->logger->error($e->getMessage());
+            }
         }
 
     }

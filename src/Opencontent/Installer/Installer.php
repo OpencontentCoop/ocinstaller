@@ -89,9 +89,11 @@ class Installer
 
     public function install()
     {
-        /** @var eZUser $adminUser */
-        $adminUser = eZUser::fetchByName('admin');
-        eZUser::setCurrentlyLoggedInUser($adminUser, $adminUser->id());
+        if (!$this->isDryRun()) {
+            /** @var eZUser $adminUser */
+            $adminUser = eZUser::fetchByName('admin');
+            eZUser::setCurrentlyLoggedInUser($adminUser, $adminUser->id());
+        }
 
         $this->loadDataVariables();
 

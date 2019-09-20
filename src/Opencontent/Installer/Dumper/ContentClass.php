@@ -2,6 +2,7 @@
 
 namespace Opencontent\Installer\Dumper;
 
+use Opencontent\Installer\InstallerVars;
 use Symfony\Component\Yaml\Yaml;
 use Opencontent\Installer\Logger;
 
@@ -148,5 +149,49 @@ class ContentClass
         }
 
         return $simplifiedData;
+    }
+
+    public static function hydrateData($data, InstallerVars $installerVars = null)
+    {
+        $hydrateData = [];
+        foreach (\Opencontent\Installer\Dumper\ContentClass::$properties as $source => $target){
+            if (isset($data[$source])){
+                $value = $installerVars ? $installerVars->parseVarValue($data[$source]) : $data[$source];
+                if (strpos($source, 'serialized_') !== false){
+                    $value = serialize($value);
+                }
+                $hydrateData[$target] = $value;
+            }
+        }
+
+        $DataMap = [];
+        foreach ($data['data_map'] as $identifier => $values){
+            $DataMap[$identifier] = self::hydrateField($values, $installerVars);
+        }
+        $hydrateData['DataMap'] = [$DataMap];
+
+        $hydrateData['InGroups'] = [];
+        foreach ($data['groups'] as $name){
+            $hydrateData['InGroups'][] = ['GroupName' => $name];
+        }
+
+
+        return $hydrateData;
+    }
+
+    public static function hydrateField($data, InstallerVars $installerVars = null)
+    {
+        $hydrateData = [];
+        foreach (\Opencontent\Installer\Dumper\ContentClass::$fields as $source => $target){
+            if (isset($data[$source])){
+                $value = $installerVars ? $installerVars->parseVarValue($data[$source]) : $data[$source];
+                if (strpos($source, 'serialized_') !== false){
+                    $value = serialize($value);
+                }
+                $hydrateData[$target] = $value;
+            }
+        }
+
+        return $hydrateData;
     }
 }
