@@ -12,20 +12,29 @@ $script = eZScript::instance([
 ]);
 
 $script->startup();
-$options = $script->getOptions('[url:][data_dir:]',
+$options = $script->getOptions('[url:][id:][data_dir:]',
     '',
     array(
         'url' => "Remote url class definition",
+        'id' => "Local content id",
         'data_dir' => "Directory of installer data",
     )
 );
 $script->initialize();
 $cli = eZCLI::instance();
 
-if ($options['url']) {
+if ($options['url'] || $options['id']) {
 
-    $data = file_get_contents($options['url']);
-    $dataArray = json_decode($data, true);
+    if ($options['url']) {
+        $data = file_get_contents($options['url']);
+        $dataArray = json_decode($data, true);
+    }elseif ($options['id']) {
+        $content = \Opencontent\Opendata\Api\Values\Content::createFromEzContentObject(
+            eZContentObject::fetch($options['id'])
+        );
+        $env = new DefaultEnvironmentSettings();
+        $dataArray = $env->filterContent($content);
+    }
 
     $contentNames = $dataArray['metadata']['name'];
     $contentName = current($contentNames);
