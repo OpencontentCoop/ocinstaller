@@ -3,6 +3,8 @@
 namespace Opencontent\Installer;
 
 use eZRole;
+use Opencontent\Installer\Dumper\Tool;
+use Opencontent\Installer\Serializer\RoleSerializer;
 
 class Role extends AbstractStepInstaller implements InterfaceStepInstaller
 {
@@ -11,8 +13,8 @@ class Role extends AbstractStepInstaller implements InterfaceStepInstaller
         $identifier = $this->step['identifier'];
         $roleDefinition = $this->ioTools->getJsonContents("roles/{$identifier}.yml");
         $name = $roleDefinition['name'];
-        $trans = \eZCharTransform::instance();
-        $roleIdentifier = $trans->transformByGroup($name, 'urlalias');
+        $roleIdentifier = Tool::slugize($name);
+
         $this->logger->info("Install role " . $identifier);
         $this->installerVars['role_' . $roleIdentifier] = 0;
     }
@@ -25,7 +27,8 @@ class Role extends AbstractStepInstaller implements InterfaceStepInstaller
         $this->logger->info("Install role " . $identifier);
 
         $name = $roleDefinition['name'];
-        $role = eZRole::fetchByName($name);
+        $serializer = new RoleSerializer();
+        $role = $serializer->unserialize($roleDefinition);
 
         if (!$role instanceof eZRole) {
             $role = eZRole::create($name);
@@ -38,8 +41,7 @@ class Role extends AbstractStepInstaller implements InterfaceStepInstaller
             $role->appendPolicy($policy['ModuleName'], $policy['FunctionName'], $policy['Limitation']);
         }
 
-        $trans = \eZCharTransform::instance();
-        $roleIdentifier = $trans->transformByGroup($name, 'urlalias');
+        $roleIdentifier = Tool::slugize($name);
         $this->installerVars['role_' . $roleIdentifier] = $role->attribute('id');
 
         if (isset($this->step['apply_to'])){

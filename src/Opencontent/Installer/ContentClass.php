@@ -4,6 +4,7 @@ namespace Opencontent\Installer;
 
 use OCClassTools;
 use OCOpenDataClassRepositoryCache;
+use Opencontent\Installer\Serializer\ContentClassSerializer;
 
 class ContentClass extends AbstractStepInstaller implements InterfaceStepInstaller
 {
@@ -23,8 +24,17 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
         $definitionJsonFile = $this->createJsonFile($sourcePath);
 
         $this->logger->info("Install class $this->identifier");
+        $force = isset($this->step['force']) && $this->step['force'];
+        if ($force){
+            $this->logger->info( ' - forcing sync');
+        }
+        $removeExtras = isset($this->step['remove_extra']) && $this->step['remove_extra'];
+        if ($removeExtras){
+            $this->logger->info( ' - removing extra attributes');
+        }
+
         $tools = new OCClassTools($this->identifier, true, array(), $definitionJsonFile);
-        $tools->sync();
+        $tools->sync($force, $removeExtras);
 
         $class = $tools->getLocale();
         $this->installerVars['class_' . $this->identifier] = $class->attribute('id');
@@ -37,7 +47,8 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
     private function createJsonFile($source)
     {
         $data = $this->ioTools->getJsonContents($source);
-        $data = $this->hydrateData($data);
+        $serializer = new ContentClassSerializer($this->installerVars);
+        $data = $serializer->unserialize($data);
 
         if ($data) {
             $filePath = $this->ioTools->getFile($source);
@@ -48,49 +59,5 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
         }
 
         return false;
-    }
-
-    private function hydrateData($data)
-    {
-        $hydrateData = [];
-        foreach (\Opencontent\Installer\Dumper\ContentClass::$properties as $source => $target){
-            if (isset($data[$source])){
-                $value = $this->installerVars->parseVarValue($data[$source]);
-                if (strpos($source, 'serialized_') !== false){
-                    $value = serialize($value);
-                }
-                $hydrateData[$target] = $value;
-            }
-        }
-
-        $DataMap = [];
-        foreach ($data['data_map'] as $identifier => $values){
-            $DataMap[$identifier] = $this->hydrateField($values);
-        }
-        $hydrateData['DataMap'] = [$DataMap];
-
-        $hydrateData['InGroups'] = [];
-        foreach ($data['groups'] as $name){
-            $hydrateData['InGroups'][] = ['GroupName' => $name];
-        }
-
-
-        return $hydrateData;
-    }
-
-    private function hydrateField($data)
-    {
-        $hydrateData = [];
-        foreach (\Opencontent\Installer\Dumper\ContentClass::$fields as $source => $target){
-            if (isset($data[$source])){
-                $value = $this->installerVars->parseVarValue($data[$source]);
-                if (strpos($source, 'serialized_') !== false){
-                    $value = serialize($value);
-                }
-                $hydrateData[$target] = $value;
-            }
-        }
-
-        return $hydrateData;
     }
 }

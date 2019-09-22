@@ -132,6 +132,10 @@ class Installer
                     $installer = new ContentTree();
                     break;
 
+                case 'classextra':
+                    $installer = new ContentClassExtra();
+                    break;
+
                 default:
                     throw new Exception("Step type " . $step['type'] . ' not handled');
             }

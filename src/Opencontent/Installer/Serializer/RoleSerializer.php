@@ -1,6 +1,6 @@
 <?php
 
-namespace Opencontent\Installer\Dumper;
+namespace Opencontent\Installer\Serializer;
 
 use eZRole;
 use eZPolicy;
@@ -10,8 +10,10 @@ use eZContentClass;
 use eZContentObjectTreeNode;
 use eZSection;
 use eZContentObjectState;
+use Opencontent\Installer\Dumper\Tool;
+use Symfony\Component\Yaml\Yaml;
 
-class RoleSerializer implements \JsonSerializable
+class RoleSerializer
 {
     /**
      * @var array
@@ -23,37 +25,13 @@ class RoleSerializer implements \JsonSerializable
      */
     private $warnings = array();
 
-    public static function fromString($roleName, $string)
-    {
-        $data = json_decode($string, true);
-        $instance = new static($roleName);
-        $instance->setData($data);
-
-        return $instance;
-    }
-
-    function jsonSerialize()
-    {
-        return $this->data;
-    }
-
-    function setData($data)
-    {
-        $this->data = $data;
-    }
-
     /**
+     * @param eZRole|null $role
      * @return array
      */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    public function fromRoleName($roleName)
+    public function serialize(eZRole $role)
     {
         $this->data = array();
-        $role = eZRole::fetchByName($roleName);
         if ($role instanceof eZRole) {
             $this->data['name'] = $role->attribute('name');
             $policies = array();
@@ -92,10 +70,48 @@ class RoleSerializer implements \JsonSerializable
         return $this->data;
     }
 
+    /**
+     * @param array $roleDefinition
+     * @return eZRole
+     */
+    public function unserialize(array $roleDefinition)
+    {
+        $name = $roleDefinition['name'];
+
+        $role = eZRole::fetchByName($name);
+
+        if (!$role instanceof eZRole) {
+            $role = eZRole::create($name);
+            $role->store();
+        } else {
+            $role->removePolicies();
+        }
+
+        foreach ($roleDefinition['policies'] as $policy) {
+            $role->appendPolicy($policy['ModuleName'], $policy['FunctionName'], $policy['Limitation']);
+        }
+
+        return $role;
+    }
+
+    public function serializeToYaml(eZRole $role, $targetDir)
+    {
+        $data = $this->serialize($role);
+
+        $roleName = Tool::slugize($role->attribute('name'));
+        $filename = $roleName . '.yml';
+
+        $dataYaml = Yaml::dump($data, 10);
+        $directory = rtrim($targetDir, '/') . '/roles';
+
+        \eZDir::mkdir($directory, false, true);
+        \eZFile::create($filename, $directory, $dataYaml);
+
+        return $roleName;
+    }
+
     private function parseLimitationValues($identifier, $values)
     {
-        $trans = \eZCharTransform::instance();
-
         switch ($identifier) {
             case 'ParentClass':
             case 'Class':
@@ -117,7 +133,7 @@ class RoleSerializer implements \JsonSerializable
                 foreach ($values as $value) {
                     $node = eZContentObjectTreeNode::fetch($value);
                     if ($node) {
-                        $name = $trans->transformByGroup( $node->attribute('name'), 'urlalias' );
+                        $name =  Tool::slugize($node->attribute('name'));
                         $nodes[] = '$content_' . $name . '__node';
                     } else {
                         throw new Exception("$identifier $value not found");
@@ -132,7 +148,7 @@ class RoleSerializer implements \JsonSerializable
                 foreach ($values as $value) {
                     $node = eZContentObjectTreeNode::fetchByPath($value);
                     if ($node) {
-                        $name = $trans->transformByGroup( $node->attribute('name'), 'urlalias' );
+                        $name = Tool::slugize( $node->attribute('name'));
                         $nodes[] = '$content_' . $name . '__node';
                     } else {
                         throw new Exception("$identifier $value not found");
@@ -175,6 +191,14 @@ class RoleSerializer implements \JsonSerializable
 
                 return $values;
         }
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getWarnings()
+    {
+        return $this->warnings;
     }
 
 }

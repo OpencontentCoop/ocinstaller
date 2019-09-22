@@ -15,7 +15,7 @@ $script->startup();
 $options = $script->getOptions('[url:][id:][data_dir:]',
     '',
     array(
-        'url' => "Remote url or file path class definition",
+        'url' => "Remote url or file path classextra definition",
         'id' => "Local content class identifier",
         'data_dir' => "Directory of installer data",
     )
@@ -26,32 +26,33 @@ $cli = eZCLI::instance();
 if ($options['url']) {
 
     $json = file_get_contents($options['url']);
+    $data = json_decode($json, true);
+    $identifier = basename($options['url']);
 
 } elseif ($options['id']) {
 
-    $tools = new OCClassTools($options['id']);
-    $result = $tools->getLocale();
-    $result->attribute('data_map');
-    $result->fetchGroupList();
-    $result->fetchAllGroups();
-
-    $json = json_encode($result);
+    $class = eZContentClass::fetchByIdentifier($id);
+    $data = OCClassExtraParametersManager::instance($class)->getAllParameters();
+    $identifier = $class->attribute('identifier');
 }
 
 if ($json) {
-    $serializer = new \Opencontent\Installer\Serializer\ContentClassSerializer();
+    $dataYaml = Yaml::dump($data, 10);
 
     if ($options['data_dir']) {
-
-        $identifier = $serializer->serializeToYaml($json, $options['data_dir']);
+        $filename = $identifier . '.yml';
+        $directory = rtrim($options['data_dir'], '/') . '/classextra';
+        eZDir::mkdir($directory, false, true);
+        eZFile::create($filename, $directory, $dataYaml);
+        $cli->output($directory . '/' . $filename);
 
         \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data_dir'], [
-            'type' => 'class',
+            'type' => 'classextra',
             'identifier' => $identifier
         ]);
 
     } else {
-        print_r($serializer->serialize($json));
+        print_r($data);
     }
 }
 

@@ -1,8 +1,8 @@
 <?php
 
-use Symfony\Component\Yaml\Yaml;
-
 require 'autoload.php';
+
+use Symfony\Component\Yaml\Yaml;
 
 $script = eZScript::instance([
     'description' => "Dump role in yml",
@@ -24,36 +24,26 @@ $cli = eZCLI::instance();
 
 if ($options['role']) {
 
-    $roleSerializer = new \Opencontent\Installer\Dumper\RoleSerializer();
-    $roleSerializer->fromRoleName($options['role']);
+    $roleSerializer = new \Opencontent\Installer\Serializer\RoleSerializer();
 
-    $data = $roleSerializer->getData();
-
-    $dataYaml = Yaml::dump($data, 10);
-
-    $trans = eZCharTransform::instance();
-    $roleName = $trans->transformByGroup($options['role'], 'urlalias');
-    $filename = $roleName . '.yml';
+    /** @var eZRole $role */
+    $role = eZRole::fetchByName($options['role']);
 
     if ($options['data_dir']) {
-        $directory = rtrim($options['data_dir'], '/') . '/roles';
 
-        \eZDir::mkdir($directory, false, true);
-        \eZFile::create($filename, $directory, $dataYaml);
+        $identifier = $roleSerializer->serializeToYaml($role, $options['data_dir']);
 
-        eZCLI::instance()->output($directory . '/' . $filename);
-
-        $output = new ezcConsoleOutput();
-        $question = ezcConsoleQuestionDialog::YesNoQuestion($output, "Append to installer.yml", "y");
-        if (ezcConsoleDialogViewer::displayDialog($question) == "y") {
-            \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data_dir'], [
-                'type' => 'role',
-                'identifier' => $roleName
-            ]);
-        }
+        \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data_dir'], [
+            'type' => 'role',
+            'identifier' => $roleName
+        ]);
 
     } else {
-        print_r($dataYaml);
+        print_r($roleSerializer->serialize($role));
+    }
+
+    foreach ($roleSerializer->getWarnings() as $warning){
+        $cli->warning($warning);
     }
 }
 

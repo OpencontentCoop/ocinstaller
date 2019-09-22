@@ -43,7 +43,7 @@ foreach ($triggers as $trigger) {
         $events = $workflow->fetchEvents();
 
         $dataEvents = [];
-        foreach ($events as $event){
+        foreach ($events as $event) {
             $dataEvent = [
                 'workflow_type_string' => $event->attribute('workflow_type_string'),
                 'description' => $event->attribute('description'),
@@ -59,7 +59,7 @@ foreach ($triggers as $trigger) {
                 'placement' => $event->attribute('placement'),
             ];
 
-            if ($event->attribute('workflow_type_string') == 'event_ezmultiplexer'){
+            if ($event->attribute('workflow_type_string') == 'event_ezmultiplexer') {
                 /** @var eZWorkflow $nestedWorkflow */
                 $nestedWorkflow = eZWorkflow::fetch($event->attribute('data_int1'));
                 if (eZWorkflow::fetchEventCountByWorkflowID($nestedWorkflow->attribute('id')) > 0) {
@@ -104,20 +104,13 @@ foreach ($triggers as $trigger) {
 
 $dataYaml = Yaml::dump($data, 10);
 
-if ($options['data_dir']) {
-    $output = new ezcConsoleOutput();
-    $question = ezcConsoleQuestionDialog::YesNoQuestion($output, "Append to installer.yml", "y");
-    $appendToInstaller = ezcConsoleDialogViewer::displayDialog($question) == "y";
-}
-
 foreach ($data as $key => $values) {
 
     $dataYaml = Yaml::dump($values, 10);
 
     if ($options['data_dir']) {
 
-        $trans = eZCharTransform::instance();
-        $workflowName = $trans->transformByGroup($values['name'], 'urlalias');
+        $workflowName = \Opencontent\Installer\Dumper\Tool::slugize($options['name']);
         list($module, $function, $connectionType) = explode(':', $key);
         $filename = $workflowName . '.yml';
         $directory = rtrim($options['data_dir'], '/') . '/workflows';
@@ -125,17 +118,15 @@ foreach ($data as $key => $values) {
         \eZFile::create($filename, $directory, $dataYaml);
         eZCLI::instance()->output($directory . '/' . $filename);
 
-        if ($appendToInstaller){
-            \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data_dir'], [
-                'type' => 'workflow',
-                'identifier' => $workflowName,
-                'trigger' => [
-                    'module' => $module,
-                    'function' => $function,
-                    'connection_type' => $connectionType
-                ]
-            ]);
-        }
+        \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data_dir'], [
+            'type' => 'workflow',
+            'identifier' => $workflowName,
+            'trigger' => [
+                'module' => $module,
+                'function' => $function,
+                'connection_type' => $connectionType
+            ]
+        ]);
 
     } else {
         print_r($dataYaml);

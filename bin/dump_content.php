@@ -28,7 +28,7 @@ if ($options['url'] || $options['id']) {
     if ($options['url']) {
         $data = file_get_contents($options['url']);
         $dataArray = json_decode($data, true);
-    }elseif ($options['id']) {
+    } elseif ($options['id']) {
         $content = \Opencontent\Opendata\Api\Values\Content::createFromEzContentObject(
             eZContentObject::fetch($options['id'])
         );
@@ -39,7 +39,7 @@ if ($options['url'] || $options['id']) {
     $contentNames = $dataArray['metadata']['name'];
     $contentName = current($contentNames);
 
-    $trans = eZCharTransform::instance();
+    $roleName = \Opencontent\Installer\Dumper\Tool::slugize($contentName);
     $contentName = $trans->transformByGroup($contentName, 'urlalias');
     $filename = $contentName . '.yml';
 
@@ -71,14 +71,10 @@ if ($options['url'] || $options['id']) {
         eZFile::create($filename, $directory, $dataYaml);
         $cli->output($directory . '/' . $filename);
 
-        $output = new ezcConsoleOutput();
-        $question = ezcConsoleQuestionDialog::YesNoQuestion($output, "Append to installer.yml", "y");
-        if (ezcConsoleDialogViewer::displayDialog($question) == "y") {
-            \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data_dir'], [
-                'type' => 'content',
-                'identifier' => $contentName
-            ]);
-        }
+        \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data_dir'], [
+            'type' => 'content',
+            'identifier' => $contentName
+        ]);
 
     }
 

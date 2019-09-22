@@ -8,7 +8,6 @@ $script = eZScript::instance([
     'description' => "Dump class in yml",
     'use-session' => false,
     'use-modules' => false,
-    'use-extensions' => false,
     'debug-timing' => true
 ]);
 
@@ -21,18 +20,24 @@ $options = $script->getOptions('[data_dir:]',
 );
 $script->initialize();
 $cli = eZCLI::instance();
-
+/*
 if ($options['data_dir']) {
-    $fileList = eZDir::recursiveFind($options['data_dir'] . '/classes', '.yml');
+    $fileList = eZDir::recursiveFind($options['data_dir'] . 'classes', '.yml');
     foreach ($fileList as $file){
+
         $data = file_get_contents($file);
-        $json = Yaml::parse($data);
-        $hydrate = \Opencontent\Installer\Dumper\ContentClass::hydrateData($json);
-        if ($hydrate['Identifier'] == 'event') {
-            print_r($hydrate);
-            die();
-        }
+        $cli->output($file);
+
+        $data = Yaml::parse($data);
+        $serializer = new \Opencontent\Installer\Serializer\ContentClassSerializer();
+        $json = $serializer->unserialize($data);
+
+        $serializer->setIgnoreDefaultValues(true);
+        $data = $serializer->serialize($json);
+
+        file_put_contents($file, Yaml::dump($data, 10));
+        $serializer->setIgnoreDefaultValues(false);
     }
 }
-
+*/
 $script->shutdown();
