@@ -21,6 +21,7 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
     {
         $this->identifier = $this->step['identifier'];
         $sourcePath = "classes/{$this->identifier}.yml";
+        $definitionData = $this->ioTools->getJsonContents($sourcePath);
         $definitionJsonFile = $this->createJsonFile($sourcePath);
 
         $this->logger->info("Install class $this->identifier");
@@ -33,7 +34,7 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
             $this->logger->info( ' - removing extra attributes');
         }
 
-        $tools = new OCClassTools($this->identifier, true, array(), $definitionJsonFile);
+        $tools = new OCClassTools($definitionData['identifier'], true, array(), $definitionJsonFile);
         $tools->sync($force, $removeExtras);
 
         $class = $tools->getLocale();

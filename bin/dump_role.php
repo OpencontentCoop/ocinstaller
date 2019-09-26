@@ -12,11 +12,11 @@ $script = eZScript::instance([
 ]);
 
 $script->startup();
-$options = $script->getOptions('[role:][data_dir:]',
+$options = $script->getOptions('[role:][data:]',
     '',
     array(
         'role' => "Local role name",
-        'data_dir' => "Directory of installer data",
+        'data' => "Directory of installer data",
     )
 );
 $script->initialize();
@@ -28,12 +28,17 @@ if ($options['role']) {
 
     /** @var eZRole $role */
     $role = eZRole::fetchByName($options['role']);
+    if (!$role instanceof eZRole){
+        $cli->error("Role not found");
+        $script->shutdown(1);
+    }
+    $roleName = \Opencontent\Installer\Dumper\Tool::slugize($role->attribute('name'));
 
-    if ($options['data_dir']) {
+    if ($options['data']) {
 
-        $identifier = $roleSerializer->serializeToYaml($role, $options['data_dir']);
+        $identifier = $roleSerializer->serializeToYaml($role, $options['data']);
 
-        \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data_dir'], [
+        \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data'], [
             'type' => 'role',
             'identifier' => $roleName
         ]);

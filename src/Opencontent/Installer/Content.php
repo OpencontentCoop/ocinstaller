@@ -37,7 +37,9 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
         $contentRepository->setEnvironment(EnvironmentLoader::loadPreset('content'));
 
         $isUpdate = false;
-        if (isset($content['metadata']['remoteId']) && \eZContentObject::fetchByRemoteID($content['metadata']['remoteId'])){
+        $alreadyExists = \eZContentObject::fetchByRemoteID($content['metadata']['remoteId']);
+        if (isset($content['metadata']['remoteId']) && $alreadyExists){
+            $content['metadata']['parentNodes'] = [$alreadyExists->mainNode()->attribute('parent_node_id')];
             $result = $contentRepository->update($content);
             $isUpdate = true;
         }else {

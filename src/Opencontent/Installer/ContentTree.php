@@ -9,6 +9,8 @@ use Opencontent\Opendata\Rest\Client\PayloadBuilder;
 
 class ContentTree extends AbstractStepInstaller implements InterfaceStepInstaller
 {
+    private $identifier;
+
     public function dryRun()
     {
         $identifier = $this->step['identifier'];
@@ -18,14 +20,62 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
     public function install()
     {
         $this->identifier = $this->step['identifier'];
-        $remoteUrl = $this->step['source'];
+
+        $source = isset($this->step['source']) ? $this->step['source'] : '';
+        $parentNodeId = $this->step['parent'];
+        if (strpos($source, 'http') !== false) {
+            $this->installFromRemote($source, $parentNodeId);
+        } elseif (is_dir($this->ioTools->getDataDir() . "/contenttrees/{$this->identifier}")) {
+            $this->installFromLocale($parentNodeId);
+        }
+    }
+
+    private function installFromLocale($parentNodeId)
+    {
+        $this->logger->info("Install contenttree " . $this->identifier . " from " . "contenttrees/{$this->identifier}");
+
+        $contents = [];
+        $files = \eZDir::findSubitems($this->ioTools->getDataDir() . "/contenttrees/{$this->identifier}", 'f');
+        foreach ($files as $file) {
+            if (\eZFile::suffix($file) == 'yml') {
+                $contents[] = $this->ioTools->getJsonContents("/contenttrees/{$this->identifier}/$file");
+            }
+        }
+
+        $contentRepository = new ContentRepository();
+        $contentRepository->setEnvironment(EnvironmentLoader::loadPreset('content'));
+
+        foreach ($contents as $content){
+            $this->logger->info(" - " . $content['metadata']['remoteId']);
+
+            $client = new HttpClient('');
+            $payload = $client->getPayload($content);
+            $payload->setParentNodes([$parentNodeId]);
+            $payload->unSetData('image');
+            $payload->unSetData('managed_by_area');
+            $payload->unSetData('managed_by_political_body');
+            $payload->unSetData('help');
+            unset($payload['metadata']['assignedNodes']);
+            unset($payload['metadata']['classDefinition']);
+
+            $alreadyExists = \eZContentObject::fetchByRemoteID($payload['metadata']['remoteId']);
+            if (isset($content['metadata']['remoteId']) && $alreadyExists){
+                $content['metadata']['parentNodes'] = [$alreadyExists->mainNode()->attribute('parent_node_id')];
+                $contentRepository->update($payload->getArrayCopy());
+            }else {
+                $contentRepository->create($payload->getArrayCopy());
+            }
+        }
+    }
+
+    private function installFromRemote($remoteUrl, $parentNodeId)
+    {
         $parts = explode('/api/opendata/v2/content/browse/', $remoteUrl);
         $remoteHost = array_shift($parts);
         $root = array_pop($parts);
 
         $contentRepository = new ContentRepository();
         $contentRepository->setEnvironment(EnvironmentLoader::loadPreset('content'));
-        $parentNodeId = $this->step['parent'];
 
         $this->logger->info("Install contenttree " . $this->identifier . " from $remoteHost");
 
@@ -50,10 +100,9 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
 
                     return $payload;
                 });
-            }catch (\Exception $e){
+            } catch (\Exception $e) {
                 $this->logger->error($e->getMessage());
             }
         }
-
     }
 }

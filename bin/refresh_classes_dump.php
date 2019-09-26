@@ -12,17 +12,17 @@ $script = eZScript::instance([
 ]);
 
 $script->startup();
-$options = $script->getOptions('[data_dir:]',
+$options = $script->getOptions('[data:]',
     '',
     array(
-        'data_dir' => "Directory of installer data",
+        'data' => "Directory of installer data",
     )
 );
 $script->initialize();
 $cli = eZCLI::instance();
 /*
-if ($options['data_dir']) {
-    $fileList = eZDir::recursiveFind($options['data_dir'] . 'classes', '.yml');
+if ($options['data']) {
+    $fileList = eZDir::recursiveFind($options['data'] . 'classes', '.yml');
     foreach ($fileList as $file){
 
         $data = file_get_contents($file);

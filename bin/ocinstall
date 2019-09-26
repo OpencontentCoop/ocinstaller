@@ -12,15 +12,15 @@ $script = eZScript::instance([
 ]);
 
 $script->startup();
-$options = $script->getOptions('[data_dir:][languages:][cleandata_dir:][cleanup][exlude-extension-schemas][only-data][embed_dfs_schema][dry-run]',
+$options = $script->getOptions('[data:][languages:][cleandata:][cleanup][exlude-extension-schemas][only-data][embed_dfs_schema][dry-run]',
     '',
     array(
-        'data_dir' => "Directory of installer data",
+        'data' => "Directory of installer data",
         'cleanup' => "Cleanup db before install",
         'exlude-extension-schemas' => "Install only base without extension schema",
         'only-data' => "Install only data without base and extension schema",
         'languages' => "Comma separates language code list, first is primary (default is: eng-GB,ita-IT,ger-DE)",
-        'cleandata_dir' => "Override directory of clean db_schema.dba and db_data.dba files",
+        'cleandata' => "Override directory of clean db_schema.dba and db_data.dba files",
         'embed_dfs_schema' => "Install dfs schema in main db",
         'dry-run' => "Only check vars",
     )
@@ -50,12 +50,12 @@ try {
     $installExtensionsSchema = !$options['exlude-extension-schemas'];
     $installDfsSchema = $options['embed_dfs_schema'];
 
-    $cleanDataDirectory = $options['cleandata_dir'] ? rtrim($options['cleandata_dir']) : false;
+    $cleanDataDirectory = $options['cleandata'] ? rtrim($options['cleandata']) : false;
 
     $languages = $options['languages'] ? $options['languages'] : 'eng-GB,ita-IT,ger-DE';
     $languageList = explode(',', $languages);
 
-    $dataDir = $options['data_dir'];
+    $dataDir = $options['data'];
     if ($dataDir && !is_dir($dataDir)) {
         throw new Exception("Directory $dataDir not found");
     }

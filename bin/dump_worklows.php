@@ -12,10 +12,10 @@ $script = eZScript::instance([
 ]);
 
 $script->startup();
-$options = $script->getOptions('[data_dir:]',
+$options = $script->getOptions('[data:]',
     '',
     array(
-        'data_dir' => "Directory of installer data",
+        'data' => "Directory of installer data",
     )
 );
 $script->initialize();
@@ -108,17 +108,17 @@ foreach ($data as $key => $values) {
 
     $dataYaml = Yaml::dump($values, 10);
 
-    if ($options['data_dir']) {
+    if ($options['data']) {
 
         $workflowName = \Opencontent\Installer\Dumper\Tool::slugize($options['name']);
         list($module, $function, $connectionType) = explode(':', $key);
         $filename = $workflowName . '.yml';
-        $directory = rtrim($options['data_dir'], '/') . '/workflows';
+        $directory = rtrim($options['data'], '/') . '/workflows';
         \eZDir::mkdir($directory, false, true);
         \eZFile::create($filename, $directory, $dataYaml);
         eZCLI::instance()->output($directory . '/' . $filename);
 
-        \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data_dir'], [
+        \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data'], [
             'type' => 'workflow',
             'identifier' => $workflowName,
             'trigger' => [

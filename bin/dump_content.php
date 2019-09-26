@@ -5,19 +5,19 @@ require 'autoload.php';
 use Symfony\Component\Yaml\Yaml;
 
 $script = eZScript::instance([
-    'description' => "Dump class in yml",
+    'description' => "Dump content in yml",
     'use-session' => false,
     'use-modules' => false,
     'debug-timing' => true
 ]);
 
 $script->startup();
-$options = $script->getOptions('[url:][id:][data_dir:]',
+$options = $script->getOptions('[url:][id:][data:]',
     '',
     array(
         'url' => "Remote url class definition",
         'id' => "Local content id",
-        'data_dir' => "Directory of installer data",
+        'data' => "Directory of installer data",
     )
 );
 $script->initialize();
@@ -38,9 +38,7 @@ if ($options['url'] || $options['id']) {
 
     $contentNames = $dataArray['metadata']['name'];
     $contentName = current($contentNames);
-
-    $roleName = \Opencontent\Installer\Dumper\Tool::slugize($contentName);
-    $contentName = $trans->transformByGroup($contentName, 'urlalias');
+    $contentName = \Opencontent\Installer\Dumper\Tool::slugize($contentName);
     $filename = $contentName . '.yml';
 
     $metadataValues = [
@@ -65,13 +63,13 @@ if ($options['url'] || $options['id']) {
 
     $dataYaml = Yaml::dump($cleanDataArray, 10);
 
-    if ($options['data_dir']) {
-        $directory = rtrim($options['data_dir'], '/') . '/contents';
+    if ($options['data']) {
+        $directory = rtrim($options['data'], '/') . '/contents';
         eZDir::mkdir($directory, false, true);
         eZFile::create($filename, $directory, $dataYaml);
         $cli->output($directory . '/' . $filename);
 
-        \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data_dir'], [
+        \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data'], [
             'type' => 'content',
             'identifier' => $contentName
         ]);

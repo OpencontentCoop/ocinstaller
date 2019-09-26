@@ -12,12 +12,12 @@ $script = eZScript::instance([
 ]);
 
 $script->startup();
-$options = $script->getOptions('[url:][id:][data_dir:]',
+$options = $script->getOptions('[url:][id:][data:]',
     '',
     array(
         'url' => "Remote url or file path class definition",
         'id' => "Local content class identifier",
-        'data_dir' => "Directory of installer data",
+        'data' => "Directory of installer data",
     )
 );
 $script->initialize();
@@ -41,11 +41,11 @@ if ($options['url']) {
 if ($json) {
     $serializer = new \Opencontent\Installer\Serializer\ContentClassSerializer();
 
-    if ($options['data_dir']) {
+    if ($options['data']) {
 
-        $identifier = $serializer->serializeToYaml($json, $options['data_dir']);
+        $identifier = $serializer->serializeToYaml($json, $options['data']);
 
-        \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data_dir'], [
+        \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data'], [
             'type' => 'class',
             'identifier' => $identifier
         ]);

@@ -38,6 +38,9 @@ class Role extends AbstractStepInstaller implements InterfaceStepInstaller
         }
 
         foreach ($roleDefinition['policies'] as $policy) {
+            foreach ($policy['Limitation'] as $index => $limitation){
+                $policy['Limitation'][$index] = $this->parseVars($limitation);
+            }
             $role->appendPolicy($policy['ModuleName'], $policy['FunctionName'], $policy['Limitation']);
         }
 
@@ -50,5 +53,18 @@ class Role extends AbstractStepInstaller implements InterfaceStepInstaller
                 $role->assignToUser($userId);
             }
         }
+    }
+
+    private function parseVars($item)
+    {
+        if (is_array($item)){
+            foreach ($item as $index => $i){
+                $item[$index] = $this->parseVars($i);
+            }
+
+            return $item;
+        }
+
+        return $this->installerVars->parseVarValue($item);
     }
 }

@@ -136,6 +136,10 @@ class Installer
                     $installer = new ContentClassExtra();
                     break;
 
+                case 'openparecaptcha':
+                    $installer = new OpenPARecaptcha();
+                    break;
+
                 default:
                     throw new Exception("Step type " . $step['type'] . ' not handled');
             }

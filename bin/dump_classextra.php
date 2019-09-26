@@ -12,12 +12,12 @@ $script = eZScript::instance([
 ]);
 
 $script->startup();
-$options = $script->getOptions('[url:][id:][data_dir:]',
+$options = $script->getOptions('[url:][id:][data:]',
     '',
     array(
         'url' => "Remote url or file path classextra definition",
         'id' => "Local content class identifier",
-        'data_dir' => "Directory of installer data",
+        'data' => "Directory of installer data",
     )
 );
 $script->initialize();
@@ -39,14 +39,14 @@ if ($options['url']) {
 if ($json) {
     $dataYaml = Yaml::dump($data, 10);
 
-    if ($options['data_dir']) {
+    if ($options['data']) {
         $filename = $identifier . '.yml';
-        $directory = rtrim($options['data_dir'], '/') . '/classextra';
+        $directory = rtrim($options['data'], '/') . '/classextra';
         eZDir::mkdir($directory, false, true);
         eZFile::create($filename, $directory, $dataYaml);
         $cli->output($directory . '/' . $filename);
 
-        \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data_dir'], [
+        \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data'], [
             'type' => 'classextra',
             'identifier' => $identifier
         ]);

@@ -47,4 +47,14 @@ class IOTools
 
         return false;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getDataDir()
+    {
+        return $this->dataDir;
+    }
+
+
 }

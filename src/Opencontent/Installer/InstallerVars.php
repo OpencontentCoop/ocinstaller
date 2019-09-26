@@ -71,8 +71,13 @@ class InstallerVars extends \ArrayObject
                 if ($tag instanceof \eZTagsObject){
                     $value = $tag->attribute('id');
                 }else{
-                    $tag = 0;
+                    $value = 0;
                 }
+            }
+
+            if (strpos($value, 'ezcrc32(') !== false) {
+                $var = trim(substr($value, 8, -1));
+                $value = \eZSys::ezcrc32($var);
             }
         }
 
