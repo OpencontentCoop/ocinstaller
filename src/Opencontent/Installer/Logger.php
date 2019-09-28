@@ -36,18 +36,24 @@ class Logger implements LoggerInterface
 
     public function notice($message, array $context = array())
     {
-        eZCLI::instance()->notice($message);
+        $color = eZCLI::instance()->terminalStyle('white');
+        $colorEnd = eZCLI::instance()->terminalStyle('white-end');
+        $normal = eZCLI::instance()->terminalStyle('normal');
+        eZCLI::instance()->output($color.$message.$colorEnd.$normal);
     }
 
     public function info($message, array $context = array())
     {
-        eZCLI::instance()->output($message);
+        eZCLI::instance()->notice($message);
     }
 
     public function debug($message, array $context = array())
     {
         if ($this->isVerbose) {
-            eZCLI::instance()->output($message);
+            $color = eZCLI::instance()->terminalStyle('cyan');
+            $colorEnd = eZCLI::instance()->terminalStyle('cyan-end');
+            $normal = eZCLI::instance()->terminalStyle('normal');
+            eZCLI::instance()->output($color.$message.$colorEnd.$normal);
         }
     }
 

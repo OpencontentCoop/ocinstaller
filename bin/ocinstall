@@ -12,16 +12,17 @@ $script = eZScript::instance([
 ]);
 
 $script->startup();
-$options = $script->getOptions('[data:][languages:][cleandata:][cleanup][exlude-extension-schemas][only-data][embed_dfs_schema][dry-run]',
+$options = $script->getOptions('[data:][languages:][cleandata:][cleanup][exlude-extension-schemas][only-data][embed-dfs-schema][dry-run][only-step:]',
     '',
     array(
         'data' => "Directory of installer data",
         'cleanup' => "Cleanup db before install",
         'exlude-extension-schemas' => "Install only base without extension schema",
         'only-data' => "Install only data without base and extension schema",
+        'only-step' => "Step index (comma separated): install only data step without base and extension schema",
         'languages' => "Comma separates language code list, first is primary (default is: eng-GB,ita-IT,ger-DE)",
         'cleandata' => "Override directory of clean db_schema.dba and db_data.dba files",
-        'embed_dfs_schema' => "Install dfs schema in main db",
+        'embed-dfs-schema' => "Install dfs schema in main db",
         'dry-run' => "Only check vars",
     )
 );
@@ -46,9 +47,9 @@ eZDB::setErrorHandling(eZDB::ERROR_HANDLING_EXCEPTIONS);
 try {
     // parameters
     $cleanDb = $options['cleanup'];
-    $installBaseSchema = !$options['only-data'];
+    $installBaseSchema = $options['only-data'] === null && $options['only-step'] === null;
     $installExtensionsSchema = !$options['exlude-extension-schemas'];
-    $installDfsSchema = $options['embed_dfs_schema'];
+    $installDfsSchema = $options['embed-dfs-schema'];
 
     $cleanDataDirectory = $options['cleandata'] ? rtrim($options['cleandata']) : false;
 
@@ -82,11 +83,14 @@ try {
 
     \eZINI::instance('file.ini')->setVariable('ClusteringSettings', 'FileHandler', $fileHandler);
 
-    $installer->install();
+    $installer->install($options['only-step']);
 
     if (!$installer->isDryRun()) {
+        $installer->getLogger()->info("Clear all cache");
+        $cli->setIsQuiet(true);
         $cacheHelper = new eZCacheHelper($cli, $script);
         $cacheHelper->clearItems(eZCache::fetchList(), false);
+        $cli->setIsQuiet($script->isQuiet());
     }
 
 } catch (Throwable $e) {

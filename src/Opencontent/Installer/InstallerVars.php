@@ -30,8 +30,7 @@ class InstallerVars extends \ArrayObject
     {
         $value = $this->parseVarValue($value);
 
-        if ($this->logger->isVerbose)
-            $this->logger->warning(" -> $" . $name . ": $value");
+        $this->logger->debug(" -> $" . $name . ": $value");
 
         parent::offsetSet($name, $value);
     }

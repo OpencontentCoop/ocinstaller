@@ -31,12 +31,12 @@ if ($options['url']) {
 
 } elseif ($options['id']) {
 
-    $class = eZContentClass::fetchByIdentifier($id);
+    $class = eZContentClass::fetchByIdentifier($options['id']);
     $data = OCClassExtraParametersManager::instance($class)->getAllParameters();
     $identifier = $class->attribute('identifier');
 }
 
-if ($json) {
+if ($data) {
     $dataYaml = Yaml::dump($data, 10);
 
     if ($options['data']) {

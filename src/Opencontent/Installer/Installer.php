@@ -87,8 +87,15 @@ class Installer
         }
     }
 
-    public function install()
+    public function install($onlyStep = null)
     {
+        $steps = $this->installerData['steps'];
+        $onlySteps = array_keys($steps);
+
+        if ($onlyStep !== null){
+            $onlySteps = explode(',', $onlyStep);
+        }
+
         if (!$this->isDryRun()) {
             /** @var eZUser $adminUser */
             $adminUser = eZUser::fetchByName('admin');
@@ -97,7 +104,14 @@ class Installer
 
         $this->loadDataVariables();
 
-        foreach ($this->installerData['steps'] as $step) {
+        foreach ($steps as $index => $step) {
+
+            $stepName = isset($step['identifier']) ? $step['type'] . ' ' . $step['identifier'] : $step['type'];
+            if (!in_array($index, $onlySteps)) {
+                $this->logger->debug("(skip) [$index] $stepName");
+                continue;
+            }
+
             switch ($step['type']) {
 
                 case 'tagtree':
@@ -147,6 +161,7 @@ class Installer
             if ($installer instanceof InterfaceStepInstaller) {
                 $installer = $this->installerFactory->factory($installer);
                 $installer->setStep($step);
+                $this->logger->debug("[$index] $stepName");
                 if ($this->dryRun){
                     $installer->dryRun();
                 }else {
