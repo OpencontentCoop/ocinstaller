@@ -77,6 +77,15 @@ class Installer
         return $this->logger;
     }
 
+    /**
+     * @param $cleanDb
+     * @param $installBaseSchema
+     * @param $installExtensionsSchema
+     * @param $languageList
+     * @param $cleanDataDirectory
+     * @param $installDfsSchema
+     * @return Schema|AbstractStepInstaller|InterfaceStepInstaller
+     */
     public function installSchema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory, $installDfsSchema)
     {
         $installer = $this->installerFactory->factory(new Schema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory, $installDfsSchema));
@@ -85,10 +94,14 @@ class Installer
         }else {
             $installer->install();
         }
+
+        return $installer;
     }
 
-    public function install($onlyStep = null)
+    public function install($options = array())
     {
+        $onlyStep = $options['only-step'];
+
         $steps = $this->installerData['steps'];
         $onlySteps = array_keys($steps);
 

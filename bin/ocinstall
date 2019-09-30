@@ -72,7 +72,7 @@ try {
         $installer->setDryRun();
     }
 
-    $installer->installSchema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory, $installDfsSchema);
+    $schemaInstaller = $installer->installSchema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory, $installDfsSchema);
     if ($cleanDb) {
         $installer->getLogger()->info("Cleanup solr");
         if (!$installer->isDryRun()) {
@@ -83,7 +83,11 @@ try {
 
     \eZINI::instance('file.ini')->setVariable('ClusteringSettings', 'FileHandler', $fileHandler);
 
-    $installer->install($options['only-step']);
+    $installer->install($options);
+
+    if ($installBaseSchema) {
+        $schemaInstaller->expiryPassword();
+    }
 
     if (!$installer->isDryRun()) {
         $installer->getLogger()->info("Clear all cache");
@@ -98,7 +102,11 @@ try {
         $db->rollback();
     }
 
-    $cli->error($e->getMessage());
+    if ($e instanceof \Symfony\Component\Yaml\Exception\ParseException){
+        $cli->error($e->getMessage() . ' at line ' . $e->getParsedLine() . ' of ' . $e->getParsedFile());
+    }else {
+        $cli->error($e->getMessage());
+    }
 
     if ($options['debug'])
         $cli->output($e->getTraceAsString());

@@ -88,7 +88,8 @@ abstract class AbstractStepInstaller
     }
 
     /**
-     * @param array $step
+     * @param $step
+     * @throws \Exception
      */
     public function setStep($step)
     {

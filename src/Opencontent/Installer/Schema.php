@@ -109,7 +109,6 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
             $this->installExtensionsSchema($activeExtensions);
 
             $this->setLanguages($this->primaryLanguageCode, $this->extraLanguageCodes);
-            $this->expiryPassword();
         }
 
     }
@@ -406,7 +405,7 @@ language_locale='eng-GB'";
         eZContentLanguage::setPrioritizedLanguages($prioritizedLanguages);
     }
 
-    private function expiryPassword()
+    public function expiryPassword()
     {
         $this->logger->info("Set all passwords expired");
         $updateSql = "UPDATE ezx_mbpaex SET password_last_updated = -1, passwordlifetime = 365";

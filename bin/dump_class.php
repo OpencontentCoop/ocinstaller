@@ -51,7 +51,7 @@ if ($json) {
         ]);
 
     } else {
-        print_r($serializer->serialize($json));
+        print_r(Yaml::dump($serializer->serialize($json), 10));
     }
 }
 
