@@ -7,6 +7,7 @@ use eZExtension;
 use eZLocale;
 use eZContentLanguage;
 use eZINI;
+use eZContentClass;
 
 class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
 {
