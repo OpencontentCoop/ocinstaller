@@ -50,6 +50,8 @@ class InstallerVars extends \ArrayObject
                 list($class, $method) = explode('::', $value);
                 if (method_exists($class, $method)) {
                     $value = $class::{$method}();
+                }else{
+                    $this->getLogger()->warning("$value not callable");
                 }
             }
 
@@ -70,6 +72,7 @@ class InstallerVars extends \ArrayObject
                 if ($tag instanceof \eZTagsObject){
                     $value = $tag->attribute('id');
                 }else{
+                    $this->getLogger()->warning("Tag $tagUrl not found");
                     $value = 0;
                 }
             }

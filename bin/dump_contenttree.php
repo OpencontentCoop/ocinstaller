@@ -58,9 +58,7 @@ if ($options['url'] || $options['id']) {
             'remoteId',
             'classIdentifier',
             'sectionIdentifier',
-            'stateIdentifiers',
             'languages',
-            'parentNodes'
         ];
         $cleanMetadata = [];
         foreach ($dataArray['metadata'] as $key => $value) {

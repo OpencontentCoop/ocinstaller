@@ -12,10 +12,9 @@ $script = eZScript::instance([
 ]);
 
 $script->startup();
-$options = $script->getOptions('[data:][languages:][cleandata:][cleanup][exlude-extension-schemas][only-data][embed-dfs-schema][dry-run][only-step:]',
-    '',
+$options = $script->getOptions('[languages:][cleandata:][cleanup][exlude-extension-schemas][only-data][embed-dfs-schema][dry-run][only-step:][no-interaction][purge-cache][purge-storage]',
+    '[data]',
     array(
-        'data' => "Directory of installer data",
         'cleanup' => "Cleanup db before install",
         'exlude-extension-schemas' => "Install only base without extension schema",
         'only-data' => "Install only data without base and extension schema",
@@ -24,6 +23,9 @@ $options = $script->getOptions('[data:][languages:][cleandata:][cleanup][exlude-
         'cleandata' => "Override directory of clean db_schema.dba and db_data.dba files",
         'embed-dfs-schema' => "Install dfs schema in main db",
         'dry-run' => "Only check vars",
+        'no-interaction' => '',
+        'purge-cache' => 'Delete cache directory before install',
+        'purge-storage' => 'Delete storage directory before install',
     )
 );
 
@@ -33,6 +35,8 @@ $fileHandler = \eZINI::instance('file.ini')->variable('ClusteringSettings', 'Fil
 \eZINI::instance()->setVariable('TemplateSettings', 'TemplateCache', 'disabled');
 \eZINI::instance()->setVariable('TemplateSettings', 'TemplateCompile', 'disabled');
 \eZINI::instance()->setVariable('OverrideSettings', 'Cache', 'disabled');
+\eZINI::instance()->setVariable('ContentSettings', 'StaticCache', 'disabled');
+//\eZINI::instance()->setVariable('SearchSettings', 'SearchEngine', 'eZSearchEngine');
 
 
 $cli = eZCLI::instance();
@@ -46,17 +50,20 @@ eZDB::setErrorHandling(eZDB::ERROR_HANDLING_EXCEPTIONS);
 
 try {
     // parameters
+    $interactive = !$options['no-interaction'];
     $cleanDb = $options['cleanup'];
     $installBaseSchema = $options['only-data'] === null && $options['only-step'] === null;
     $installExtensionsSchema = !$options['exlude-extension-schemas'];
     $installDfsSchema = $options['embed-dfs-schema'];
+    $purgeCache = $options['purge-cache'];
+    $purgeStorage = $options['purge-storage'];
 
     $cleanDataDirectory = $options['cleandata'] ? rtrim($options['cleandata']) : false;
 
     $languages = $options['languages'] ? $options['languages'] : 'eng-GB,ita-IT,ger-DE';
     $languageList = explode(',', $languages);
 
-    $dataDir = $options['data'];
+    $dataDir = $options['arguments'][0];
     if ($dataDir && !is_dir($dataDir)) {
         throw new Exception("Directory $dataDir not found");
     }
@@ -68,9 +75,62 @@ try {
         $installer->getLogger()->isVerbose = true;
     }
 
+    $installer->getLogger()->warning("Using db " . $db->DB);
+
+    $continue = true;
+    if ($interactive) {
+        $question = ezcConsoleQuestionDialog::YesNoQuestion($output, "Continue?", "y");
+        $continue = ezcConsoleDialogViewer::displayDialog($question) == "y";
+    }
+
     if ($options['dry-run']) {
         $installer->setDryRun();
     }
+
+    if ($purgeCache) {
+        $cacheDir = eZSys::cacheDirectory();
+        $cacheDfsDir = eZINI::instance('file.ini')->variable('eZDFSClusteringSettings', 'MountPointPath') . $cacheDir;
+        $installer->getLogger()->info("Remove cache directories $cacheDfsDir, $cacheDir");
+        $continue = true;
+        if ($interactive) {
+            $question = ezcConsoleQuestionDialog::YesNoQuestion($output, "Continue?", "y");
+            $continue = ezcConsoleDialogViewer::displayDialog($question) == "y";
+        }
+        if (is_dir($cacheDfsDir)) {
+            $allowedDirs = $modifiedAllowedDirs = eZINI::instance()->variable('FileSettings', 'AllowedDeletionDirs');
+            $dirRealPath = dirname(realpath($cacheDfsDir)) . DIRECTORY_SEPARATOR;
+            $modifiedAllowedDirs[] = $dirRealPath;
+            eZINI::instance()->setVariable('FileSettings', 'AllowedDeletionDirs', $modifiedAllowedDirs);
+            eZDir::recursiveDelete($cacheDfsDir);
+            eZINI::instance()->setVariable('FileSettings', 'AllowedDeletionDirs', $allowedDirs);
+        }
+        if (is_dir($cacheDir)) {
+            eZDir::recursiveDelete($cacheDir);
+        }
+    }
+
+    if ($purgeStorage) {
+        $storageDir = eZSys::storageDirectory();
+        $storageDfsDir = eZINI::instance('file.ini')->variable('eZDFSClusteringSettings', 'MountPointPath') . $storageDir;
+        $installer->getLogger()->info("Remove storage directories $storageDfsDir, $storageDir");
+        $continue = true;
+        if ($interactive) {
+            $question = ezcConsoleQuestionDialog::YesNoQuestion($output, "Continue?", "y");
+            $continue = ezcConsoleDialogViewer::displayDialog($question) == "y";
+        }
+        if (is_dir($storageDfsDir)) {
+            $allowedDirs = $modifiedAllowedDirs = eZINI::instance()->variable('FileSettings', 'AllowedDeletionDirs');
+            $dirRealPath = dirname(realpath($storageDfsDir)) . DIRECTORY_SEPARATOR;
+            $modifiedAllowedDirs[] = $dirRealPath;
+            eZINI::instance()->setVariable('FileSettings', 'AllowedDeletionDirs', $modifiedAllowedDirs);
+            eZDir::recursiveDelete($storageDfsDir);
+            eZINI::instance()->setVariable('FileSettings', 'AllowedDeletionDirs', $allowedDirs);
+        }
+        if (is_dir($storageDir)) {
+            eZDir::recursiveDelete($storageDir);
+        }
+    }
+
 
     $schemaInstaller = $installer->installSchema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory, $installDfsSchema);
     if ($cleanDb) {
@@ -98,18 +158,22 @@ try {
     }
 
 } catch (Throwable $e) {
-    if ($db->TransactionCounter > 0) {
-        $db->rollback();
+    if ($e instanceof eZDBException) {
+        if ($db->TransactionCounter > 0) {
+            $db->rollback();
+        }
     }
 
-    if ($e instanceof \Symfony\Component\Yaml\Exception\ParseException){
+    if ($e instanceof \Symfony\Component\Yaml\Exception\ParseException) {
         $cli->error($e->getMessage() . ' at line ' . $e->getParsedLine() . ' of ' . $e->getParsedFile());
-    }else {
+    } else {
         $cli->error($e->getMessage());
     }
 
-    if ($options['debug'])
+    if ($options['debug']) {
+        $cli->error('At line ' . $e->getLine() . ' of ' . $e->getFile());
         $cli->output($e->getTraceAsString());
+    }
 }
 
 $script->shutdown();

@@ -135,6 +135,7 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
             if (!$result)
                 break;
         }
+
         return $result;
     }
 

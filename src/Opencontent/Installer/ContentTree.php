@@ -13,8 +13,22 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
 
     public function dryRun()
     {
-        $identifier = $this->step['identifier'];
-        $this->logger->info("Install contenttree " . $identifier);
+        $this->identifier = $this->step['identifier'];
+        $this->logger->info("Install contenttree " . $this->identifier);
+        if (is_dir($this->ioTools->getDataDir() . "/contenttrees/{$this->identifier}")) {
+            $files = \eZDir::findSubitems($this->ioTools->getDataDir() . "/contenttrees/{$this->identifier}", 'f');
+            foreach ($files as $file) {
+                if (\eZFile::suffix($file) == 'yml') {
+                    $identifier = substr(basename($file), 0, -4);
+                    $contents[$identifier] = "/contenttrees/{$this->identifier}/$file";
+                }
+            }
+        }
+        foreach ($contents as $identifier => $content){
+            $this->installerVars['contenttree_' . $this->identifier . '_' . $identifier .  '_node'] = 0;
+            $this->installerVars['contenttree_' . $this->identifier . '_' . $identifier . '_object'] = 0;
+            $this->installerVars['contenttree_' . $this->identifier . '_' . $identifier . '_path_string'] = 0;
+        }
     }
 
     public function install()
@@ -22,6 +36,9 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
         $this->identifier = $this->step['identifier'];
 
         $source = isset($this->step['source']) ? $this->step['source'] : '';
+        if (!isset($this->step['parent'])){
+            throw new \Exception("Missing parent param");
+        }
         $parentNodeId = $this->step['parent'];
         if (strpos($source, 'http') !== false) {
             $this->installFromRemote($source, $parentNodeId);
@@ -38,14 +55,15 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
         $files = \eZDir::findSubitems($this->ioTools->getDataDir() . "/contenttrees/{$this->identifier}", 'f');
         foreach ($files as $file) {
             if (\eZFile::suffix($file) == 'yml') {
-                $contents[] = $this->ioTools->getJsonContents("/contenttrees/{$this->identifier}/$file");
+                $identifier = substr(basename($file), 0, -4);
+                $contents[$identifier] = $this->ioTools->getJsonContents("/contenttrees/{$this->identifier}/$file");
             }
         }
 
         $contentRepository = new ContentRepository();
         $contentRepository->setEnvironment(EnvironmentLoader::loadPreset('content'));
 
-        foreach ($contents as $content){
+        foreach ($contents as $identifier => $content){
             $this->logger->info(" - " . $content['metadata']['remoteId']);
 
             $client = new HttpClient('');
@@ -61,10 +79,20 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
             $alreadyExists = \eZContentObject::fetchByRemoteID($payload['metadata']['remoteId']);
             if (isset($content['metadata']['remoteId']) && $alreadyExists){
                 $content['metadata']['parentNodes'] = [$alreadyExists->mainNode()->attribute('parent_node_id')];
-                $contentRepository->update($payload->getArrayCopy());
+                $result = $contentRepository->update($payload->getArrayCopy());
             }else {
-                $contentRepository->create($payload->getArrayCopy());
+                $result = $contentRepository->create($payload->getArrayCopy());
             }
+
+            $nodeId = $result['content']['metadata']['mainNodeId'];
+            $node = \eZContentObjectTreeNode::fetch($nodeId);
+            if (!$node instanceof \eZContentObjectTreeNode){
+                throw new \Exception("Node $nodeId not found");
+            }
+
+            $this->installerVars['contenttree_' . $this->identifier . '_' . $identifier .  '_node'] = $node->attribute('node_id');
+            $this->installerVars['contenttree_' . $this->identifier . '_' . $identifier . '_object'] = $node->attribute('contentobject_id');
+            $this->installerVars['contenttree_' . $this->identifier . '_' . $identifier . '_path_string'] = $node->attribute('path_string');
         }
     }
 
@@ -87,9 +115,10 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
 
                 $contentNames = $child['metadata']['name'];
                 $contentName = current($contentNames);
+                $identifier = \Opencontent\Installer\Dumper\Tool::slugize($contentName);
                 $this->logger->info(" - $contentName");
 
-                $client->import($child, $contentRepository, function (PayloadBuilder $payload) use ($parentNodeId) {
+                $result = $client->import($child, $contentRepository, function (PayloadBuilder $payload) use ($parentNodeId) {
                     $payload->setParentNodes([$parentNodeId]);
                     $payload->unSetData('image');
                     $payload->unSetData('managed_by_area');
@@ -100,6 +129,14 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
 
                     return $payload;
                 });
+
+                $nodeId = $result['content']['metadata']['mainNodeId'];
+                $node = \eZContentObjectTreeNode::fetch($nodeId);
+
+                $this->installerVars['contenttree_' . $this->identifier . '_' . $identifier .  '_node'] = $node->attribute('node_id');
+                $this->installerVars['contenttree_' . $this->identifier . '_' . $identifier . '_object'] = $node->attribute('contentobject_id');
+                $this->installerVars['contenttree_' . $this->identifier . '_' . $identifier . '_path_string'] = $node->attribute('path_string');
+
             } catch (\Exception $e) {
                 $this->logger->error($e->getMessage());
             }

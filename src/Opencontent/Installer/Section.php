@@ -26,7 +26,7 @@ class Section extends AbstractStepInstaller implements InterfaceStepInstaller
 
         $name = $this->sectionDefinition['name'];
         $identifier = $this->sectionDefinition['identifier'];
-        $navigationPart = $this->sectionDefinition['navigation_part'];
+        $navigationPart = isset($this->sectionDefinition['navigation_part']) ? $this->sectionDefinition['navigation_part'] : 'ezcontentnavigationpart';
 
         $this->logger->info("Install section " . $identifier);
 
