@@ -221,19 +221,21 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
 
     private function setLanguages($primaryLanguageCode, $extraLanguageCodes = [])
     {
+        $installerDataLocale = 'ita-IT';
+
         $primaryLanguage = eZLocale::create($primaryLanguageCode);
         $primaryLanguageLocaleCode = $primaryLanguage->localeCode();
         $primaryLanguageName = $primaryLanguage->languageName();
 
-        // Make sure objects use the selected main language instead of eng-GB
-        if ($primaryLanguageLocaleCode != 'eng-GB') {
+        // Make sure objects use the selected main language instead of $installerDataLocale
+        if ($primaryLanguageLocaleCode != $installerDataLocale) {
             $this->logger->info("Set primary content language " . $primaryLanguageLocaleCode);
 
-            $extraLanguageCodes[] = 'eng-GB';
+            $extraLanguageCodes[] = $installerDataLocale;
 
-            $engLanguageObj = eZContentLanguage::fetchByLocale('eng-GB');
+            $engLanguageObj = eZContentLanguage::fetchByLocale($installerDataLocale);
             if (!$engLanguageObj) {
-                $engLanguage = eZLocale::create('eng-GB');
+                $engLanguage = eZLocale::create($installerDataLocale);
                 $engLanguageLocaleCode = $engLanguage->localeCode();
                 $engLanguageName = $engLanguage->languageName();
                 $engLanguageObj = eZContentLanguage::addLanguage($engLanguageLocaleCode, $engLanguageName);
@@ -269,15 +271,15 @@ language_mask & 1 = 1";
             }
             $inSql = 'IN ( ' . implode(', ', $objectList) . ')';
 
-            // Updates databases that have eng-GB data to the new locale.
+            // Updates databases that have $installerDataLocale data to the new locale.
             $updateSql = "UPDATE ezcontentobject_name
 SET
 content_translation='$primaryLanguageLocaleCode',
 real_translation='$primaryLanguageLocaleCode',
 language_id=$primaryLanguageID
 WHERE
-content_translation='eng-GB' OR
-real_translation='eng-GB'";
+content_translation='$installerDataLocale' OR
+real_translation='$installerDataLocale'";
             $this->db->query($updateSql);
             // Fix always available
             $updateSql = "UPDATE ezcontentobject_name
@@ -293,7 +295,7 @@ SET
 language_code='$primaryLanguageLocaleCode',
 language_id=$primaryLanguageID
 WHERE
-language_code='eng-GB'";
+language_code='$installerDataLocale'";
             $this->db->query($updateSql);
             // Fix always available
             $updateSql = "UPDATE ezcontentobject_attribute
@@ -359,7 +361,7 @@ id $inSql";
 SET
 language_locale='$primaryLanguageLocaleCode'
 WHERE
-language_locale='eng-GB'";
+language_locale='$installerDataLocale'";
             $this->db->query($updateSql);
 
             // use high-level api, because it's impossible to update serialized names with direct sqls.
@@ -371,15 +373,15 @@ language_locale='eng-GB'";
                 /** @var eZContentClassAttribute[] $classAttributes */
                 $classAttributes = $contentClass->fetchAttributes();
                 foreach ($classAttributes as $classAttribute) {
-                    $classAttribute->NameList->setName($classAttribute->NameList->name('eng-GB'), $primaryLanguageLocaleCode);
+                    $classAttribute->NameList->setName($classAttribute->NameList->name($installerDataLocale), $primaryLanguageLocaleCode);
                     $classAttribute->NameList->setAlwaysAvailableLanguage($primaryLanguageLocaleCode);
-                    $classAttribute->NameList->removeName('eng-GB');
+                    $classAttribute->NameList->removeName($installerDataLocale);
                     $classAttribute->store();
                 }
 
-                $contentClass->NameList->setName($contentClass->NameList->name('eng-GB'), $primaryLanguageLocaleCode);
+                $contentClass->NameList->setName($contentClass->NameList->name($installerDataLocale), $primaryLanguageLocaleCode);
                 $contentClass->NameList->setAlwaysAvailableLanguage($primaryLanguageLocaleCode);
-                $contentClass->NameList->removeName('eng-GB');
+                $contentClass->NameList->removeName($installerDataLocale);
                 $contentClass->NameList->setHasDirtyData(false); // to not update 'ezcontentclass_name', because we've already updated it.
                 $contentClass->store();
             }

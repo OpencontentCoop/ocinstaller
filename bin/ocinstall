@@ -19,7 +19,7 @@ $options = $script->getOptions('[languages:][cleandata:][cleanup][exlude-extensi
         'exlude-extension-schemas' => "Install only base without extension schema",
         'only-data' => "Install only data without base and extension schema",
         'only-step' => "Step index (comma separated): install only data step without base and extension schema",
-        'languages' => "Comma separates language code list, first is primary (default is: eng-GB,ita-IT,ger-DE)",
+        'languages' => "Comma separates language code list, first is primary (default is: ita-IT,eng-GB)",
         'cleandata' => "Override directory of clean db_schema.dba and db_data.dba files",
         'embed-dfs-schema' => "Install dfs schema in main db",
         'dry-run' => "Only check vars",
@@ -60,7 +60,7 @@ try {
 
     $cleanDataDirectory = $options['cleandata'] ? rtrim($options['cleandata']) : false;
 
-    $languages = $options['languages'] ? $options['languages'] : 'eng-GB,ita-IT,ger-DE';
+    $languages = $options['languages'] ? $options['languages'] : 'ita-IT,eng-GB';
     $languageList = explode(',', $languages);
 
     $dataDir = $options['arguments'][0];
