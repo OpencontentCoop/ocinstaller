@@ -29,6 +29,7 @@ $options = $script->getOptions('[languages:][cleandata:][cleanup][exlude-extensi
     )
 );
 
+\eZINI::instance()->setVariable('DatabaseSettings', 'ConnectRetries', '100');
 $fileHandler = \eZINI::instance('file.ini')->variable('ClusteringSettings', 'FileHandler');
 \eZINI::instance('file.ini')->setVariable('ClusteringSettings', 'FileHandler', 'eZFSFileHandler');
 \eZINI::instance()->setVariable('ContentSettings', 'ViewCaching', 'disabled');
