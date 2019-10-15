@@ -11,7 +11,10 @@
     "minimum-stability": "dev",
     "autoload": {
         "psr-0": {"Opencontent\\Installer\\": "src/"}
-    },    
+    },
+    "require": {
+        "symfony/yaml": "*"
+    },
     "config": {
         "bin-dir": "bin"
     },
