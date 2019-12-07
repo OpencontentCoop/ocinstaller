@@ -106,8 +106,33 @@ class Installer
         return $installer;
     }
 
+    public function needUpdate()
+    {
+        $version = \eZSiteData::fetchByName('ocinstaller_version');
+        if (!$version instanceof \eZSiteData){
+            $currentVersion = '0.0.0';
+        }else{
+            $currentVersion = $version->attribute('value');
+            $this->getLogger()->info("Installed version $currentVersion");
+        }
+
+        return version_compare($currentVersion, $this->installerData['version'], '<');
+    }
+
+    private function storeVersion()
+    {
+        $version = \eZSiteData::fetchByName('ocinstaller_version');
+        if (!$version instanceof \eZSiteData){
+            $version = \eZSiteData::create('ocinstaller_version', $this->installerData['version']);
+        }else{
+            $version->setAttribute('value', $this->installerData['version']);
+        }
+        $version->store();
+    }
+
     public function install($options = array())
     {
+        $this->getLogger()->info("Update to version " . $this->installerData['version']);
         $onlyStep = $options['only-step'];
 
         $steps = $this->installerData['steps'];
@@ -206,6 +231,8 @@ class Installer
                 }
             }
         }
+
+        $this->storeVersion();
     }
 
     protected function validateData()
