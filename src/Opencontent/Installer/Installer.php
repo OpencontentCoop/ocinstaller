@@ -36,10 +36,10 @@ class Installer
     private $installerFactory;
 
     /**
-     * @var bool 
+     * @var bool
      */
     private $dryRun = false;
-    
+
     /**
      * OpenContentInstaller constructor.
      * @param eZDBInterface $db
@@ -78,6 +78,14 @@ class Installer
     }
 
     /**
+     * @return InstallerVars
+     */
+    public function getInstallerVars()
+    {
+        return $this->installerVars;
+    }
+
+    /**
      * @param $cleanDb
      * @param $installBaseSchema
      * @param $installExtensionsSchema
@@ -89,9 +97,9 @@ class Installer
     public function installSchema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory, $installDfsSchema)
     {
         $installer = $this->installerFactory->factory(new Schema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory, $installDfsSchema));
-        if ($this->dryRun){
+        if ($this->dryRun) {
             $installer->dryRun();
-        }else {
+        } else {
             $installer->install();
         }
 
@@ -105,7 +113,7 @@ class Installer
         $steps = $this->installerData['steps'];
         $onlySteps = array_keys($steps);
 
-        if ($onlyStep !== null){
+        if ($onlyStep !== null) {
             $onlySteps = explode(',', $onlyStep);
         }
 
@@ -167,18 +175,34 @@ class Installer
                     $installer = new OpenPARecaptcha();
                     break;
 
+                case 'sql':
+                    $installer = new Sql();
+                    break;
+
                 default:
                     throw new Exception("Step type " . $step['type'] . ' not handled');
             }
 
             if ($installer instanceof InterfaceStepInstaller) {
                 $installer = $this->installerFactory->factory($installer);
-                $installer->setStep($step);
-                $this->logger->debug("[$index] $stepName");
-                if ($this->dryRun){
-                    $installer->dryRun();
-                }else {
-                    $installer->install();
+                $ignoreError = false;
+                if (isset($step['ignore_error'])) {
+                    $ignoreError = (bool)$step['ignore_error'];
+                }
+                try {
+                    $installer->setStep($step);
+                    $this->logger->debug("[$index] $stepName");
+                    if ($this->dryRun) {
+                        $installer->dryRun();
+                    } else {
+                        $installer->install();
+                    }
+                } catch (\Throwable $e) {
+                    if ($ignoreError) {
+                        $this->getLogger()->error($e->getMessage());
+                    } else {
+                        throw $e;
+                    }
                 }
             }
         }

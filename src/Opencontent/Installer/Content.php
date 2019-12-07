@@ -14,6 +14,8 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
 
     private $removeSwapped;
 
+    private $doUpdate = false;
+
     public function dryRun()
     {
         $identifier = $this->step['identifier'];
@@ -37,16 +39,22 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
         $contentRepository->setEnvironment(EnvironmentLoader::loadPreset('content'));
 
         $isUpdate = false;
-        $alreadyExists = \eZContentObject::fetchByRemoteID($content['metadata']['remoteId']);
-        if (isset($content['metadata']['remoteId']) && $alreadyExists){
+        $alreadyExists = isset($content['metadata']['remoteId']) ? \eZContentObject::fetchByRemoteID($content['metadata']['remoteId']) : false;
+        if ($alreadyExists){
             $content['metadata']['parentNodes'] = [$alreadyExists->mainNode()->attribute('parent_node_id')];
-            $result = $contentRepository->update($content);
+            if ($this->doUpdate) {
+                $result = $contentRepository->update($content);
+                $nodeId = $result['content']['metadata']['mainNodeId'];
+            }else{
+                $this->getLogger()->error(' -> already exists');
+                $nodeId = $alreadyExists->mainNode()->attribute('node_id');
+            }
             $isUpdate = true;
         }else {
             $result = $contentRepository->create($content);
+            $nodeId = $result['content']['metadata']['mainNodeId'];
         }
 
-        $nodeId = $result['content']['metadata']['mainNodeId'];
         if ($this->swapWith && $isUpdate === false){
             $nodeId = $this->swap($nodeId);
         }

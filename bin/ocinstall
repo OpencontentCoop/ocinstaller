@@ -23,7 +23,7 @@ $options = $script->getOptions('[languages:][cleandata:][cleanup][exlude-extensi
         'cleandata' => "Override directory of clean db_schema.dba and db_data.dba files",
         'embed-dfs-schema' => "Install dfs schema in main db",
         'dry-run' => "Only check vars",
-        'no-interaction' => '',
+        'no-interaction' => 'Don\'t ask don\'t tell',
         'purge-cache' => 'Delete cache directory before install',
         'purge-storage' => 'Delete storage directory before install',
     )
@@ -146,16 +146,16 @@ try {
 
     $installer->install($options);
 
-    if ($installBaseSchema) {
+    if ($installer->getInstallerVars()->offsetGet('schema_already_exists') === false) {
         $schemaInstaller->expiryPassword();
     }
 
     if (!$installer->isDryRun()) {
         $installer->getLogger()->info("Clear all cache");
-        $cli->setIsQuiet(true);
+        //$cli->setIsQuiet(true);
         $cacheHelper = new eZCacheHelper($cli, $script);
         $cacheHelper->clearItems(eZCache::fetchList(), false);
-        $cli->setIsQuiet($script->isQuiet());
+        //$cli->setIsQuiet($script->isQuiet());
     }
 
 } catch (Throwable $e) {

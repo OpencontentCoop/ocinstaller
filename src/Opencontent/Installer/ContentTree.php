@@ -11,6 +11,8 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
 {
     private $identifier;
 
+    private $doUpdate = false;
+
     public function dryRun()
     {
         $this->identifier = $this->step['identifier'];
@@ -76,15 +78,21 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
             unset($payload['metadata']['assignedNodes']);
             unset($payload['metadata']['classDefinition']);
 
-            $alreadyExists = \eZContentObject::fetchByRemoteID($payload['metadata']['remoteId']);
-            if (isset($content['metadata']['remoteId']) && $alreadyExists){
+            $alreadyExists = isset($content['metadata']['remoteId']) ? \eZContentObject::fetchByRemoteID($payload['metadata']['remoteId']) : false;
+            if ($alreadyExists){
                 $content['metadata']['parentNodes'] = [$alreadyExists->mainNode()->attribute('parent_node_id')];
-                $result = $contentRepository->update($payload->getArrayCopy());
+                if ($this->doUpdate) {
+                    $result = $contentRepository->update($payload->getArrayCopy());
+                    $nodeId = $result['content']['metadata']['mainNodeId'];
+                }else{
+                    $this->getLogger()->error(' -> already exists');
+                    $nodeId = $alreadyExists->mainNode()->attribute('node_id');
+                }
             }else {
                 $result = $contentRepository->create($payload->getArrayCopy());
+                $nodeId = $result['content']['metadata']['mainNodeId'];
             }
 
-            $nodeId = $result['content']['metadata']['mainNodeId'];
             $node = \eZContentObjectTreeNode::fetch($nodeId);
             if (!$node instanceof \eZContentObjectTreeNode){
                 throw new \Exception("Node $nodeId not found");

@@ -42,7 +42,7 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
 
         $ini = eZINI::instance('dbschema.ini');
         $schemaPaths = $ini->variable('SchemaSettings', 'SchemaPaths');
-        $schemaPaths['postgresql'] = __DIR__  . '/ezpgsqlschema.php';
+        $schemaPaths['postgresql'] = __DIR__ . '/ezpgsqlschema.php';
         $ini->setVariable('SchemaSettings', 'SchemaPaths', $schemaPaths);
     }
 
@@ -60,7 +60,7 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
             $this->logger->info("Install schema " . $baseSchema);
         }
 
-        if ($this->installDfsSchema){
+        if ($this->installDfsSchema) {
             $this->logger->info("Install schema " . $dfsSchema);
         }
 
@@ -150,12 +150,20 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
             'schema' => true,
             'data' => false
         );
-        if (!$dbSchema->insertSchema($params)) {
-            throw new Exception("Unknown error");
+
+        try {
+            if (!$dbSchema->insertSchema($params)) {
+                throw new Exception("Unknown error");
+            }
+            $this->installerVars['schema_already_exists'] = false;
+        } catch (\eZDBException $e) {
+            $this->db->rollback();
+            $this->getLogger()->error(' -> already installed');
+            $this->installerVars['schema_already_exists'] = true;
         }
 
         $dfsSchemaArray = [];
-        if ($this->installDfsSchema){
+        if ($this->installDfsSchema) {
             $this->logger->info("Install schema " . $dfsSchema);
             $dfsSchemaArray = eZDbSchema::read($dfsSchema, true);
             $dfsSchemaArray['type'] = strtolower($this->db->databaseName());
@@ -165,8 +173,13 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
                 'schema' => true,
                 'data' => false
             );
-            if (!$dbDfsSchema->insertSchema($params)) {
-                throw new Exception("Unknown error");
+            try {
+                if (!$dbDfsSchema->insertSchema($params)) {
+                    throw new Exception("Unknown error");
+                }
+            } catch (\eZDBException $e) {
+                $this->db->rollback();
+                $this->getLogger()->error(' -> already installed');
             }
         }
 
@@ -179,8 +192,13 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
             'schema' => false,
             'data' => true
         );
-        if (!$dbDataSchema->insertSchema($params)) {
-            throw new Exception("Unknown error");
+        try {
+            if (!$dbDataSchema->insertSchema($params)) {
+                throw new Exception("Unknown error");
+            }
+        } catch (\eZDBException $e) {
+            $this->db->rollback();
+            $this->getLogger()->error(' -> already installed');
         }
     }
 
@@ -206,9 +224,13 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
                     'schema' => true,
                     'data' => true
                 );
-
-                if (!$dbSchema->insertSchema($params)) {
-                    throw new Exception("Unknown error");
+                try {
+                    if (!$dbSchema->insertSchema($params)) {
+                        throw new Exception("Unknown error");
+                    }
+                } catch (\eZDBException $e) {
+                    $this->db->rollback();
+                    $this->getLogger()->error(' -> already installed');
                 }
             }
 
