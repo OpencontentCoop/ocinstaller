@@ -45,11 +45,11 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
         if (strpos($source, 'http') !== false) {
             $this->installFromRemote($source, $parentNodeId);
         } elseif (is_dir($this->ioTools->getDataDir() . "/contenttrees/{$this->identifier}")) {
-            $this->installFromLocale($parentNodeId);
+            $this->installFromLocal($parentNodeId);
         }
     }
 
-    private function installFromLocale($parentNodeId)
+    private function installFromLocal($parentNodeId)
     {
         $this->logger->info("Install contenttree " . $this->identifier . " from " . "contenttrees/{$this->identifier}");
 

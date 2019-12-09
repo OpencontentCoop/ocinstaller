@@ -144,10 +144,10 @@ try {
 
     \eZINI::instance('file.ini')->setVariable('ClusteringSettings', 'FileHandler', $fileHandler);
 
-    if ($installer->needUpdate()) {
+    if ($installer->needUpdate() || $options['only-step'] !== null) {
         $installer->install($options);
 
-        if ($installer->getInstallerVars()->offsetGet('schema_already_exists') === false) {
+        if ($installBaseSchema && $installer->getInstallerVars()->offsetGet('schema_already_exists') === false) {
             $schemaInstaller->expiryPassword();
         }
 
