@@ -74,6 +74,32 @@ function getArray($obj)
     return $array;
 }
 
+function readTree($tagRepository, $name)
+{
+    $offset = 0;
+    $limit = 100;
+    $rootTag = $tagRepository->read($name, $offset, $limit);
+
+    if ($rootTag['hasChildren']){
+        while ($rootTag['childrenCount'] > count($rootTag['children'])){
+            $offset = $offset + $limit;
+            $offsetRootTag = $tagRepository->read($name, $offset, $limit);
+            $rootTag['children'] = array_merge(
+                $rootTag['children'],
+                $offsetRootTag['children']
+            );
+        }
+
+        foreach ($rootTag['children'] as $index => $child){
+            if ($child['hasChildren']) {
+                $rootTag['children'][$index] = readTree($tagRepository, $child['id']);
+            }
+        }
+    }
+
+    return $rootTag;
+}
+
 $parentTag = new ArrayObject([
     'children' => []
 ]);
@@ -91,7 +117,7 @@ if ($options['url']) {
         null,
         'tags_tree'
     );
-    $remoteRoot = $client->readTag($rootTag);
+    $remoteRoot = $client->readTree($rootTag);
     recursiveListTag($remoteRoot, $parentTag);
 
 } elseif ($options['id']) {
