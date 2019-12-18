@@ -70,7 +70,7 @@ class TagTree extends AbstractStepInstaller implements InterfaceStepInstaller
     public function installFromLocal()
     {
         $identifier = $this->step['identifier'];
-        $this->logger->info("Install tag tree " . $identifier . " from " . "contenttrees/{$identifier}");
+        $this->logger->info("Install tag tree " . $identifier . " from " . "tagtree/{$identifier}");
         $remoteRoot = $this->ioTools->getJsonContents("tagtree/{$identifier}.yml");
         $tag = $this->recursiveCreateTag($remoteRoot, 0);
 

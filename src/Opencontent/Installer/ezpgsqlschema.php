@@ -393,6 +393,9 @@ class eZPgsqlSchema extends eZDBSchemaInterface
                 $length = 11;
                 return 'int';
 
+            case 'smallint':
+                return 'int';
+
             case 'character varying':
                 return 'varchar';
 
