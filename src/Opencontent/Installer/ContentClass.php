@@ -37,7 +37,20 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
         $tools = new OCClassTools($definitionData['identifier'], true, array(), $definitionJsonFile);
 
         $tools->compare();
-        $result = $tools->getData();
+        $this->logCompare($tools->getData());
+
+        $tools->sync($force, $removeExtras);
+
+        $class = $tools->getLocale();
+        $this->installerVars['class_' . $this->identifier] = $class->attribute('id');
+
+        OCOpenDataClassRepositoryCache::clearCache();
+
+        @unlink($definitionJsonFile);
+    }
+
+    private function logCompare($result)
+    {
         if ($result->missingAttributes) {
             $this->logger->info('    Attributi mancanti rispetto al prototipo: ' . count($result->missingAttributes));
             foreach ($result->missingAttributes as $identifier => $original) {
@@ -98,15 +111,6 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
                     $this->logger->info("        {$property['field_name']}");
             }
         }
-
-        $tools->sync($force, $removeExtras);
-
-        $class = $tools->getLocale();
-        $this->installerVars['class_' . $this->identifier] = $class->attribute('id');
-
-        OCOpenDataClassRepositoryCache::clearCache();
-
-        @unlink($definitionJsonFile);
     }
 
     private function createJsonFile($source)

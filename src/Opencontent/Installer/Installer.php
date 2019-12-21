@@ -109,12 +109,13 @@ class Installer
     public function needUpdate()
     {
         $version = \eZSiteData::fetchByName('ocinstaller_version');
-        if (!$version instanceof \eZSiteData){
+        if (!$version instanceof \eZSiteData) {
             $currentVersion = '0.0.0';
-        }else{
+        } else {
             $currentVersion = $version->attribute('value');
-            $this->getLogger()->info("Installed version $currentVersion");
         }
+
+        $this->getLogger()->info("Installed version $currentVersion");
 
         return version_compare($currentVersion, $this->installerData['version'], '<');
     }
@@ -122,9 +123,9 @@ class Installer
     private function storeVersion()
     {
         $version = \eZSiteData::fetchByName('ocinstaller_version');
-        if (!$version instanceof \eZSiteData){
+        if (!$version instanceof \eZSiteData) {
             $version = \eZSiteData::create('ocinstaller_version', $this->installerData['version']);
-        }else{
+        } else {
             $version->setAttribute('value', $this->installerData['version']);
         }
         $version->store();
@@ -216,11 +217,15 @@ class Installer
                 }
                 try {
                     $installer->setStep($step);
-                    $this->logger->debug("[$index] $stepName");
-                    if ($this->dryRun) {
-                        $installer->dryRun();
+                    if (isset($installer->getStep()['condition']) && (bool)$installer->getStep()['condition'] !== true) {
+                        $this->logger->debug("[$index] $stepName skipped by condition parameter");
                     } else {
-                        $installer->install();
+                        $this->logger->debug("[$index] $stepName");
+                        if ($this->dryRun) {
+                            $installer->dryRun();
+                        } else {
+                            $installer->install();
+                        }
                     }
                 } catch (\Throwable $e) {
                     if ($ignoreError) {
