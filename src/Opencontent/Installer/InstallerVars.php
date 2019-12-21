@@ -57,7 +57,13 @@ class InstallerVars extends \ArrayObject
 
             if (strpos($value, 'env(') !== false) {
                 $envVariable = substr($value, 4, -1);
-                $value = isset($_ENV[$envVariable]) ? $_ENV[$envVariable] : false;
+                if (isset($_ENV[$envVariable])){
+                    $value = $_ENV[$envVariable];
+                }elseif (isset($_SERVER[$envVariable])){
+                    $value = $_SERVER[$envVariable];
+                }else{
+                    $value = false;
+                }
             }
 
             if (strpos($value, 'ini(') !== false) {
