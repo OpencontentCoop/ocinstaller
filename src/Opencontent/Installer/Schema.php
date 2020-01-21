@@ -156,6 +156,7 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
                 throw new Exception("Unknown error");
             }
             $this->installerVars['schema_already_exists'] = false;
+            $this->installerVars['is_install_from_scratch'] = false;
         } catch (\eZDBException $e) {
             $this->db->rollback();
             $this->getLogger()->error(' -> already installed');
