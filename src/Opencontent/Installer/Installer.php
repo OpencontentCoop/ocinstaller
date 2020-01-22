@@ -215,6 +215,9 @@ class Installer
                 if (isset($step['ignore_error'])) {
                     $ignoreError = (bool)$step['ignore_error'];
                 }
+                if (isset($step['condition']) && $step['condition'] == '$is_install_from_scratch' && !$this->installerVars['is_install_from_scratch']) {
+                    $ignoreError = true;
+                }
                 try {
                     $installer->setStep($step);
                     if (isset($installer->getStep()['condition']) && (bool)$installer->getStep()['condition'] !== true) {
