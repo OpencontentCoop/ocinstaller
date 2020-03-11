@@ -13,7 +13,8 @@
         "psr-0": {"Opencontent\\Installer\\": "src/"}
     },
     "require": {
-        "symfony/yaml": "*"
+        "symfony/yaml": "*",
+        "psr/log": "*"
     },
     "config": {
         "bin-dir": "bin"

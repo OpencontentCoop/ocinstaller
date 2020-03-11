@@ -9,6 +9,10 @@ use eZUser;
 
 class Installer
 {
+    const INSTALLER_TYPE_DEFAULT = 'default';
+
+    const INSTALLER_TYPE_MODULE = 'module';
+
     protected $db;
 
     protected $dataDir;
@@ -40,6 +44,8 @@ class Installer
      */
     private $dryRun = false;
 
+    private $type = false;
+
     /**
      * OpenContentInstaller constructor.
      * @param eZDBInterface $db
@@ -56,6 +62,12 @@ class Installer
         $this->dataDir = rtrim($dataDir, '/');
         $this->validateData();
         $this->installerData = Yaml::parse(file_get_contents($this->dataDir . '/installer.yml'));
+
+        $this->type = isset($this->installerData['type']) ? $this->installerData['type'] : self::INSTALLER_TYPE_DEFAULT;
+
+        if ($this->type !== self::INSTALLER_TYPE_DEFAULT && $this->type !== self::INSTALLER_TYPE_MODULE) {
+            throw new Exception("Invalid installer type {$this->type}");
+        }
 
         $this->logger->info("Install " . $this->installerData['name'] . ' version ' . $this->installerData['version']);
 
@@ -85,6 +97,11 @@ class Installer
         return $this->installerVars;
     }
 
+    public function getType()
+    {
+        return $this->type;
+    }
+
     /**
      * @param $cleanDb
      * @param $installBaseSchema
@@ -106,9 +123,25 @@ class Installer
         return $installer;
     }
 
+    public function canInstallSchema()
+    {
+        return $this->type == self::INSTALLER_TYPE_DEFAULT;
+    }
+
+    private function getSiteDataName()
+    {
+        if ($this->type == self::INSTALLER_TYPE_MODULE) {
+            $identifier = \eZCharTransform::instance()->transformByGroup($this->installerData['name'], 'identifier');
+
+            return "ocinstaller_{$identifier}_version";
+        }
+
+        return 'ocinstaller_version';
+    }
+
     public function needUpdate()
     {
-        $version = \eZSiteData::fetchByName('ocinstaller_version');
+        $version = \eZSiteData::fetchByName($this->getSiteDataName());
         if (!$version instanceof \eZSiteData) {
             $currentVersion = '0.0.0';
         } else {
@@ -122,9 +155,9 @@ class Installer
 
     private function storeVersion()
     {
-        $version = \eZSiteData::fetchByName('ocinstaller_version');
+        $version = \eZSiteData::fetchByName($this->getSiteDataName());
         if (!$version instanceof \eZSiteData) {
-            $version = \eZSiteData::create('ocinstaller_version', $this->installerData['version']);
+            $version = \eZSiteData::create($this->getSiteDataName(), $this->installerData['version']);
         } else {
             $version->setAttribute('value', $this->installerData['version']);
         }

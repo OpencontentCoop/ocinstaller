@@ -89,56 +89,65 @@ try {
     }
 
     if ($purgeCache) {
-        $cacheDir = eZSys::cacheDirectory();
-        $cacheDfsDir = eZINI::instance('file.ini')->variable('eZDFSClusteringSettings', 'MountPointPath') . $cacheDir;
-        $installer->getLogger()->info("Remove cache directories $cacheDfsDir, $cacheDir");
-        $continue = true;
-        if ($interactive) {
-            $question = ezcConsoleQuestionDialog::YesNoQuestion($output, "Continue?", "y");
-            $continue = ezcConsoleDialogViewer::displayDialog($question) == "y";
-        }
-        if (is_dir($cacheDfsDir)) {
-            $allowedDirs = $modifiedAllowedDirs = eZINI::instance()->variable('FileSettings', 'AllowedDeletionDirs');
-            $dirRealPath = dirname(realpath($cacheDfsDir)) . DIRECTORY_SEPARATOR;
-            $modifiedAllowedDirs[] = $dirRealPath;
-            eZINI::instance()->setVariable('FileSettings', 'AllowedDeletionDirs', $modifiedAllowedDirs);
-            eZDir::recursiveDelete($cacheDfsDir);
-            eZINI::instance()->setVariable('FileSettings', 'AllowedDeletionDirs', $allowedDirs);
-        }
-        if (is_dir($cacheDir)) {
-            eZDir::recursiveDelete($cacheDir);
+        if ($installer->canInstallSchema()) {
+            $cacheDir = eZSys::cacheDirectory();
+            $cacheDfsDir = eZINI::instance('file.ini')->variable('eZDFSClusteringSettings', 'MountPointPath') . $cacheDir;
+            $installer->getLogger()->info("Remove cache directories $cacheDfsDir, $cacheDir");
+            $continue = true;
+            if ($interactive) {
+                $question = ezcConsoleQuestionDialog::YesNoQuestion($output, "Continue?", "y");
+                $continue = ezcConsoleDialogViewer::displayDialog($question) == "y";
+            }
+            if (is_dir($cacheDfsDir)) {
+                $allowedDirs = $modifiedAllowedDirs = eZINI::instance()->variable('FileSettings', 'AllowedDeletionDirs');
+                $dirRealPath = dirname(realpath($cacheDfsDir)) . DIRECTORY_SEPARATOR;
+                $modifiedAllowedDirs[] = $dirRealPath;
+                eZINI::instance()->setVariable('FileSettings', 'AllowedDeletionDirs', $modifiedAllowedDirs);
+                eZDir::recursiveDelete($cacheDfsDir);
+                eZINI::instance()->setVariable('FileSettings', 'AllowedDeletionDirs', $allowedDirs);
+            }
+            if (is_dir($cacheDir)) {
+                eZDir::recursiveDelete($cacheDir);
+            }
+        }else{
+            $installer->getLogger()->notice("Purge cache not allowed in {$installer->getType()} installer");
         }
     }
 
     if ($purgeStorage) {
-        $storageDir = eZSys::storageDirectory();
-        $storageDfsDir = eZINI::instance('file.ini')->variable('eZDFSClusteringSettings', 'MountPointPath') . $storageDir;
-        $installer->getLogger()->info("Remove storage directories $storageDfsDir, $storageDir");
-        $continue = true;
-        if ($interactive) {
-            $question = ezcConsoleQuestionDialog::YesNoQuestion($output, "Continue?", "y");
-            $continue = ezcConsoleDialogViewer::displayDialog($question) == "y";
-        }
-        if (is_dir($storageDfsDir)) {
-            $allowedDirs = $modifiedAllowedDirs = eZINI::instance()->variable('FileSettings', 'AllowedDeletionDirs');
-            $dirRealPath = dirname(realpath($storageDfsDir)) . DIRECTORY_SEPARATOR;
-            $modifiedAllowedDirs[] = $dirRealPath;
-            eZINI::instance()->setVariable('FileSettings', 'AllowedDeletionDirs', $modifiedAllowedDirs);
-            eZDir::recursiveDelete($storageDfsDir);
-            eZINI::instance()->setVariable('FileSettings', 'AllowedDeletionDirs', $allowedDirs);
-        }
-        if (is_dir($storageDir)) {
-            eZDir::recursiveDelete($storageDir);
+        if ($installer->canInstallSchema()) {
+            $storageDir = eZSys::storageDirectory();
+            $storageDfsDir = eZINI::instance('file.ini')->variable('eZDFSClusteringSettings', 'MountPointPath') . $storageDir;
+            $installer->getLogger()->info("Remove storage directories $storageDfsDir, $storageDir");
+            $continue = true;
+            if ($interactive) {
+                $question = ezcConsoleQuestionDialog::YesNoQuestion($output, "Continue?", "y");
+                $continue = ezcConsoleDialogViewer::displayDialog($question) == "y";
+            }
+            if (is_dir($storageDfsDir)) {
+                $allowedDirs = $modifiedAllowedDirs = eZINI::instance()->variable('FileSettings', 'AllowedDeletionDirs');
+                $dirRealPath = dirname(realpath($storageDfsDir)) . DIRECTORY_SEPARATOR;
+                $modifiedAllowedDirs[] = $dirRealPath;
+                eZINI::instance()->setVariable('FileSettings', 'AllowedDeletionDirs', $modifiedAllowedDirs);
+                eZDir::recursiveDelete($storageDfsDir);
+                eZINI::instance()->setVariable('FileSettings', 'AllowedDeletionDirs', $allowedDirs);
+            }
+            if (is_dir($storageDir)) {
+                eZDir::recursiveDelete($storageDir);
+            }
+        }else{
+            $installer->getLogger()->notice("Purge storage not allowed in {$installer->getType()} installer");
         }
     }
 
-
-    $schemaInstaller = $installer->installSchema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory, $installDfsSchema);
-    if ($cleanDb) {
-        $installer->getLogger()->info("Cleanup solr");
-        if (!$installer->isDryRun()) {
-            $solr = new eZSolr();
-            $solr->cleanup(true, true);
+    if ($installer->canInstallSchema()) {
+        $schemaInstaller = $installer->installSchema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory, $installDfsSchema);
+        if ($cleanDb) {
+            $installer->getLogger()->info("Cleanup solr");
+            if (!$installer->isDryRun()) {
+                $solr = new eZSolr();
+                $solr->cleanup(true, true);
+            }
         }
     }
 
@@ -147,7 +156,7 @@ try {
     if ($installer->needUpdate() || $options['only-step'] !== null || $installer->isDryRun()) {
         $installer->install($options);
 
-        if ($installBaseSchema && $installer->getInstallerVars()->offsetGet('schema_already_exists') === false) {
+        if ($installer->canInstallSchema() && $installBaseSchema && $installer->getInstallerVars()->offsetGet('schema_already_exists') === false) {
             $schemaInstaller->expiryPassword();
         }
 
