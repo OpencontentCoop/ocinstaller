@@ -97,11 +97,8 @@ class TagTree extends AbstractStepInstaller implements InterfaceStepInstaller
         $struct->alwaysAvailable = true;
 
         $result = $tagRepository->create($struct);
-        if ($result['message'] == 'success') {
-            $this->logger->debug(str_pad('', $recursionLevel, '  ', STR_PAD_LEFT) . ' |- ' . $remoteTag['keyword']);
-        } elseif ($result['message'] == 'already exists') {
-            $this->logger->debug(str_pad('', $recursionLevel, '  ', STR_PAD_LEFT) . ' |- ' . $remoteTag['keyword']);
-        }
+        $isNew = $result['message'] == 'success' ? ' + ' : '';
+        $this->logger->debug(str_pad('', $recursionLevel, '  ', STR_PAD_LEFT) . ' |- ' . $isNew . $remoteTag['keyword']);
         /** @var Tag $tag */
         $tag = $result['tag'];
 
@@ -112,8 +109,9 @@ class TagTree extends AbstractStepInstaller implements InterfaceStepInstaller
                 $synonymStruct->keyword = $synonym;
                 $synonymStruct->locale = $locale;
 
-                $tagRepository->addSynonym($synonymStruct);
-                $this->logger->debug(str_pad('', $recursionLevel, '  ', STR_PAD_LEFT) . '     |- ' . $synonym);
+                $result = $tagRepository->addSynonym($synonymStruct);
+                $isNew = $result['message'] == 'success' ? ' + ' : '';
+                $this->logger->debug(str_pad('', $recursionLevel, '  ', STR_PAD_LEFT) . '     |- ' . $isNew . $synonym);
             }
         }
 
@@ -124,8 +122,9 @@ class TagTree extends AbstractStepInstaller implements InterfaceStepInstaller
                 $translationStruct->keyword = $translation;
                 $translationStruct->locale = $locale;
 
-                $tagRepository->addTranslation($translationStruct);
-                $this->logger->debug(str_pad('', $recursionLevel, '  ', STR_PAD_LEFT) . '     |- ' . $translation);
+                $result = $tagRepository->addTranslation($translationStruct);
+                $isNew = $result['message'] == 'success' ? ' + ' : '';
+                $this->logger->debug(str_pad('', $recursionLevel, '  ', STR_PAD_LEFT) . '     |- ' . $isNew . $translation);
             }
         }
 
