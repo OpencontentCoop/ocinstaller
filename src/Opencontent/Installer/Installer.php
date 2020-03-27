@@ -235,6 +235,7 @@ class Installer
                     break;
 
                 case 'sql':
+                case 'sql_copy_from_tsv':
                     $installer = new Sql();
                     break;
 

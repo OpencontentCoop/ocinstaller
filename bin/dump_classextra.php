@@ -40,11 +40,13 @@ if ($data) {
     $dataYaml = Yaml::dump($data, 10);
 
     if ($options['data']) {
-        $filename = $identifier . '.yml';
-        $directory = rtrim($options['data'], '/') . '/classextra';
-        eZDir::mkdir($directory, false, true);
-        eZFile::create($filename, $directory, $dataYaml);
-        $cli->output($directory . '/' . $filename);
+
+        \Opencontent\Installer\Dumper\Tool::createFile(
+            $options['data'],
+            'classextra',
+            $identifier . '.yml',
+            $dataYaml
+        );
 
         \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data'], [
             'type' => 'classextra',

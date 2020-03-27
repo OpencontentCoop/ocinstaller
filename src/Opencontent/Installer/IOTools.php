@@ -26,7 +26,20 @@ class IOTools
         $filePath = \eZSys::rootDir() . '/' . $this->dataDir . '/' . $source;
 
         if (file_exists($filePath)) {
-            return $filePath;
+            return realpath($filePath);
+        }
+
+        return false;
+    }
+
+    public function getFileContents($source)
+    {
+        $filePath = $this->getFile($source);
+
+        if (file_exists($filePath)) {
+            $data = file_get_contents($filePath);
+
+            return $data;
         }
 
         return false;

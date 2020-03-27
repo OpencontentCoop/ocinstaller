@@ -78,12 +78,12 @@ function readTree($tagRepository, $name)
 {
     $offset = 0;
     $limit = 100;
-    $rootTag = $tagRepository->read($name, $offset, $limit);
+    $rootTag = $tagRepository->read($name, $offset, $limit)->jsonSerialize();
 
     if ($rootTag['hasChildren']){
         while ($rootTag['childrenCount'] > count($rootTag['children'])){
             $offset = $offset + $limit;
-            $offsetRootTag = $tagRepository->read($name, $offset, $limit);
+            $offsetRootTag = $tagRepository->read($name, $offset, $limit)->jsonSerialize();
             $rootTag['children'] = array_merge(
                 $rootTag['children'],
                 $offsetRootTag['children']
@@ -123,7 +123,7 @@ if ($options['url']) {
 } elseif ($options['id']) {
 
     $tagRepository = new \Opencontent\Opendata\Api\TagRepository();
-    $remoteRoot = $tagRepository->read($options['id']);
+    $remoteRoot = readTree($tagRepository, $options['id']);
     recursiveListTag($remoteRoot, $parentTag);
 
 }
@@ -137,10 +137,13 @@ if ($json) {
         $dataYaml = Yaml::dump($json, 10);
         $identifier = \Opencontent\Installer\Dumper\Tool::slugize($remoteRoot['keyword']);
         $filename = $identifier . '.yml';
-        $directory = rtrim($options['data'], '/') . '/tagtree';
-        eZDir::mkdir($directory, false, true);
-        eZFile::create($filename, $directory, $dataYaml);
-        $cli->output($directory . '/' . $filename);
+
+        \Opencontent\Installer\Dumper\Tool::createFile(
+            $options['data'],
+            'tagtree',
+            $identifier . '.yml',
+            $dataYaml
+        );
 
         \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data'], [
             'type' => 'tagtree',

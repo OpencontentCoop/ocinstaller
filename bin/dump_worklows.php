@@ -110,13 +110,15 @@ foreach ($data as $key => $values) {
 
     if ($options['data']) {
 
-        $workflowName = \Opencontent\Installer\Dumper\Tool::slugize($options['name']);
+        $workflowName = \Opencontent\Installer\Dumper\Tool::slugize($values['name']);
         list($module, $function, $connectionType) = explode(':', $key);
-        $filename = $workflowName . '.yml';
-        $directory = rtrim($options['data'], '/') . '/workflows';
-        \eZDir::mkdir($directory, false, true);
-        \eZFile::create($filename, $directory, $dataYaml);
-        eZCLI::instance()->output($directory . '/' . $filename);
+
+        \Opencontent\Installer\Dumper\Tool::createFile(
+            $options['data'],
+            'workflows',
+            $workflowName . '.yml',
+            $dataYaml
+        );
 
         \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data'], [
             'type' => 'workflow',

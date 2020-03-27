@@ -33,6 +33,12 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
 
         $content = $this->ioTools->getJsonContents("contents/{$this->identifier}.yml");
 
+        $sortData = false;
+        if (isset($content['sort_data'])){
+            $sortData = $content['sort_data'];
+            unset($content['sort_data']);
+        }
+
         $this->logger->info("Install content " . $this->identifier);
 
         $contentRepository = new ContentRepository();
@@ -61,6 +67,14 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
 
         $node = \eZContentObjectTreeNode::fetch($nodeId);
 
+        if (!$node instanceof \eZContentObjectTreeNode){
+            throw new \Exception("Node $nodeId not found");
+        }
+
+        if ($sortData && $this->doUpdate){
+            $this->setSortAndPriority($node, $sortData);
+        }
+
         $this->installerVars['content_' . $this->identifier . '_node'] = $node->attribute('node_id');
         $this->installerVars['content_' . $this->identifier . '_object'] = $node->attribute('contentobject_id');
         $this->installerVars['content_' . $this->identifier . '_path_string'] = $node->attribute('path_string');
@@ -80,5 +94,14 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
         }
 
         return $target;
+    }
+
+    private function setSortAndPriority(\eZContentObjectTreeNode $node, $data)
+    {
+        $node->setAttribute('sort_field', $data['sort_field']);
+        $node->setAttribute('sort_order', $data['sort_order']);
+        $node->setAttribute('priority', $data['priority']);
+
+        $node->store();
     }
 }

@@ -3,6 +3,8 @@
 require 'autoload.php';
 
 use Symfony\Component\Yaml\Yaml;
+use Opencontent\Opendata\Api\ContentRepository;
+use Opencontent\Opendata\Api\ContentBrowser;
 
 $script = eZScript::instance([
     'description' => "Dump content tree in yml",
@@ -22,6 +24,10 @@ $options = $script->getOptions('[url:][id:][data:]',
 );
 $script->initialize();
 $cli = eZCLI::instance();
+
+$user = eZUser::fetchByName( 'admin' );
+eZUser::setCurrentlyLoggedInUser( $user , $user->attribute( 'contentobject_id' ) );
+
 
 if ($options['url'] || $options['id']) {
 
@@ -45,7 +51,28 @@ if ($options['url'] || $options['id']) {
         }
 
     } elseif ($options['id']) {
-        throw new Exception('TODO');
+
+        $repo = new ContentRepository();
+        $repo->setEnvironment(new DefaultEnvironmentSettings());
+        $browser = new ContentBrowser();
+        $browser->setEnvironment(new DefaultEnvironmentSettings());
+
+        $remoteRoot = (array)$browser->browse($options['id'], 0, 100);
+        $contentTreeNames = $remoteRoot['name'];
+        $contentTreeName = current($contentTreeNames);
+        $contentTreeName = \Opencontent\Installer\Dumper\Tool::slugize($contentTreeName);
+
+        foreach ($remoteRoot['children'] as $childNode) {
+            $childNode = (array)$childNode;
+            $cli->output('Dump content #' . $childNode['id']);
+            $data = (array)$repo->read($childNode['id']);
+            $data['sort_data'] = [
+                'sort_field' => (int)$childNode['sortField'],
+                'sort_order' => (int)$childNode['sortOrder'],
+                'priority' => (int)$childNode['priority'],
+            ];
+            $dataList[] = $data;
+        }
     }
 
     foreach ($dataList as $dataArray) {
@@ -69,16 +96,19 @@ if ($options['url'] || $options['id']) {
 
         $cleanDataArray = [
             'metadata' => $cleanMetadata,
-            'data' => $dataArray['data']
+            'data' => $dataArray['data'],
+            'sort_data' => $dataArray['sort_data'],
         ];
 
         $dataYaml = Yaml::dump($cleanDataArray, 10);
 
         if ($options['data']) {
-            $directory = rtrim($options['data'], '/') . '/contenttrees/' . $contentTreeName;
-            eZDir::mkdir($directory, false, true);
-            eZFile::create($filename, $directory, $dataYaml);
-            $cli->output($directory . '/' . $filename);
+            \Opencontent\Installer\Dumper\Tool::createFile(
+                $options['data'],
+                'contenttrees/' . $contentTreeName,
+                $filename,
+                $dataYaml
+            );
         }
     }
 

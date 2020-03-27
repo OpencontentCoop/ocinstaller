@@ -54,9 +54,6 @@ class State extends AbstractStepInstaller implements InterfaceStepInstaller
                 if (isset($groupNames[$language->attribute('locale')])) {
                     $translation->setAttribute('name', $groupNames[$language->attribute('locale')]);
                     $translation->setAttribute('description', $groupNames[$language->attribute('locale')]);
-                } else {
-                    $translation->setAttribute('name', $groupNames['eng-GB']);
-                    $translation->setAttribute('description', $groupNames['eng-GB']);
                 }
             }
 
@@ -82,9 +79,6 @@ class State extends AbstractStepInstaller implements InterfaceStepInstaller
                     if (isset($state['name'][$language->attribute('locale')])) {
                         $translation->setAttribute('name', $state['name'][$language->attribute('locale')]);
                         $translation->setAttribute('description', $state['name'][$language->attribute('locale')]);
-                    } else {
-                        $translation->setAttribute('name', $state['name']['eng-GB']);
-                        $translation->setAttribute('description', $state['name']['eng-GB']);
                     }
                 }
                 $messages = array();

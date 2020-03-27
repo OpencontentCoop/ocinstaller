@@ -68,6 +68,12 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
         foreach ($contents as $identifier => $content){
             $this->logger->info(" - " . $content['metadata']['remoteId']);
 
+            $sortData = false;
+            if (isset($content['sort_data'])){
+                $sortData = $content['sort_data'];
+                unset($content['sort_data']);
+            }
+
             $client = new HttpClient('');
             $payload = $client->getPayload($content);
             $payload->setParentNodes([$parentNodeId]);
@@ -96,6 +102,10 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
             $node = \eZContentObjectTreeNode::fetch($nodeId);
             if (!$node instanceof \eZContentObjectTreeNode){
                 throw new \Exception("Node $nodeId not found");
+            }
+
+            if ($sortData && $this->doUpdate){
+                $this->setSortAndPriority($node, $sortData);
             }
 
             $this->installerVars['contenttree_' . $this->identifier . '_' . $identifier .  '_node'] = $node->attribute('node_id');
@@ -149,5 +159,14 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
                 $this->logger->error($e->getMessage());
             }
         }
+    }
+
+    private function setSortAndPriority(\eZContentObjectTreeNode $node, $data)
+    {
+        $node->setAttribute('sort_field', $data['sort_field']);
+        $node->setAttribute('sort_order', $data['sort_order']);
+        $node->setAttribute('priority', $data['priority']);
+
+        $node->store();
     }
 }

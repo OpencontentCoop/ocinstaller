@@ -37,7 +37,11 @@ class InstallerVars extends \ArrayObject
 
     public function filter($data)
     {
-        foreach ($this as $name => $value) {
+        $variables = $this->getArrayCopy();
+        uksort($variables, function($a, $b){
+            return strlen($b) - strlen($a);
+        });
+        foreach ($variables as $name => $value) {
             $data = str_replace('$' . $name, $value, $data);
         }
         return $data;

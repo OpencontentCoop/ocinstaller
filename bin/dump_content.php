@@ -29,11 +29,21 @@ if ($options['url'] || $options['id']) {
         $data = file_get_contents($options['url']);
         $dataArray = json_decode($data, true);
     } elseif ($options['id']) {
+        $object = eZContentObject::fetch($options['id']);
+        if (!$object instanceof eZContentObject){
+            throw new Exception("Object not found");
+        }
         $content = \Opencontent\Opendata\Api\Values\Content::createFromEzContentObject(
-            eZContentObject::fetch($options['id'])
+            $object
         );
         $env = new DefaultEnvironmentSettings();
         $dataArray = $env->filterContent($content);
+        $node = $object->mainNode();
+        $dataArray['sort_data'] = [
+            'sort_field' => (int)$node->attribute('sort_field'),
+            'sort_order' => (int)$node->attribute('sort_order'),
+            'priority' => (int)$node->attribute('priority'),
+        ];
     }
 
     $contentNames = $dataArray['metadata']['name'];
@@ -58,16 +68,20 @@ if ($options['url'] || $options['id']) {
 
     $cleanDataArray = [
         'metadata' => $cleanMetadata,
-        'data' => $dataArray['data']
+        'data' => $dataArray['data'],
+        'sort_data' => $dataArray['sort_data'],
     ];
 
     $dataYaml = Yaml::dump($cleanDataArray, 10);
 
     if ($options['data']) {
-        $directory = rtrim($options['data'], '/') . '/contents';
-        eZDir::mkdir($directory, false, true);
-        eZFile::create($filename, $directory, $dataYaml);
-        $cli->output($directory . '/' . $filename);
+
+        \Opencontent\Installer\Dumper\Tool::createFile(
+            $options['data'],
+            'contents',
+            $filename,
+            $dataYaml
+        );
 
         \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data'], [
             'type' => 'content',
