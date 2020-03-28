@@ -71,7 +71,7 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
             throw new \Exception("Node $nodeId not found");
         }
 
-        if ($sortData && $this->doUpdate){
+        if ($sortData && (($this->doUpdate && $isUpdate) || !$isUpdate)){
             $this->setSortAndPriority($node, $sortData);
         }
 

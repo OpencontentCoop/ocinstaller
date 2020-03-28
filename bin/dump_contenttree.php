@@ -14,12 +14,16 @@ $script = eZScript::instance([
 ]);
 
 $script->startup();
-$options = $script->getOptions('[url:][id:][data:]',
+$options = $script->getOptions('[url:][id:][data:][prefix:][recursion:][classes:][append]',
     '',
     array(
         'url' => "Remote url class definition (https://.../api/opendata/v2/content/browse/...)",
         'id' => "Local content id",
         'data' => "Directory of installer data",
+        'prefix' => "Identifier prefix",
+        'recursion' => "Recursion",
+        'classes' => "Classes comma separated",
+        'append' => "Append to installer.yml",
     )
 );
 $script->initialize();
@@ -28,94 +32,127 @@ $cli = eZCLI::instance();
 $user = eZUser::fetchByName( 'admin' );
 eZUser::setCurrentlyLoggedInUser( $user , $user->attribute( 'contentobject_id' ) );
 
+function dumpContent($dataArray, $dataDir, $contentTreeName)
+{
+    $contentNames = $dataArray['metadata']['name'];
+    $contentName = current($contentNames);
+    $contentName = \Opencontent\Installer\Dumper\Tool::slugize($contentName);
+    $filename = $contentName . '.yml';
 
-if ($options['url'] || $options['id']) {
+    $metadataValues = [
+        'remoteId',
+        'classIdentifier',
+        'sectionIdentifier',
+        'languages',
+    ];
+    $cleanMetadata = [];
+    foreach ($dataArray['metadata'] as $key => $value) {
+        if (in_array($key, $metadataValues)) {
+            $cleanMetadata[$key] = $value;
+        }
+    }
+
+    if ($dataArray['data']['ita-IT']['decorrenza_di_pubblicazione'][0] == '') unset($dataArray['data']['ita-IT']['decorrenza_di_pubblicazione']);
+    if ($dataArray['data']['ita-IT']['aggiornamento'][0] == '') unset($dataArray['data']['ita-IT']['aggiornamento']);
+    if ($dataArray['data']['ita-IT']['termine_pubblicazione'][0] == '') unset($dataArray['data']['ita-IT']['termine_pubblicazione']);
+
+    $cleanDataArray = [
+        'metadata' => $cleanMetadata,
+        'data' => $dataArray['data'],
+        'sort_data' => $dataArray['sort_data'],
+    ];
+
+    $dataYaml = Yaml::dump($cleanDataArray, 10);
+
+    if ($dataDir) {
+        \Opencontent\Installer\Dumper\Tool::createFile(
+            $dataDir,
+            'contenttrees/' . $contentTreeName,
+            $filename,
+            $dataYaml
+        );
+    }
+}
+
+$avoidDuplications = [];
+
+function dumpTree($remoteRoot, $contentClient, $browser, $dataDir, $prefix, $maxRecursion = 3, $classes = false, $append = false, $recursion = 0, $parentTreeName = '')
+{
+    global $avoidDuplications;
 
     $dataList = [];
-    if ($options['url']) {
-        $parts = explode('/api/opendata/v2/content/browse/', $options['url']);
-        $remoteHost = array_shift($parts);
-        $root = array_pop($parts);
+    $contentTreeNames = $remoteRoot['name'];
+    $contentTreeName = current($contentTreeNames);
+    $currentTreeName = \Opencontent\Installer\Dumper\Tool::slugize($contentTreeName);
+    $contentTreeName = $parentTreeName . \Opencontent\Installer\Dumper\Tool::slugizeAndCompress($contentTreeName);
+    if (isset($avoidDuplications[$contentTreeName])){
+        $avoidDuplications[$contentTreeName] += 1;
+        $contentTreeName = $contentTreeName . $avoidDuplications[$contentTreeName];
+    }else{
+        $avoidDuplications[$contentTreeName] = 1;
+    }
+    eZCLI::instance()->output("[$recursion] Fetch $contentTreeName");
 
-        $client = new \Opencontent\Opendata\Rest\Client\HttpClient($remoteHost);
-        $remoteRoot = $client->browse($root, 100);
-
-        $contentTreeNames = $remoteRoot['name'];
-        $contentTreeName = current($contentTreeNames);
-        $contentTreeName = \Opencontent\Installer\Dumper\Tool::slugize($contentTreeName);
-
-        foreach ($remoteRoot['children'] as $childNode) {
-            $cli->output('Download content #' . $childNode['id']);
-            $data = $client->read($childNode['id']);
-            $dataList[] = $data;
-        }
-
-    } elseif ($options['id']) {
-
-        $repo = new ContentRepository();
-        $repo->setEnvironment(new DefaultEnvironmentSettings());
-        $browser = new ContentBrowser();
-        $browser->setEnvironment(new DefaultEnvironmentSettings());
-
-        $remoteRoot = (array)$browser->browse($options['id'], 0, 100);
-        $contentTreeNames = $remoteRoot['name'];
-        $contentTreeName = current($contentTreeNames);
-        $contentTreeName = \Opencontent\Installer\Dumper\Tool::slugize($contentTreeName);
-
-        foreach ($remoteRoot['children'] as $childNode) {
-            $childNode = (array)$childNode;
-            $cli->output('Dump content #' . $childNode['id']);
-            $data = (array)$repo->read($childNode['id']);
+    foreach ($remoteRoot['children'] as $childNode) {
+        $childNode = (array)$childNode;
+        if ((is_array($classes) && in_array($childNode['classIdentifier'], $classes)) || $classes === false) {
+            $data = (array)$contentClient->read($childNode['id']);
             $data['sort_data'] = [
                 'sort_field' => (int)$childNode['sortField'],
                 'sort_order' => (int)$childNode['sortOrder'],
                 'priority' => (int)$childNode['priority'],
             ];
-            $dataList[] = $data;
+            dumpContent($data, $dataDir, $prefix . $contentTreeName);
         }
     }
 
-    foreach ($dataList as $dataArray) {
-        $contentNames = $dataArray['metadata']['name'];
-        $contentName = current($contentNames);
-        $contentName = \Opencontent\Installer\Dumper\Tool::slugize($contentName);
-        $filename = $contentName . '.yml';
+    eZCLI::instance()->warning($prefix . $contentTreeName);
+    if ($dataDir) {
+        \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($dataDir, [
+            'type' => 'contenttree',
+            'identifier' => $prefix . $contentTreeName,
+            'parent' => '$contenttree_' . $prefix . rtrim($parentTreeName, '-'). '_' . $currentTreeName . '_node',
+        ], $append);
+    }
 
-        $metadataValues = [
-            'remoteId',
-            'classIdentifier',
-            'sectionIdentifier',
-            'languages',
-        ];
-        $cleanMetadata = [];
-        foreach ($dataArray['metadata'] as $key => $value) {
-            if (in_array($key, $metadataValues)) {
-                $cleanMetadata[$key] = $value;
+    if ($recursion < $maxRecursion) {
+        foreach ($remoteRoot['children'] as $childNode) {
+            if ((is_array($classes) && in_array($childNode['classIdentifier'], $classes)) || $classes === false) {
+                $childRemoteNode = $browser->browse($childNode['nodeId']);
+                $recursion++;
+                dumpTree($childRemoteNode, $contentClient, $browser, $dataDir, $prefix, $maxRecursion, $classes, $append, $recursion, $contentTreeName.'-');
+                $recursion--;
             }
         }
+    }
+}
 
-        $cleanDataArray = [
-            'metadata' => $cleanMetadata,
-            'data' => $dataArray['data'],
-            'sort_data' => $dataArray['sort_data'],
-        ];
+if ($options['url'] || $options['id']) {
 
-        $dataYaml = Yaml::dump($cleanDataArray, 10);
+    $contentClient = false;
+    if ($options['url']) {
+        $parts = explode('/api/opendata/v2/content/browse/', $options['url']);
+        $remoteHost = array_shift($parts);
+        $root = array_pop($parts);
 
-        if ($options['data']) {
-            \Opencontent\Installer\Dumper\Tool::createFile(
-                $options['data'],
-                'contenttrees/' . $contentTreeName,
-                $filename,
-                $dataYaml
-            );
-        }
+        $contentClient = $browser = new \Opencontent\Opendata\Rest\Client\HttpClient($remoteHost);
+        $remoteRoot = $contentClient->browse($root, 100);
+
+    } elseif ($options['id']) {
+
+        $contentClient = new ContentRepository();
+        $contentClient->setEnvironment(new DefaultEnvironmentSettings());
+        $browser = new ContentBrowser();
+        $browser->setEnvironment(new DefaultEnvironmentSettings());
+
+        $remoteRoot = (array)$browser->browse($options['id'], 0, 100);
     }
 
-    \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data'], [
-        'type' => 'contenttree',
-        'identifier' => $contentTreeName
-    ]);
+    $classes = $options['classes'] ? explode(',', $options['classes']) : false;
+    $maxRecursion = $options['recursion'] ? (int)$options['recursion'] : 1;
+    if ($remoteRoot){
+        dumpTree($remoteRoot, $contentClient, $browser, $options['data'], $options['prefix'], $maxRecursion, $classes, $options['append']);
+    }
 
 }
 

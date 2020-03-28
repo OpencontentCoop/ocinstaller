@@ -12,7 +12,7 @@ class Tool
         $question = \ezcConsoleQuestionDialog::YesNoQuestion($output, "Append to installer.yml", "y");
 
         $append = true;
-        if ($skipQuestion === false){
+        if (!$skipQuestion){
             $append = \ezcConsoleDialogViewer::displayDialog($question) == "y";
         }
 
@@ -33,6 +33,20 @@ class Tool
     {
         $trans = \eZCharTransform::instance();
         return $trans->transformByGroup($name, 'urlalias');
+    }
+
+    public static function slugizeAndCompress($name, $limit = 4, $tokens = 3)
+    {
+        $trans = \eZCharTransform::instance();
+        $slug = explode('-', $trans->transformByGroup($name, 'urlalias'));
+        $compress = [];
+        foreach ($slug as $index => $part){
+            if ($index < $tokens) {
+                $compress[] = substr($part, 0, $limit);
+            }
+
+        }
+        return implode('-', $compress);
     }
 
     public static function createFile($dataDir, $directoryName, $filename, $dataYaml)
