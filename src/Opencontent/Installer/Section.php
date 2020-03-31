@@ -4,6 +4,7 @@ namespace Opencontent\Installer;
 
 use eZSection;
 use Exception;
+use Opencontent\Opendata\Api\SectionRepository;
 
 class Section extends AbstractStepInstaller implements InterfaceStepInstaller
 {
@@ -44,6 +45,9 @@ class Section extends AbstractStepInstaller implements InterfaceStepInstaller
         if (!$section instanceof eZSection) {
             throw new Exception("Section $identifier not found");
         }
+
+        $repository = new SectionRepository();
+        $repository->clearCache();
 
         $this->installerVars['section_' . $section->attribute('identifier')] = $section->attribute('id');
     }

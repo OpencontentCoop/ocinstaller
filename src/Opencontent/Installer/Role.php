@@ -50,6 +50,12 @@ class Role extends AbstractStepInstaller implements InterfaceStepInstaller
         if (isset($this->step['apply_to'])){
             foreach ($this->step['apply_to'] as $userId){
                 $this->logger->info(" - assign to $userId");
+                if (!is_numeric($userId)){
+                    $object = \eZContentObject::fetchByRemoteID($userId);
+                    if ($object instanceof \eZContentObject){
+                        $userId = $object->attribute('id');
+                    }
+                }
                 $role->assignToUser($userId);
             }
         }

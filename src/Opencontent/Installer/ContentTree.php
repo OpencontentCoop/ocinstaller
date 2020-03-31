@@ -37,6 +37,10 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
     {
         $this->identifier = $this->step['identifier'];
 
+        if (isset($this->step['update'])){
+            $this->doUpdate = $this->step['update'] == 1;
+        }
+
         $source = isset($this->step['source']) ? $this->step['source'] : '';
         if (!isset($this->step['parent'])){
             throw new \Exception("Missing parent param");

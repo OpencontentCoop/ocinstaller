@@ -52,9 +52,9 @@ function dumpContent($dataArray, $dataDir, $contentTreeName)
         }
     }
 
-    if ($dataArray['data']['ita-IT']['decorrenza_di_pubblicazione'][0] == '') unset($dataArray['data']['ita-IT']['decorrenza_di_pubblicazione']);
-    if ($dataArray['data']['ita-IT']['aggiornamento'][0] == '') unset($dataArray['data']['ita-IT']['aggiornamento']);
-    if ($dataArray['data']['ita-IT']['termine_pubblicazione'][0] == '') unset($dataArray['data']['ita-IT']['termine_pubblicazione']);
+    //if ($dataArray['data']['ita-IT']['decorrenza_di_pubblicazione'][0] == '') unset($dataArray['data']['ita-IT']['decorrenza_di_pubblicazione']);
+    //if ($dataArray['data']['ita-IT']['aggiornamento'][0] == '') unset($dataArray['data']['ita-IT']['aggiornamento']);
+    //if ($dataArray['data']['ita-IT']['termine_pubblicazione'][0] == '') unset($dataArray['data']['ita-IT']['termine_pubblicazione']);
 
     $cleanDataArray = [
         'metadata' => $cleanMetadata,
@@ -80,6 +80,7 @@ function dumpTree($remoteRoot, $contentClient, $browser, $dataDir, $prefix, $max
 {
     global $avoidDuplications;
 
+    $remoteRoot = json_decode(json_encode($remoteRoot), true);
     $dataList = [];
     $contentTreeNames = $remoteRoot['name'];
     $contentTreeName = current($contentTreeNames);
@@ -96,7 +97,7 @@ function dumpTree($remoteRoot, $contentClient, $browser, $dataDir, $prefix, $max
     foreach ($remoteRoot['children'] as $childNode) {
         $childNode = (array)$childNode;
         if ((is_array($classes) && in_array($childNode['classIdentifier'], $classes)) || $classes === false) {
-            $data = (array)$contentClient->read($childNode['id']);
+            $data = json_decode(json_encode($contentClient->read($childNode['id'])), true);
             $data['sort_data'] = [
                 'sort_field' => (int)$childNode['sortField'],
                 'sort_order' => (int)$childNode['sortOrder'],
@@ -117,6 +118,7 @@ function dumpTree($remoteRoot, $contentClient, $browser, $dataDir, $prefix, $max
 
     if ($recursion < $maxRecursion) {
         foreach ($remoteRoot['children'] as $childNode) {
+            $childNode = (array)$childNode;
             if ((is_array($classes) && in_array($childNode['classIdentifier'], $classes)) || $classes === false) {
                 $childRemoteNode = $browser->browse($childNode['nodeId']);
                 $recursion++;

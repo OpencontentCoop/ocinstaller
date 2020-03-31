@@ -46,6 +46,9 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
 
         OCOpenDataClassRepositoryCache::clearCache();
 
+        $handler = \eZExpiryHandler::instance();
+        $handler->setTimestamp('class-identifier-cache', -1);
+
         @unlink($definitionJsonFile);
     }
 

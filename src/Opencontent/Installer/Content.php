@@ -31,6 +31,10 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
         $this->swapWith = isset($this->step['swap_with']) ? $this->step['swap_with'] : false;
         $this->removeSwapped = isset($this->step['remove_swapped']) && $this->step['remove_swapped'] == true;
 
+        if (isset($this->step['update'])){
+            $this->doUpdate = $this->step['update'] == 1;
+        }
+
         $content = $this->ioTools->getJsonContents("contents/{$this->identifier}.yml");
 
         $sortData = false;
