@@ -22,6 +22,11 @@ $cli = eZCLI::instance();
 if ($options['tables']) {
     $tables = explode(',', $options['tables']);
 
+    $ini = eZINI::instance('dbschema.ini');
+    $schemaPaths = $ini->variable('SchemaSettings', 'SchemaPaths');
+    $schemaPaths['postgresql'] = 'vendor/opencontent/ocinstaller/src/Opencontent/Installer/ezpgsqlschema.php';
+    $ini->setVariable('SchemaSettings', 'SchemaPaths', $schemaPaths);
+
     $db = eZDB::instance();
     $dbSchema = eZDbSchema::instance($db);
 
