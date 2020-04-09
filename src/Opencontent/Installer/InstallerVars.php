@@ -42,6 +42,7 @@ class InstallerVars extends \ArrayObject
             return strlen($b) - strlen($a);
         });
         foreach ($variables as $name => $value) {
+            //$this->getLogger()->debug("Replace var $name with value $value");
             $data = str_replace('$' . $name, $value, $data);
         }
         return $data;
@@ -68,6 +69,11 @@ class InstallerVars extends \ArrayObject
                 }else{
                     $value = false;
                 }
+            }
+
+            if (strpos($value, 'date(') !== false) {
+                $dateFormat = substr($value, 5, -1);
+                $value = '"' . date($dateFormat) . '"';
             }
 
             if (strpos($value, 'ini(') !== false) {
