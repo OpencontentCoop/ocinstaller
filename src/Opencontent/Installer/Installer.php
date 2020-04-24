@@ -46,6 +46,8 @@ class Installer
 
     private $type = false;
 
+    private $currentVersion;
+
     /**
      * OpenContentInstaller constructor.
      * @param eZDBInterface $db
@@ -141,18 +143,25 @@ class Installer
 
     public function needUpdate()
     {
-        $version = \eZSiteData::fetchByName($this->getSiteDataName());
-        if (!$version instanceof \eZSiteData) {
-            $currentVersion = '0.0.0';
-        } else {
-            $currentVersion = $version->attribute('value');
-        }
+        $this->getLogger()->info("Installed version " . $this->getCurrentVersion());
 
-        $this->getLogger()->info("Installed version $currentVersion");
-
-        return version_compare($currentVersion, $this->installerData['version'], '<');
+        return version_compare($this->getCurrentVersion(), $this->installerData['version'], '<');
     }
 
+    private function getCurrentVersion()
+    {
+        if ($this->currentVersion === null){
+            $version = \eZSiteData::fetchByName($this->getSiteDataName());
+            if (!$version instanceof \eZSiteData) {
+                $this->currentVersion = '0.0.0';
+            } else {
+                $this->currentVersion = $version->attribute('value');
+            }
+        }
+
+        return $this->currentVersion;
+    }
+    
     private function storeVersion()
     {
         $version = \eZSiteData::fetchByName($this->getSiteDataName());
@@ -166,6 +175,7 @@ class Installer
 
     public function install($options = array())
     {
+        $this->installerVars['current_version'] = $this->getCurrentVersion();
         $this->getLogger()->info("Update to version " . $this->installerData['version']);
         $onlyStep = $options['only-step'];
 
@@ -254,9 +264,36 @@ class Installer
                 }
                 try {
                     $installer->setStep($step);
+                    
+                    $skip = false;
+
+                    if (isset($installer->getStep()['current_version_lt'])){
+                        $skip = version_compare($this->getCurrentVersion(), $installer->getStep()['current_version_lt'], 'lt') == false;
+                        $this->logger->debug("[$index] $stepName skipped by version compare parameter");
+                    }
+                    if (isset($installer->getStep()['current_version_le'])){
+                        $skip = version_compare($this->getCurrentVersion(), $installer->getStep()['current_version_le'], 'le') == false;
+                        $this->logger->debug("[$index] $stepName skipped by version compare parameter");
+                    }
+                    if (isset($installer->getStep()['current_version_eq'])){
+                        $skip = version_compare($this->getCurrentVersion(), $installer->getStep()['current_version_eq'], 'eq') == false;
+                        $this->logger->debug("[$index] $stepName skipped by version compare parameter");
+                    }
+                    if (isset($installer->getStep()['current_version_ge'])){
+                        $skip = version_compare($this->getCurrentVersion(), $installer->getStep()['current_version_ge'], 'ge') == false;
+                        $this->logger->debug("[$index] $stepName skipped by version compare parameter");
+                    }
+                    if (isset($installer->getStep()['current_version_gt'])){
+                        $skip = version_compare($this->getCurrentVersion(), $installer->getStep()['current_version_gt'], 'gt') == false;
+                        $this->logger->debug("[$index] $stepName skipped by version compare parameter");
+                    }
+                    
                     if (isset($installer->getStep()['condition']) && (bool)$installer->getStep()['condition'] !== true) {
                         $this->logger->debug("[$index] $stepName skipped by condition parameter");
-                    } else {
+                        $skip = true;
+                    }
+                    
+                    if (!$skip){
                         $this->logger->debug("[$index] $stepName");
                         if ($this->dryRun) {
                             $installer->dryRun();

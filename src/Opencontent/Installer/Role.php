@@ -59,6 +59,19 @@ class Role extends AbstractStepInstaller implements InterfaceStepInstaller
                 $role->assignToUser($userId);
             }
         }
+
+        if (isset($this->step['remove_from'])){
+            foreach ($this->step['remove_from'] as $userId){
+                $this->logger->info(" - remove from $userId");
+                if (!is_numeric($userId)){
+                    $object = \eZContentObject::fetchByRemoteID($userId);
+                    if ($object instanceof \eZContentObject){
+                        $userId = $object->attribute('id');
+                    }
+                }
+                $role->removeUserAssignment($userId);
+            }
+        }
     }
 
     private function parseVars($item)
