@@ -97,6 +97,11 @@ class InstallerVars extends \ArrayObject
                 $var = trim(substr($value, 8, -1));
                 $value = \eZSys::ezcrc32($var);
             }
+
+            if (strpos($value, 'classid(') !== false) {
+                $var = trim(substr($value, 8, -1));
+                $value = \eZContentClass::classIDByIdentifier($var);
+            }
         }
 
         return $value;
