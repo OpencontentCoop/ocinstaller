@@ -102,6 +102,29 @@ class InstallerVars extends \ArrayObject
                 $var = trim(substr($value, 8, -1));
                 $value = \eZContentClass::classIDByIdentifier($var);
             }
+
+            if (strpos($value, 'classattributeid(') !== false) {
+                $parts = explode('lassattributeid(', $value);
+                $rightParts = explode(')', $parts[1]);
+                $var = trim(array_shift($rightParts));
+                $expressionResult = \eZContentClassAttribute::classAttributeIDByIdentifier($var);
+                $value = trim(substr($parts[0], 0, -1)) . $expressionResult . implode(')', $rightParts);
+
+            }
+
+            if (strpos($value, 'classattributeid_list(') !== false) {
+                $parts = explode('lassattributeid_list(', $value);
+                $rightParts = explode(')', $parts[1]);
+                $valuable = trim(array_shift($rightParts));
+                $vars = explode(',', $valuable);
+                $list = [];
+                foreach ($vars as $var){
+                    $id = \eZContentClassAttribute::classAttributeIDByIdentifier(trim($var));
+                    if ($id) $list[] = $id;
+                }
+                $expressionResult = implode(',', $list);
+                $value = trim(substr($parts[0], 0, -1)) . $expressionResult . implode(')', $rightParts);
+            }
         }
 
         return $value;
