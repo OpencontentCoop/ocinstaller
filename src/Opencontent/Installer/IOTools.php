@@ -23,7 +23,11 @@ class IOTools
 
     public function getFile($source)
     {
-        $filePath = \eZSys::rootDir() . '/' . $this->dataDir . '/' . $source;
+        if (substr($this->dataDir, 0, 1) === '/'){
+            $filePath = $this->dataDir . '/' . $source;
+        }else{
+            $filePath = \eZSys::rootDir() . '/' . $this->dataDir . '/' . $source;
+        }
 
         if (file_exists($filePath)) {
             return realpath($filePath);

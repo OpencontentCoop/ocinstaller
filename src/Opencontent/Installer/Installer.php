@@ -2,10 +2,10 @@
 
 namespace Opencontent\Installer;
 
-use Symfony\Component\Yaml\Yaml;
-use eZDBInterface;
 use Exception;
+use eZDBInterface;
 use eZUser;
+use Symfony\Component\Yaml\Yaml;
 
 class Installer
 {
@@ -175,6 +175,10 @@ class Installer
 
     public function install($options = array())
     {
+        if (\eZContentObjectTrashNode::trashListCount() > 0) {
+            throw new Exception("There are objects in trash: please empty trash before running installer");
+        }
+
         $this->installerVars['current_version'] = $this->getCurrentVersion();
         $this->getLogger()->info("Update to version " . $this->installerData['version']);
         $onlyStep = $options['only-step'];
