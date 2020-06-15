@@ -12,7 +12,7 @@ $script = eZScript::instance([
 ]);
 
 $script->startup();
-$options = $script->getOptions('[languages:][cleandata:][cleanup][exlude-extension-schemas][only-data][embed-dfs-schema][dry-run][only-step:][no-interaction][purge-cache][purge-storage]',
+$options = $script->getOptions('[languages:][cleandata:][cleanup][exlude-extension-schemas][only-data][embed-dfs-schema][dry-run][force][only-step:][no-interaction][purge-cache][purge-storage]',
     '[data]',
     array(
         'cleanup' => "Cleanup db before install",
@@ -23,6 +23,7 @@ $options = $script->getOptions('[languages:][cleandata:][cleanup][exlude-extensi
         'cleandata' => "Override directory of clean db_schema.dba and db_data.dba files",
         'embed-dfs-schema' => "Install dfs schema in main db",
         'dry-run' => "Only check vars",
+        'force' => "Ignore version check",
         'no-interaction' => 'Don\'t ask don\'t tell',
         'purge-cache' => 'Delete cache directory before install',
         'purge-storage' => 'Delete storage directory before install',
@@ -86,6 +87,10 @@ try {
 
     if ($options['dry-run']) {
         $installer->setDryRun();
+    }
+
+    if ($options['force']) {
+        $installer->setIgnoreVersionCheck();
     }
 
     if ($purgeCache) {

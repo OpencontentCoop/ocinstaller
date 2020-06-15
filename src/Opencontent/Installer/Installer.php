@@ -48,6 +48,8 @@ class Installer
 
     private $currentVersion;
 
+    private $ignoreVersionCheck = false;
+
     /**
      * OpenContentInstaller constructor.
      * @param eZDBInterface $db
@@ -143,9 +145,17 @@ class Installer
 
     public function needUpdate()
     {
+        if ($this->ignoreVersionCheck){
+            return true;
+        }
         $this->getLogger()->info("Installed version " . $this->getCurrentVersion());
 
         return version_compare($this->getCurrentVersion(), $this->installerData['version'], '<');
+    }
+
+    public function setIgnoreVersionCheck()
+    {
+        $this->ignoreVersionCheck = true;
     }
 
     private function getCurrentVersion()
@@ -251,6 +261,12 @@ class Installer
                 case 'sql':
                 case 'sql_copy_from_tsv':
                     $installer = new Sql();
+                    break;
+
+                case 'add_tag':
+                case 'remove_tag':
+                case 'move_tag':
+                    $installer = new Tag();
                     break;
 
                 default:

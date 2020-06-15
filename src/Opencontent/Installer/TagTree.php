@@ -43,7 +43,7 @@ class TagTree extends AbstractStepInstaller implements InterfaceStepInstaller
     /**
      * @throws Exception
      */
-    public function installFromRemote()
+    private function installFromRemote()
     {
         $remoteUrl = $this->step['source'];
         $parts = explode('/api/opendata/v2/tags_tree/', $remoteUrl);
@@ -67,7 +67,7 @@ class TagTree extends AbstractStepInstaller implements InterfaceStepInstaller
     /**
      * @throws Exception
      */
-    public function installFromLocal()
+    private function installFromLocal()
     {
         $identifier = $this->step['identifier'];
         $this->logger->info("Install tag tree " . $identifier . " from " . "tagtree/{$identifier}");
@@ -86,7 +86,7 @@ class TagTree extends AbstractStepInstaller implements InterfaceStepInstaller
      * @return \Opencontent\Opendata\Api\Values\Tag
      * @throws Exception
      */
-    function createTag($recursionLevel, $remoteTag, $parentTagId, $locale = 'ita-IT')
+    protected function createTag($recursionLevel, $remoteTag, $parentTagId, $locale = 'ita-IT')
     {
         $tagRepository = new TagRepository();
 
@@ -138,7 +138,7 @@ class TagTree extends AbstractStepInstaller implements InterfaceStepInstaller
      * @return \Opencontent\Opendata\Api\Values\Tag
      * @throws Exception
      */
-    function recursiveCreateTag($remoteTag, $localeParentTagLocation = 0, $recursionLevel = 0)
+    private function recursiveCreateTag($remoteTag, $localeParentTagLocation = 0, $recursionLevel = 0)
     {
         $tag = $this->createTag($recursionLevel, $remoteTag, $localeParentTagLocation);
         if ($remoteTag['hasChildren']) {
