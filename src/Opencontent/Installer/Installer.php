@@ -176,7 +176,10 @@ class Installer
     {
         $version = \eZSiteData::fetchByName($this->getSiteDataName());
         if (!$version instanceof \eZSiteData) {
-            $version = \eZSiteData::create($this->getSiteDataName(), $this->installerData['version']);
+            $version = new \eZSiteData([
+                'name' => $this->getSiteDataName(),
+                'value' => $this->installerData['version']
+            ]);
         } else {
             $version->setAttribute('value', $this->installerData['version']);
         }

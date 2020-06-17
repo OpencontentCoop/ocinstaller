@@ -93,7 +93,7 @@ try {
         $installer->setIgnoreVersionCheck();
     }
 
-    if ($purgeCache) {
+    if ($purgeCache && !$installer->isDryRun()) {
         if ($installer->canInstallSchema()) {
             $cacheDir = eZSys::cacheDirectory();
             $cacheDfsDir = eZINI::instance('file.ini')->variable('eZDFSClusteringSettings', 'MountPointPath') . $cacheDir;
@@ -119,7 +119,7 @@ try {
         }
     }
 
-    if ($purgeStorage) {
+    if ($purgeStorage && !$installer->isDryRun()) {
         if ($installer->canInstallSchema()) {
             $storageDir = eZSys::storageDirectory();
             $storageDfsDir = eZINI::instance('file.ini')->variable('eZDFSClusteringSettings', 'MountPointPath') . $storageDir;

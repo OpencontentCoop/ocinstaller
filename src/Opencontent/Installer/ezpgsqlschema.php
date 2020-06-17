@@ -428,7 +428,8 @@ class eZPgsqlSchema extends eZDBSchemaInterface
 
         // postgresql 7.x: nextval('ezbasket_id_seq'::text)
         // postgresql 8.x: nextval(('ezbasket_id_seq'::text)::regclass)
-        if ( preg_match( "@^nextval\(\(?'([a-z_]+_id_seq)'::text\)@", $default, $matches ) )
+        $sequenceName = $this->getSequenceName('', 'id');
+        if ( preg_match( "@^nextval\(\(?'([a-z_]+{$sequenceName})'::text\)@", $default, $matches ) )
         {
             $autoinc = 1;
             return '';
@@ -591,13 +592,14 @@ class eZPgsqlSchema extends eZDBSchemaInterface
         }
         else
         {
+            $sequenceName = $this->getSequenceName($table_name, $field_name);
             if ( $diffFriendly )
             {
-                $sql_def .= "integer\n    DEFAULT nextval('{$table_name}_{$field_name}_seq'::text)\n    NOT NULL";
+                $sql_def .= "integer\n    DEFAULT nextval('{$sequenceName}'::text)\n    NOT NULL";
             }
             else
             {
-                $sql_def .= "integer DEFAULT nextval('{$table_name}_{$field_name}_seq'::text) NOT NULL";
+                $sql_def .= "integer DEFAULT nextval('{$sequenceName}'::text) NOT NULL";
             }
         }
         return $sql_def;
@@ -778,7 +780,8 @@ class eZPgsqlSchema extends eZDBSchemaInterface
         {
             if ( $field_def['type'] == 'auto_increment' )
             {
-                $sequenceFields = array( "CREATE SEQUENCE {$table}_{$field_name}_seq",
+                $sequenceName = $this->getSequenceName($table, $field_name);
+                $sequenceFields = array( "CREATE SEQUENCE {$sequenceName}",
                                          "START 1",
                                          "INCREMENT 1",
                                          "MAXVALUE 9223372036854775807",
@@ -827,9 +830,10 @@ class eZPgsqlSchema extends eZDBSchemaInterface
 
         foreach ( $tableDef['fields'] as $fieldName => $fieldDef )
         {
+            $sequenceName = $this->getSequenceName($tableName, $fieldName);
             if ( $fieldDef['type'] == 'auto_increment' )
             {
-                $sql = "SELECT setval('" . $tableName . "_{$fieldName}_seq',max(" . $fieldName . ")+1) FROM " . $tableName;
+                $sql = "SELECT setval('" . $sequenceName . "',max(" . $fieldName . ")+1) FROM " . $tableName;
                 if ( $withClosure )
                     $sql .= ";";
                 $sqlList[] = $sql;
@@ -1216,6 +1220,18 @@ class eZPgsqlSchema extends eZDBSchemaInterface
                       'write',
                       'year',
                       'zone' );
+    }
+
+    private function getSequenceName($table, $field_name)
+    {
+        if (version_compare(eZPublishSDK::version(true, false, false), '5.99.99', '>='))
+        {
+            return "{$table}_{$field_name}_seq";
+        }
+        else
+        {
+            return "{$table}_s";
+        }
     }
 }
 ?>

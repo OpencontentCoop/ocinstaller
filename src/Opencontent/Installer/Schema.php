@@ -2,13 +2,13 @@
 
 namespace Opencontent\Installer;
 
+use Exception;
+use eZContentClass;
+use eZContentLanguage;
 use eZDbSchema;
 use eZExtension;
-use eZLocale;
-use eZContentLanguage;
 use eZINI;
-use eZContentClass;
-use Exception;
+use eZLocale;
 
 class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
 {
@@ -162,9 +162,13 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
             $this->installerVars['is_install_from_scratch'] = true;
         } catch (\eZDBException $e) {
             $this->db->rollback();
-            $this->getLogger()->error(' -> already installed');
-            $this->installerVars['schema_already_exists'] = true;
-            $this->installerVars['is_install_from_scratch'] = false;
+            if (strpos($e->getMessage(), 'already exists') !== false) {
+                $this->getLogger()->error(' -> already installed');
+                $this->installerVars['schema_already_exists'] = true;
+                $this->installerVars['is_install_from_scratch'] = false;
+            } else {
+                throw $e;
+            }
         }
 
         $dfsSchemaArray = [];
@@ -184,7 +188,11 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
                 }
             } catch (\eZDBException $e) {
                 $this->db->rollback();
-                $this->getLogger()->error(' -> already installed');
+                if (strpos($e->getMessage(), 'already exists') !== false) {
+                    $this->getLogger()->error(' -> already installed');
+                } else {
+                    throw $e;
+                }
             }
         }
 
@@ -203,7 +211,11 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
             }
         } catch (\eZDBException $e) {
             $this->db->rollback();
-            $this->getLogger()->error(' -> already installed');
+            if (strpos($e->getMessage(), 'already exists') !== false) {
+                $this->getLogger()->error(' -> already installed');
+            } else {
+                throw $e;
+            }
         }
     }
 
@@ -235,7 +247,11 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
                     }
                 } catch (\eZDBException $e) {
                     $this->db->rollback();
-                    $this->getLogger()->error(' -> already installed');
+                    if (strpos($e->getMessage(), 'already exists') !== false) {
+                        $this->getLogger()->error(' -> already installed');
+                    } else {
+                        throw $e;
+                    }
                 }
             }
 
@@ -441,5 +457,16 @@ language_locale='$installerDataLocale'";
         $this->logger->info("Set all passwords expired");
         $updateSql = "UPDATE ezx_mbpaex SET password_last_updated = -1, passwordlifetime = 365";
         $this->db->query($updateSql);
+        if (!defined('\eZUser::PASSWORD_HASH_PHP_DEFAULT')) {
+            $user = \eZUser::fetch(14);
+            if ($user instanceof \eZUser) {
+                $newHash = $user->createHash($user->attribute('login'), 'change_password', \eZUser::site(), \eZUser::hashType());
+                $user->setAttribute('password_hash', $newHash);
+                $user->setAttribute('password_hash_type', \eZUser::hashType());
+                $user->store();
+                $this->logger->info("Set legacy hash type to admin user");
+            }
+        }
+
     }
 }
