@@ -294,25 +294,57 @@ class Installer
                     
                     $skip = false;
 
+                    $countVersionCheck = 0;
+                    $versionCheckValidCount = 0;
+                    $skipByVersionDebug = [];
                     if (isset($installer->getStep()['current_version_lt'])){
-                        $skip = version_compare($this->getCurrentVersion(), $installer->getStep()['current_version_lt'], 'lt') == false;
-                        $this->logger->debug("[$index] $stepName skipped by version compare parameter");
+                        $check = version_compare($this->getCurrentVersion(), $installer->getStep()['current_version_lt'], 'lt');
+                        if ($check){
+                            $versionCheckValidCount++;
+                        }
+                        $skipByVersionDebug['current_version_lt'] = $this->getCurrentVersion() . ' < ' . $installer->getStep()['current_version_lt'] . ' -> ' . (int)$check;
+                        $countVersionCheck++;
                     }
                     if (isset($installer->getStep()['current_version_le'])){
-                        $skip = version_compare($this->getCurrentVersion(), $installer->getStep()['current_version_le'], 'le') == false;
-                        $this->logger->debug("[$index] $stepName skipped by version compare parameter");
+                        $check = version_compare($this->getCurrentVersion(), $installer->getStep()['current_version_le'], 'le');
+                        if ($check){
+                            $versionCheckValidCount++;
+                        }
+                        $skipByVersionDebug['current_version_le'] = $this->getCurrentVersion() . ' <= ' . $installer->getStep()['current_version_le'] . ' -> ' . (int)$check;
+                        $countVersionCheck++;
                     }
                     if (isset($installer->getStep()['current_version_eq'])){
-                        $skip = version_compare($this->getCurrentVersion(), $installer->getStep()['current_version_eq'], 'eq') == false;
-                        $this->logger->debug("[$index] $stepName skipped by version compare parameter");
+                        $check = version_compare($this->getCurrentVersion(), $installer->getStep()['current_version_eq'], 'eq');
+                        if ($check){
+                            $versionCheckValidCount++;
+                        }
+                        $skipByVersionDebug['current_version_eq'] = $this->getCurrentVersion() . ' = ' . $installer->getStep()['current_version_eq'] . ' -> ' . (int)$check;
+                        $countVersionCheck++;
                     }
                     if (isset($installer->getStep()['current_version_ge'])){
-                        $skip = version_compare($this->getCurrentVersion(), $installer->getStep()['current_version_ge'], 'ge') == false;
-                        $this->logger->debug("[$index] $stepName skipped by version compare parameter");
+                        $check = version_compare($this->getCurrentVersion(), $installer->getStep()['current_version_ge'], 'ge');
+                        if ($check){
+                            $versionCheckValidCount++;
+                        }
+                        $skipByVersionDebug['current_version_ge'] = $this->getCurrentVersion() . ' >= ' . $installer->getStep()['current_version_ge'] . ' -> ' . (int)$check;
+                        $countVersionCheck++;
                     }
                     if (isset($installer->getStep()['current_version_gt'])){
-                        $skip = version_compare($this->getCurrentVersion(), $installer->getStep()['current_version_gt'], 'gt') == false;
-                        $this->logger->debug("[$index] $stepName skipped by version compare parameter");
+                        $check = version_compare($this->getCurrentVersion(), $installer->getStep()['current_version_gt'], 'gt');
+                        if ($check){
+                            $versionCheckValidCount++;
+                        }
+                        $skipByVersionDebug['current_version_gt'] = $this->getCurrentVersion() . ' > ' . $installer->getStep()['current_version_gt'] . ' -> ' . (int)$check;
+                        $countVersionCheck++;
+                    }
+                    if ($countVersionCheck > 0){
+                        $skip = $countVersionCheck != $versionCheckValidCount;
+                        if ($skip){
+                            $this->logger->debug("[$index] $stepName skipped by version compare parameters ({$versionCheckValidCount}/{$countVersionCheck})");
+                        }
+                        foreach ($skipByVersionDebug as $skipCond => $skipDebug){
+                            $this->logger->debug("[$index] version compare: $skipCond $skipDebug");
+                        }
                     }
                     
                     if (isset($installer->getStep()['condition']) && (bool)$installer->getStep()['condition'] !== true) {

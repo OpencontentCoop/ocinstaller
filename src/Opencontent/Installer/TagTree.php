@@ -104,14 +104,19 @@ class TagTree extends AbstractStepInstaller implements InterfaceStepInstaller
 
         if (isset($remoteTag['synonyms']) && count($remoteTag['synonyms']) > 0){
             foreach ($remoteTag['synonyms'] as $locale => $synonym){
-                $synonymStruct = new TagSynonymStruct();
-                $synonymStruct->tagId = $tag->id;
-                $synonymStruct->keyword = $synonym;
-                $synonymStruct->locale = $locale;
+                if (!is_array($synonym)){
+                    $synonym = [$synonym];
+                }
+                foreach ($synonym as $syn) {
+                    $synonymStruct = new TagSynonymStruct();
+                    $synonymStruct->tagId = $tag->id;
+                    $synonymStruct->keyword = $syn;
+                    $synonymStruct->locale = $locale;
 
-                $result = $tagRepository->addSynonym($synonymStruct);
-                $isNew = $result['message'] == 'success' ? ' + ' : '';
-                $this->logger->debug(str_pad('', $recursionLevel, '  ', STR_PAD_LEFT) . '     |- ' . $isNew . $synonym);
+                    $result = $tagRepository->addSynonym($synonymStruct);
+                    $isNew = $result['message'] == 'success' ? ' + ' : '';
+                    $this->logger->debug(str_pad('', $recursionLevel, '  ', STR_PAD_LEFT) . '     |- ' . $isNew . $syn);
+                }
             }
         }
 
