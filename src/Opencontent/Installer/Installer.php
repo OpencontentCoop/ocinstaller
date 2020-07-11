@@ -370,7 +370,9 @@ class Installer
             }
         }
 
-        $this->storeVersion();
+        if (!$this->dryRun) {
+            $this->storeVersion();
+        }
     }
 
     protected function validateData()

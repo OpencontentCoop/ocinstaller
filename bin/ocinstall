@@ -72,11 +72,10 @@ try {
 
     // install
     $installer = new \Opencontent\Installer\Installer($db, $dataDir);
-
     if ($options['verbose']) {
         $installer->getLogger()->isVerbose = true;
     }
-
+    $installer->getLogger()->debug(implode(' ', $GLOBALS['argv']));
     $installer->getLogger()->warning("Using db " . $db->DB);
 
     $continue = true;
@@ -187,6 +186,8 @@ try {
     }else{
         $installer->getLogger()->info("No update needed");
     }
+    
+    $cli->output("Installer logfile: " . $installer->getLogger()->getLogFilePath());
 
 } catch (Throwable $e) {
     if ($e instanceof eZDBException) {
