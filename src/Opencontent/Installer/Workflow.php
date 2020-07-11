@@ -56,24 +56,26 @@ class Workflow extends AbstractStepInstaller implements InterfaceStepInstaller
     {
         $workflow = eZPersistentObject::fetchObject(eZWorkflow::definition(), null, ["name" => $name, "version" => 0]);
 
-        if ($workflow instanceof eZWorkflow) {
-            eZWorkflowFunctions::removeGroup($workflow->attribute('id'), $workflow->attribute('version'), 1);
-            $workflow->removeThis(true);
-        }
+        if (!$workflow instanceof eZWorkflow) {
+            $time = time();
+            $workflow = new eZWorkflow([
+                "id" => null,
+                "workflow_type_string" => "group_ezserial",
+                "version" => 0,
+                "is_enabled" => 1,
+                "name" => $name,
+                "creator_id" => \eZUser::currentUserID(),
+                "modifier_id" => \eZUser::currentUserID(),
+                "created" => $time,
+                "modified" => $time
+            ]);
+            $workflow->store();
 
-        $time = time();
-        $workflow = new eZWorkflow([
-            "id" => null,
-            "workflow_type_string" => "group_ezserial",
-            "version" => 0,
-            "is_enabled" => 1,
-            "name" => $name,
-            "creator_id" => \eZUser::currentUserID(),
-            "modifier_id" => \eZUser::currentUserID(),
-            "created" => $time,
-            "modified" => $time
-        ]);
-        $workflow->store();
+            $ingroup = eZWorkflowGroupLink::create( $workflow->attribute('id'), $workflow->attribute('version'), 1, 'Standard' );
+            $ingroup->store();
+        }else{
+            eZWorkflow::removeEvents( false, $workflow->attribute('id'), 0 );
+        }
 
         $workflowEventList = [];
         foreach ($events as $event) {
@@ -88,9 +90,6 @@ class Workflow extends AbstractStepInstaller implements InterfaceStepInstaller
             $workflowEventList[] = $workflowEvent;
         }
         $workflow->store($workflowEventList);
-
-        $ingroup = eZWorkflowGroupLink::create( $workflow->attribute('id'), $workflow->attribute('version'), 1, 'Standard' );
-        $ingroup->store();
 
         return $workflow;
     }
