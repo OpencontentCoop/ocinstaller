@@ -160,11 +160,12 @@ try {
     if ($installer->needUpdate() || $options['only-step'] !== null || $installer->isDryRun()) {
         $installer->install($options);
 
-        if ($installer->canInstallSchema() && $installBaseSchema && $installer->getInstallerVars()->offsetGet('schema_already_exists') === false) {
-            $schemaInstaller->expiryPassword();
-        }
-
         if (!$installer->isDryRun()) {
+
+            if ($installer->canInstallSchema() && $installBaseSchema && $installer->getInstallerVars()->offsetGet('schema_already_exists') === false) {
+                $schemaInstaller->expiryPassword();
+            }
+
             $installer->getLogger()->info("Clear all cache");
             //$cli->setIsQuiet(true);
             $cacheHelper = new eZCacheHelper($cli, $script);
