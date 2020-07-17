@@ -275,7 +275,19 @@ class Installer
                 case 'patch_content':
                     $installer = new PatchContent();
                     break;
+                    
+                case 'change_state':
+                    $installer = new ChangeState();
+                    break;
 
+                case 'change_section':
+                    $installer = new ChangeSection();
+                    break;
+
+                case 'tag_description':
+                    $installer = new TagDescription();
+                    break;
+                    
                 default:
                     throw new Exception("Step type " . $step['type'] . ' not handled');
             }

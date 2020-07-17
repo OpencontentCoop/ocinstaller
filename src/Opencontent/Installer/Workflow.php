@@ -82,7 +82,7 @@ class Workflow extends AbstractStepInstaller implements InterfaceStepInstaller
             $event['id'] = null;
             $event['version'] = 0;
             $event['workflow_id'] = $workflow->attribute('id');
-            $workflowEvent = new eZWorkflowEvent($event);
+            $workflowEvent = new eZWorkflowEvent($this->parseVars($event));
             /** @var eZWorkflowType $workflowEventType */
             $workflowEventType = $workflowEvent->eventType();
             $workflowEventType->initializeEvent($workflowEvent);
@@ -92,5 +92,18 @@ class Workflow extends AbstractStepInstaller implements InterfaceStepInstaller
         $workflow->store($workflowEventList);
 
         return $workflow;
+    }
+
+    private function parseVars($item)
+    {
+        if (is_array($item)){
+            foreach ($item as $index => $i){
+                $item[$index] = $this->parseVars($i);
+            }
+
+            return $item;
+        }
+
+        return $this->installerVars->parseVarValue($item);
     }
 }

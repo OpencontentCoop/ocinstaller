@@ -55,16 +55,16 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
     private function logCompare($result)
     {
         if ($result->missingAttributes) {
-            $this->logger->info('    Attributi mancanti rispetto al prototipo: ' . count($result->missingAttributes));
+            $this->logger->debug('    Attributi mancanti rispetto al prototipo: ' . count($result->missingAttributes));
             foreach ($result->missingAttributes as $identifier => $original) {
-                $this->logger->info("     -> $identifier ({$original->DataTypeString})");
+                $this->logger->debug("     -> $identifier ({$original->DataTypeString})");
             }
         }
         if ($result->extraAttributes) {
-            $this->logger->info('    Attributi aggiuntivi rispetto al prototipo: ' . count($result->extraAttributes));
+            $this->logger->debug('    Attributi aggiuntivi rispetto al prototipo: ' . count($result->extraAttributes));
             foreach ($result->extraAttributes as $attribute) {
                 $detail = $result->extraDetails[$attribute->Identifier];
-                $this->logger->info("     -> {$attribute->Identifier} ({$attribute->DataTypeString})");
+                $this->logger->debug("     -> {$attribute->Identifier} ({$attribute->DataTypeString})");
             }
         }
         if ($result->hasDiffAttributes) {
@@ -73,45 +73,45 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
             $warnings = array_intersect(array_keys($result->warnings), $identifiers);
 
             if (count($errors) > 0)
-                $this->logger->info('    Attributi che differiscono dal prototipo: ' . count($result->diffAttributes));
+                $this->logger->debug('    Attributi che differiscono dal prototipo: ' . count($result->diffAttributes));
             elseif (count($warnings) > 0)
-                $this->logger->info('    Attributi che differiscono dal prototipo: ' . count($result->diffAttributes));
+                $this->logger->debug('    Attributi che differiscono dal prototipo: ' . count($result->diffAttributes));
             else
-                $this->logger->info('    Attributi che differiscono dal prototipo: ' . count($result->diffAttributes));
+                $this->logger->debug('    Attributi che differiscono dal prototipo: ' . count($result->diffAttributes));
 
             foreach ($result->diffAttributes as $identifier => $value) {
                 if (isset($result->errors[$identifier]))
-                    $this->logger->info("     -> $identifier");
+                    $this->logger->debug("     -> $identifier");
                 elseif (isset($result->warnings[$identifier]))
-                    $this->logger->info("     -> $identifier");
+                    $this->logger->debug("     -> $identifier");
                 else
-                    $this->logger->info("     -> $identifier");
+                    $this->logger->debug("     -> $identifier");
 
                 foreach ($value as $diff) {
                     if (isset($result->errors[$identifier][$diff['field_name']]))
-                        $this->logger->info("        {$diff['field_name']}");
+                        $this->logger->debug("        {$diff['field_name']}");
                     elseif (isset($result->warnings[$identifier][$diff['field_name']]))
-                        $this->logger->info("        {$diff['field_name']}");
+                        $this->logger->debug("        {$diff['field_name']}");
                     else
-                        $this->logger->info("        {$diff['field_name']}");
+                        $this->logger->debug("        {$diff['field_name']}");
                 }
             }
         }
         if ($result->hasDiffProperties) {
             if (isset($result->errors['properties']))
-                $this->logger->info('    Proprietà che differiscono dal prototipo: ' . count($result->diffProperties));
+                $this->logger->debug('    Proprietà che differiscono dal prototipo: ' . count($result->diffProperties));
             elseif (isset($result->warnings['properties']))
-                $this->logger->info('    Proprietà che differiscono dal prototipo: ' . count($result->diffProperties));
+                $this->logger->debug('    Proprietà che differiscono dal prototipo: ' . count($result->diffProperties));
             else
-                $this->logger->info('    Proprietà che differiscono dal prototipo: ' . count($result->diffProperties));
+                $this->logger->debug('    Proprietà che differiscono dal prototipo: ' . count($result->diffProperties));
 
             foreach ($result->diffProperties as $property) {
                 if (isset($result->errors['properties'][$property['field_name']]))
-                    $this->logger->info("        {$property['field_name']}");
+                    $this->logger->debug("        {$property['field_name']}");
                 elseif (isset($result->warnings['properties'][$property['field_name']]))
-                    $this->logger->info("        {$property['field_name']}");
+                    $this->logger->debug("        {$property['field_name']}");
                 else
-                    $this->logger->info("        {$property['field_name']}");
+                    $this->logger->debug("        {$property['field_name']}");
             }
         }
     }
