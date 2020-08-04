@@ -287,7 +287,11 @@ class Installer
                 case 'tag_description':
                     $installer = new TagDescription();
                     break;
-                    
+
+                case 'reindex':
+                    $installer = new Reindex();
+                    break;
+
                 default:
                     throw new Exception("Step type " . $step['type'] . ' not handled');
             }
