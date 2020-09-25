@@ -13,6 +13,8 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
 
     private $doUpdate = false;
 
+    private $doRemoveLocations = false;
+
     public function dryRun()
     {
         $this->identifier = $this->step['identifier'];
@@ -39,6 +41,10 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
 
         if (isset($this->step['update'])){
             $this->doUpdate = $this->step['update'] == 1;
+        }
+
+        if (isset($this->step['remove_locations'])){
+            $this->doRemoveLocations = $this->step['remove_locations'] == 1;
         }
 
         $source = isset($this->step['source']) ? $this->step['source'] : '';
@@ -91,10 +97,26 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
             $isUpdate = false;
             $alreadyExists = isset($content['metadata']['remoteId']) ? \eZContentObject::fetchByRemoteID($payload['metadata']['remoteId']) : false;
             if ($alreadyExists){
-                $content['metadata']['parentNodes'] = [$alreadyExists->mainNode()->attribute('parent_node_id')];
+
                 if ($this->doUpdate) {
+
+                    $removeNodeAssignments = [];
+                    if ($this->doRemoveLocations) {
+                        foreach ($alreadyExists->assignedNodes() as $node) {
+                            if (!in_array($node->attribute('parent_node_id'), $payload->getMetadaData('parentNodes'))) {
+                                $removeNodeAssignments[$node->attribute('node_id')] = $node->fetchParent()->attribute('name');
+                            }
+                        }
+                    }
+
                     $result = $contentRepository->update($payload->getArrayCopy());
                     $nodeId = $result['content']['metadata']['mainNodeId'];
+                    if (count($removeNodeAssignments) > 0){
+                        $this->getLogger()->debug(' -> remove locations in ' . implode(', ', array_values($removeNodeAssignments)));
+                        \eZContentOperationCollection::removeNodes(array_keys($removeNodeAssignments));
+                        $nodeId = \eZContentObject::fetchByRemoteID($payload['metadata']['remoteId'])->mainNodeID();
+                    }
+                    
                 }else{
                     $this->getLogger()->error(' -> already exists');
                     $nodeId = $alreadyExists->mainNode()->attribute('node_id');
