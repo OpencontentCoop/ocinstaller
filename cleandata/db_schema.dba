@@ -1830,7 +1830,7 @@ $schema = array (
       'modified' => 
       array (
         'length' => 11,
-        'type' => 'int',
+        'type' => 'bigint',
         'not_null' => '1',
         'default' => 0,
       ),
@@ -1850,7 +1850,7 @@ $schema = array (
       'published' => 
       array (
         'length' => 11,
-        'type' => 'int',
+        'type' => 'bigint',
         'not_null' => '1',
         'default' => 0,
       ),
