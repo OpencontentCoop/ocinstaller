@@ -5,18 +5,29 @@ namespace Opencontent\Installer;
 
 class OpenPARecaptcha extends AbstractStepInstaller implements InterfaceStepInstaller
 {
+    private $version;
+
+    public function __construct($version = null)
+    {
+        $this->version = $version ? (int)$version : 2;
+    }
+
     public function dryRun()
     {
-        $this->logger->info("Install recaptcha keys");
+        $this->logger->info("Install recaptcha {$this->version} keys");
     }
 
     public function install()
     {
-        $this->logger->info("Install recaptcha keys");
+        $this->logger->info("Install recaptcha {$this->version} keys");
         $public = trim($this->step['public']);
         $private = trim($this->step['private']);
-        $recaptcha = new \OpenPARecaptcha();
-        $recaptcha->store($public, $private);
+        if (!empty($public) && !empty($private)) {
+            $recaptcha = new \OpenPARecaptcha($this->version);
+            $recaptcha->store($public, $private);
+        }else{
+            $this->getLogger()->error('Recaptcha keys are empty');
+        }
     }
 
 }

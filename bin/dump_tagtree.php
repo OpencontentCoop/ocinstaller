@@ -39,8 +39,10 @@ function createTag($remoteTag, $parentTag)
         'children' => [],
         'hasChildren' => false,
     ]);
-    if (isset($remoteTag['synonyms'])) {
-        $tag['synonyms'] = $remoteTag['synonyms'];
+    if (isset($remoteTag['synonyms']) && !empty($remoteTag['synonyms'])) {
+        foreach ($remoteTag['synonyms'] as $language => $value){
+            $tag['synonyms'][$language][] = $value;
+        }
     }
 
     $parentTag['hasChildren'] = true;
@@ -117,7 +119,9 @@ if ($options['url']) {
         null,
         'tags_tree'
     );
+    $cli->output('Retrieve tag tree... ', false);
     $remoteRoot = $client->readTree($rootTag);
+    $cli->output('done');
     recursiveListTag($remoteRoot, $parentTag);
 
 } elseif ($options['id']) {

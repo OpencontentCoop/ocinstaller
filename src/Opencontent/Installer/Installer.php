@@ -260,6 +260,9 @@ class Installer
                 case 'openparecaptcha':
                     $installer = new OpenPARecaptcha();
                     break;
+                case 'openparecaptcha_v3':
+                    $installer = new OpenPARecaptcha(3);
+                    break;
 
                 case 'sql':
                 case 'sql_copy_from_tsv':
