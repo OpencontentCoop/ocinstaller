@@ -43,14 +43,14 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
             unset($content['sort_data']);
         }
 
-        $this->logger->info("Install content " . $this->identifier);
-
         $contentRepository = new ContentRepository();
         $contentRepository->setEnvironment(EnvironmentLoader::loadPreset('content'));
 
         $isUpdate = false;
         $alreadyExists = isset($content['metadata']['remoteId']) ? \eZContentObject::fetchByRemoteID($content['metadata']['remoteId']) : false;
+        
         if ($alreadyExists){
+            $this->logger->info("Update content " . $this->identifier);
             $content['metadata']['parentNodes'] = [$alreadyExists->mainNode()->attribute('parent_node_id')];
             if ($this->doUpdate) {
                 $result = $contentRepository->update($content);
@@ -61,6 +61,7 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
             }
             $isUpdate = true;
         }else {
+            $this->logger->info("Install content " . $this->identifier);
             $result = $contentRepository->create($content);
             $nodeId = $result['content']['metadata']['mainNodeId'];
         }

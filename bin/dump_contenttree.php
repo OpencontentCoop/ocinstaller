@@ -52,9 +52,10 @@ function dumpContent($dataArray, $dataDir, $contentTreeName)
         }
     }
 
-    //if ($dataArray['data']['ita-IT']['decorrenza_di_pubblicazione'][0] == '') unset($dataArray['data']['ita-IT']['decorrenza_di_pubblicazione']);
-    //if ($dataArray['data']['ita-IT']['aggiornamento'][0] == '') unset($dataArray['data']['ita-IT']['aggiornamento']);
-    //if ($dataArray['data']['ita-IT']['termine_pubblicazione'][0] == '') unset($dataArray['data']['ita-IT']['termine_pubblicazione']);
+    if ($dataArray['data']['ita-IT']['decorrenza_di_pubblicazione'][0] == '') unset($dataArray['data']['ita-IT']['decorrenza_di_pubblicazione']);
+    if ($dataArray['data']['ita-IT']['aggiornamento'][0] == '') unset($dataArray['data']['ita-IT']['aggiornamento']);
+    if ($dataArray['data']['ita-IT']['termine_pubblicazione'][0] == '') unset($dataArray['data']['ita-IT']['termine_pubblicazione']);
+    if (empty($dataArray['data']['ita-IT']['fields_blocks'])) unset($dataArray['data']['ita-IT']['fields_blocks']);
 
     $cleanDataArray = [
         'metadata' => $cleanMetadata,

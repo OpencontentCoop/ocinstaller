@@ -88,6 +88,8 @@ if ($options['url'] || $options['id']) {
             'identifier' => $contentName
         ]);
 
+    }else{
+        echo json_encode($cleanDataArray);
     }
 
 }
