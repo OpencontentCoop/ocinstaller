@@ -295,6 +295,10 @@ class Installer
                     $installer = new Reindex();
                     break;
 
+                case 'deprecate_topic':
+                    $installer = new DeprecateTopic();
+                    break;    
+
                 default:
                     throw new Exception("Step type " . $step['type'] . ' not handled');
             }
