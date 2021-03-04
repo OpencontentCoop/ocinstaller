@@ -15,55 +15,58 @@ class DeprecateTopic extends AbstractStepInstaller implements InterfaceStepInsta
     public function dryRun()
     {
         $identifier = $this->step['identifier'];
-        $target = $this->step['target'];
         $source = eZContentObject::fetchByRemoteID($identifier);
         if (!$source instanceof eZContentObject){
             throw new \Exception("Topic $identifier not found");
         }
         $sourceName = $source->attribute('name');
-        $targetTopic = eZContentObject::fetchByRemoteID($target);
-        if ($targetTopic instanceof eZContentObject){
-            $targetName = $targetTopic->attribute('name');
-        }else{
-            $targetName = $target . ' (not yet installed)';
+
+        if (isset($this->step['target'])) {
+            $target = $this->step['target'];
+            $targetTopic = eZContentObject::fetchByRemoteID($target);
+            if ($targetTopic instanceof eZContentObject) {
+                $targetName = $targetTopic->attribute('name');
+            } else {
+                $targetName = $target . ' (not yet installed)';
+            }
+            $searchRepository = new ContentSearch();
+            $searchRepository->setEnvironment(EnvironmentLoader::loadPreset('content'));
+            $search = $searchRepository->search('topics.id = ' . $source->attribute('id') . ' limit 1', []);
+            $this->logger->info("Remap $search->totalCount objects from from $identifier ($sourceName) to $target ($targetName) and move topic in node #$moveIn");
         }
 
         $moveIn = $this->step['move_in'];
-
-        $searchRepository = new ContentSearch();
-        $searchRepository->setEnvironment(EnvironmentLoader::loadPreset('content'));
-        $search = $searchRepository->search('topics.id = ' . $source->attribute('id') . ' limit 1', []);
-        $this->logger->info("Remap $search->totalCount objects from from $identifier ($sourceName) to $target ($targetName) and move topic in node #$moveIn");
+        $this->logger->info("Move topic $identifier ($sourceName) in node #$moveIn");
     }
 
     public function install()
     {
         $identifier = $this->step['identifier'];
-        $target = $this->step['target'];
         $sourceTopic = eZContentObject::fetchByRemoteID($identifier);
         if (!$sourceTopic instanceof eZContentObject){
             throw new \Exception("Topic $identifier not found");
         }
-
-        $targetTopic = eZContentObject::fetchByRemoteID($target);
-        if (!$targetTopic instanceof eZContentObject){
-            throw new \Exception("Target topic $target not found");
-        }
-
         $sourceName = $sourceTopic->attribute('name');
-        $targetName = $targetTopic->attribute('name');
 
-        $searchRepository = new ContentSearch();
-        $searchRepository->setEnvironment(EnvironmentLoader::loadPreset('content'));
-        $searchResults = $searchRepository->search('topics.id = ' . $sourceTopic->attribute('id'));
+        if (isset($this->step['target'])) {
+            $target = $this->step['target'];
+            $targetTopic = eZContentObject::fetchByRemoteID($target);
+            if (!$targetTopic instanceof eZContentObject) {
+                throw new \Exception("Target topic $target not found");
+            }
+            $targetName = $targetTopic->attribute('name');
+            $searchRepository = new ContentSearch();
+            $searchRepository->setEnvironment(EnvironmentLoader::loadPreset('content'));
+            $searchResults = $searchRepository->search('topics.id = ' . $sourceTopic->attribute('id'));
 
-        if ($searchResults->totalCount > 0) {
-            $this->logger->info("Remap $searchResults->totalCount objects from $identifier ($sourceName) to $target ($targetName)");
-            $this->remapTopic($sourceTopic, $targetTopic, $searchResults);
+            if ($searchResults->totalCount > 0) {
+                $this->logger->info("Remap $searchResults->totalCount objects from $identifier ($sourceName) to $target ($targetName)");
+                $this->remapTopic($sourceTopic, $targetTopic, $searchResults);
+            }
         }
 
         $moveIn = $this->step['move_in'];
-        $this->logger->info("Move topic $sourceName in node #$moveIn");
+        $this->logger->info("Move topic $identifier ($sourceName) in node #$moveIn");
         \eZContentObjectTreeNodeOperations::move($sourceTopic->attribute('main_node_id'), $moveIn);
     }
 
