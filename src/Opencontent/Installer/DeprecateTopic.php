@@ -35,8 +35,10 @@ class DeprecateTopic extends AbstractStepInstaller implements InterfaceStepInsta
             $this->logger->info("Remap $search->totalCount objects from from $identifier ($sourceName) to $target ($targetName) and move topic in node #$moveIn");
         }
 
-        $moveIn = $this->step['move_in'];
-        $this->logger->info("Move topic $identifier ($sourceName) in node #$moveIn");
+        if (isset($this->step['move_in'])) {
+            $moveIn = $this->step['move_in'];
+            $this->logger->info("Move topic $identifier ($sourceName) in node #$moveIn");
+        }
     }
 
     public function install()
@@ -65,9 +67,11 @@ class DeprecateTopic extends AbstractStepInstaller implements InterfaceStepInsta
             }
         }
 
-        $moveIn = $this->step['move_in'];
-        $this->logger->info("Move topic $identifier ($sourceName) in node #$moveIn");
-        \eZContentObjectTreeNodeOperations::move($sourceTopic->attribute('main_node_id'), $moveIn);
+        if (isset($this->step['move_in'])) {
+            $moveIn = $this->step['move_in'];
+            $this->logger->info("Move topic $identifier ($sourceName) in node #$moveIn");
+            \eZContentObjectTreeNodeOperations::move($sourceTopic->attribute('main_node_id'), $moveIn);
+        }
     }
 
     private function remapTopic(eZContentObject $source, eZContentObject $target, SearchResults $searchResults)
