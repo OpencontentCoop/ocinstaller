@@ -63,7 +63,7 @@ class DeprecateTopic extends AbstractStepInstaller implements InterfaceStepInsta
 
             if ($searchResults->totalCount > 0) {
                 $this->logger->info("Remap $searchResults->totalCount objects from $identifier ($sourceName) to $target ($targetName)");
-                $this->remapTopic($sourceTopic, $targetTopic, $searchResults);
+                $this->remapTopic($sourceTopic, $targetTopic, $searchResults, $searchRepository);
             }
         }
 
@@ -74,7 +74,7 @@ class DeprecateTopic extends AbstractStepInstaller implements InterfaceStepInsta
         }
     }
 
-    private function remapTopic(eZContentObject $source, eZContentObject $target, SearchResults $searchResults)
+    private function remapTopic(eZContentObject $source, eZContentObject $target, SearchResults $searchResults, ContentSearch $searchRepository)
     {
         foreach ($searchResults->searchHits as $hit){
             $object = eZContentObject::fetch($hit['metadata']['id']);
@@ -104,9 +104,8 @@ class DeprecateTopic extends AbstractStepInstaller implements InterfaceStepInsta
             eZContentObject::clearCache();
         }
         if ($searchResults->nextPageQuery){
-            $nextQuery = explode('search/', $searchResults->nextPageQuery)[1];
-            $search = $searchRepository->search($nextQuery);
-            $this->remapTopic($source, $target, $search);
+            $search = $searchRepository->search($searchResults->nextPageQuery);
+            $this->remapTopic($source, $target, $search, $searchRepository);
         }
     }
 
