@@ -102,6 +102,10 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
 
                     $removeNodeAssignments = [];
                     if ($this->doRemoveLocations) {
+
+                        $this->getLogger()->debug(' -> move in #' . $parentNodeId);
+                        \eZContentObjectTreeNodeOperations::move($alreadyExists->mainNodeID(), $parentNodeId);
+
                         foreach ($alreadyExists->assignedNodes() as $node) {
                             if (!in_array($node->attribute('parent_node_id'), $payload->getMetadaData('parentNodes'))) {
                                 $removeNodeAssignments[$node->attribute('node_id')] = $node->fetchParent()->attribute('name');
