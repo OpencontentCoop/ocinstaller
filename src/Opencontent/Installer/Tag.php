@@ -68,7 +68,7 @@ class Tag extends TagTree
             if ($tagId > 0) {
                 $tag = eZTagsObject::fetch((int)$tagId);
                 $keywords = $this->step['keywords'];
-                if ($tag instanceof eZTagsObject && count($keywords) > 0){
+                if ($tag instanceof eZTagsObject && !$tag->isSynonym() && count($keywords) > 0){
                     $this->logger->info("Rename tag $tagId in " . implode(', ', $keywords));
                     $currentKeywords = $tag->getTranslations();
                     foreach ($keywords as $locale => $keyword){
