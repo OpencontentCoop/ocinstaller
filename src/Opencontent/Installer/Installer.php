@@ -272,6 +272,7 @@ class Installer
                 case 'add_tag':
                 case 'remove_tag':
                 case 'move_tag':
+                case 'rename_tag':
                     $installer = new Tag();
                     break;
 
