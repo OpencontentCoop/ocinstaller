@@ -69,7 +69,7 @@ class IOTools
                 if (in_array($source, self::$avoidImportRecursion[$avoidRecursionKey])){
                     throw new \Exception("Found import recursion {$source} in {$avoidRecursionKey}");
                 }
-                self::$avoidImportRecursion[$avoidRecursionKey] = $source;
+                self::$avoidImportRecursion[$avoidRecursionKey][] = $source;
                 foreach ($json['imports'] as $import){
                     if (isset($import['resource'])){
                         if (in_array($import['resource'], self::$avoidImportRecursion[$avoidRecursionKey])){
