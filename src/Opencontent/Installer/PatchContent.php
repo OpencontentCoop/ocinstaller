@@ -3,6 +3,8 @@
 namespace Opencontent\Installer;
 
 use eZContentObject;
+use Opencontent\Opendata\Api\AttributeConverterLoader;
+use Opencontent\Opendata\Api\PublicationProcess;
 
 class PatchContent extends AbstractStepInstaller implements InterfaceStepInstaller
 {
@@ -130,10 +132,16 @@ class PatchContent extends AbstractStepInstaller implements InterfaceStepInstall
 
         $attributesData = $params['attributes'];
 
+        $fakePublicationProcess = new PublicationProcess(null);
         foreach ($attributeList as $attribute) {
             $attributeIdentifier = $attribute->attribute('contentclass_attribute_identifier');
             if (array_key_exists($attributeIdentifier, $attributesData)) {
-                $dataString = $attributesData[$attributeIdentifier];
+                $converter = AttributeConverterLoader::load(
+                    $object->attribute('class_identifier'),
+                    $attributeIdentifier,
+                    $attribute->attribute('data_type_string')
+                );
+                $dataString = $converter->set($attributesData[$attributeIdentifier], $fakePublicationProcess);
                 switch ($datatypeString = $attribute->attribute('data_type_string')) {
                     case 'ezimage':
                     case 'ezbinaryfile':
@@ -144,7 +152,6 @@ class PatchContent extends AbstractStepInstaller implements InterfaceStepInstall
                     }
                     default:
                 }
-
                 $attribute->fromString($dataString);
                 $attribute->store();
             }
