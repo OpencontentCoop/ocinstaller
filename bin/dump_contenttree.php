@@ -121,7 +121,7 @@ function dumpTree($remoteRoot, $contentClient, $browser, $dataDir, $prefix, $max
         foreach ($remoteRoot['children'] as $childNode) {
             $childNode = (array)$childNode;
             if ((is_array($classes) && in_array($childNode['classIdentifier'], $classes)) || $classes === false) {
-                $childRemoteNode = $browser->browse($childNode['nodeId']);
+                $childRemoteNode = $browser->browse($childNode['nodeId'], 0, 100);
                 $recursion++;
                 dumpTree($childRemoteNode, $contentClient, $browser, $dataDir, $prefix, $maxRecursion, $classes, $append, $recursion, $contentTreeName.'-');
                 $recursion--;

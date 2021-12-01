@@ -54,6 +54,7 @@ class Workflow extends AbstractStepInstaller implements InterfaceStepInstaller
 
     private function createWorkflow($name, $events)
     {
+        /** @var eZWorkflow $workflow */
         $workflow = eZPersistentObject::fetchObject(eZWorkflow::definition(), null, ["name" => $name, "version" => 0]);
 
         if (!$workflow instanceof eZWorkflow) {
@@ -67,37 +68,50 @@ class Workflow extends AbstractStepInstaller implements InterfaceStepInstaller
                 "creator_id" => \eZUser::currentUserID(),
                 "modifier_id" => \eZUser::currentUserID(),
                 "created" => $time,
-                "modified" => $time
+                "modified" => $time,
             ]);
             $workflow->store();
 
-            $ingroup = eZWorkflowGroupLink::create( $workflow->attribute('id'), $workflow->attribute('version'), 1, 'Standard' );
+            $ingroup = eZWorkflowGroupLink::create($workflow->attribute('id'), $workflow->attribute('version'), 1, 'Standard');
             $ingroup->store();
-        }else{
-            eZWorkflow::removeEvents( false, $workflow->attribute('id'), 0 );
+        }
+        $eventsTypes = array_column($events, 'workflow_type_string');
+        $workflowEventList = $workflow->fetchEvents();
+        $removeEvents = [];
+        foreach ($workflowEventList as $index => $event) {
+            if (in_array($event->attribute('workflow_type_string'), $eventsTypes)) {
+                $this->logger->debug(' - Remove event ' . $event->attribute('workflow_type_string'));
+                $removeEvents[] = $event;
+                unset($workflowEventList[$index]);
+            }
+        }
+        if (count($removeEvents)) {
+            eZWorkflow::removeEvents($removeEvents, $workflow->attribute('id'), 0);
         }
 
-        $workflowEventList = [];
         foreach ($events as $event) {
             $event['id'] = null;
             $event['version'] = 0;
             $event['workflow_id'] = $workflow->attribute('id');
             $workflowEvent = new eZWorkflowEvent($this->parseVars($event));
+            $this->logger->debug(' - Install event ' . $workflowEvent->attribute('workflow_type_string'));
             /** @var eZWorkflowType $workflowEventType */
             $workflowEventType = $workflowEvent->eventType();
             $workflowEventType->initializeEvent($workflowEvent);
             $workflowEvent->store();
             $workflowEventList[] = $workflowEvent;
         }
+        $workflow->adjustEventPlacements($workflowEventList);
         $workflow->store($workflowEventList);
+        $workflow->cleanupWorkFlowProcess();
 
         return $workflow;
     }
 
     private function parseVars($item)
     {
-        if (is_array($item)){
-            foreach ($item as $index => $i){
+        if (is_array($item)) {
+            foreach ($item as $index => $i) {
                 $item[$index] = $this->parseVars($i);
             }
 
