@@ -364,6 +364,9 @@ class eZPgsqlSchema extends eZDBSchemaInterface
             case 'decimal':
                 return 'numeric';
 
+            case 'timestamp':
+                return 'timestamp';
+
             default:
                 die ( "ERROR UNHANDLED TYPE: $type " . __LINE__ );
         }
@@ -413,6 +416,9 @@ class eZPgsqlSchema extends eZDBSchemaInterface
 
             case 'numeric':
                 return 'decimal';
+
+            case 'timestamp without time zone':
+                return 'timestamp';
 
             default:
                 die ( "ERROR UNHANDLED TYPE: $type " . __LINE__ );
