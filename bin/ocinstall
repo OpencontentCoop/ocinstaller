@@ -12,11 +12,12 @@ $script = eZScript::instance([
 ]);
 
 $script->startup();
-$options = $script->getOptions('[languages:][cleandata:][cleanup][exlude-extension-schemas][only-data][embed-dfs-schema][dry-run][force][only-step:][no-interaction][purge-cache][purge-storage]',
+$options = $script->getOptions('[languages:][cleandata:][cleanup][exlude-extension-schemas][only-schema][only-data][embed-dfs-schema][dry-run][force][only-step:][no-interaction][purge-cache][purge-storage]',
     '[data]',
     array(
         'cleanup' => "Cleanup db before install",
         'exlude-extension-schemas' => "Install only base without extension schema",
+        'only-schema' => "Install only base and extension schema without data",
         'only-data' => "Install only data without base and extension schema",
         'only-step' => "Step index (comma separated): install only data step without base and extension schema",
         'languages' => "Comma separates language code list, first is primary (default is: ita-IT,eng-GB)",
@@ -59,6 +60,7 @@ try {
     $installDfsSchema = $options['embed-dfs-schema'];
     $purgeCache = $options['purge-cache'];
     $purgeStorage = $options['purge-storage'];
+    $installOnlySchema = $options['only-schema'] !== null;
 
     $cleanDataDirectory = $options['cleandata'] ? rtrim($options['cleandata']) : false;
 
@@ -157,37 +159,44 @@ try {
 
     \eZINI::instance('file.ini')->setVariable('ClusteringSettings', 'FileHandler', $fileHandler);
 
-    if ($installer->needUpdate() || $options['only-step'] !== null || $installer->isDryRun()) {
-        $installer->install($options);
+    if ($installOnlySchema) {
+        $installer->getLogger()->info("Data installation skipped");
+    }else {
+        if ($installer->needUpdate() || $options['only-step'] !== null || $installer->isDryRun()) {
+            $installer->install($options);
 
-        if (!$installer->isDryRun()) {
+            if (!$installer->isDryRun()) {
+                if ($installer->canInstallSchema() && $installBaseSchema && $installer->getInstallerVars()->offsetGet(
+                        'schema_already_exists'
+                    ) === false) {
+                    $schemaInstaller->expiryPassword();
+                }
 
-            if ($installer->canInstallSchema() && $installBaseSchema && $installer->getInstallerVars()->offsetGet('schema_already_exists') === false) {
-                $schemaInstaller->expiryPassword();
+                $installer->getLogger()->info("Clear all cache");
+                //$cli->setIsQuiet(true);
+                $cacheHelper = new eZCacheHelper($cli, $script);
+                $cacheHelper->clearItems(eZCache::fetchList(), false);
+                //$cli->setIsQuiet($script->isQuiet());
+
+                $optionArray = [
+                    'iniFile' => 'site.ini',
+                    'iniSection' => 'ContentSettings',
+                    'iniVariable' => 'StaticCacheHandler'
+                ];
+                try {
+                    $options = new ezpExtensionOptions($optionArray);
+                    /** @var ezpStaticCache $staticCacheHandler */
+                    $staticCacheHandler = eZExtension::getHandlerClass($options);
+                    $staticCacheHandler->generateCache(true, true);
+                } catch (Exception $e) {
+                    $installer->getLogger()->error($e->getMessage());
+                }
             }
-
-            $installer->getLogger()->info("Clear all cache");
-            //$cli->setIsQuiet(true);
-            $cacheHelper = new eZCacheHelper($cli, $script);
-            $cacheHelper->clearItems(eZCache::fetchList(), false);
-            //$cli->setIsQuiet($script->isQuiet());
-
-            $optionArray = array('iniFile' => 'site.ini',
-                'iniSection' => 'ContentSettings',
-                'iniVariable' => 'StaticCacheHandler');
-            try {
-                $options = new ezpExtensionOptions($optionArray);
-                /** @var ezpStaticCache $staticCacheHandler */
-                $staticCacheHandler = eZExtension::getHandlerClass($options);
-                $staticCacheHandler->generateCache(true, true);
-            }catch (Exception $e){
-                $installer->getLogger()->error($e->getMessage());
-            }
+        } else {
+            $installer->getLogger()->info("No update needed");
         }
-    }else{
-        $installer->getLogger()->info("No update needed");
     }
-    
+
     $cli->output("Installer logfile: " . $installer->getLogger()->getLogFilePath());
 
 } catch (Throwable $e) {
