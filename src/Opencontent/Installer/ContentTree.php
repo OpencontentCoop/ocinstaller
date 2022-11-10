@@ -87,7 +87,7 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
             $client = new HttpClient('');
             $payload = $client->getPayload($content);
             $payload->setParentNodes([$parentNodeId]);
-            $payload->unSetData('image');
+//            $payload->unSetData('image');
             $payload->unSetData('managed_by_area');
             $payload->unSetData('managed_by_political_body');
             $payload->unSetData('help');
@@ -170,7 +170,7 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
 
                 $result = $client->import($child, $contentRepository, function (PayloadBuilder $payload) use ($parentNodeId) {
                     $payload->setParentNodes([$parentNodeId]);
-                    $payload->unSetData('image');
+//                    $payload->unSetData('image');
                     $payload->unSetData('managed_by_area');
                     $payload->unSetData('managed_by_political_body');
                     $payload->unSetData('help');
