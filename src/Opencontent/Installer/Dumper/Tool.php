@@ -35,7 +35,7 @@ class Tool
         return $trans->transformByGroup($name, 'urlalias');
     }
 
-    public static function slugizeAndCompress($name, $limit = 4, $tokens = 3)
+    public static function slugizeAndCompress($name, $limit = 15, $tokens = 3)
     {
         $trans = \eZCharTransform::instance();
         $slug = explode('-', $trans->transformByGroup($name, 'urlalias'));

@@ -14,7 +14,6 @@ class Section extends AbstractStepInstaller implements InterfaceStepInstaller
     {
         $identifier = $this->step['identifier'];
         $sectionDefinition = $this->ioTools->getJsonContents("sections/{$identifier}.yml");
-        $sectionDefinition = $sectionDefinition;
         $this->logger->info("Install section " . $sectionDefinition['identifier']);
         $this->installerVars['section_' . $sectionDefinition['identifier']] = 0;
     }

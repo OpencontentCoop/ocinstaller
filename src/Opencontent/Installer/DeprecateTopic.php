@@ -113,7 +113,7 @@ class DeprecateTopic extends AbstractStepInstaller implements InterfaceStepInsta
     {
         if (!isset(self::$topicTreeObjectList[$topic->attribute('id')])){
             self::$topicTreeObjectList[$topic->attribute('id')] = [];
-            /** @var eZContentObjectTreeNode[] $path */
+            /** @var \eZContentObjectTreeNode[] $path */
             $path = $topic->mainNode()->fetchPath();
             foreach ($path as $item){
                 if ($item->attribute('class_identifier') == 'topic'){

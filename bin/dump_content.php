@@ -89,7 +89,7 @@ if ($options['url'] || $options['id']) {
         ]);
 
     }else{
-        echo json_encode($cleanDataArray);
+        echo $dataYaml;
     }
 
 }

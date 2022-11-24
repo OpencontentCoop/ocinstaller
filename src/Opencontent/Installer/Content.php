@@ -80,9 +80,19 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
             $this->setSortAndPriority($node, $sortData);
         }
 
+        $this->rename($node);
+
         $this->installerVars['content_' . $this->identifier . '_node'] = $node->attribute('node_id');
         $this->installerVars['content_' . $this->identifier . '_object'] = $node->attribute('contentobject_id');
         $this->installerVars['content_' . $this->identifier . '_path_string'] = $node->attribute('path_string');
+    }
+
+    private function rename(\eZContentObjectTreeNode $node)
+    {
+        $object = $node->attribute('object');
+        $class = $object->contentClass();
+        $object->setName($class->contentObjectName($object));
+        $object->store();
     }
 
     private function swap($nodeId)

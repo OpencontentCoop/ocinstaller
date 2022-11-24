@@ -120,6 +120,7 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
     private function cleanup()
     {
         $this->logger->info('Cleanup db');
+        TagTreeCsv::dropTagList();
         $relationTypes = $this->db->supportedRelationTypes();
         $result = true;
         $matchRegexp = "#^ez|^sql|^oc|^openpa|^cjw|tmp_notification_rule_s#";
@@ -140,6 +141,22 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
         }
 
         return $result;
+    }
+
+    // idempotente!
+    private function installSchemaExtras()
+    {
+        $this->getLogger()->info("Install schema extras");
+        // alter_contentobject_date_interger_type.sql
+        $sql = 'DO $do$ BEGIN IF 
+                (SELECT data_type FROM information_schema.columns WHERE column_name = \'published\' 
+                AND table_name = \'ezcontentobject\') = \'integer\' 
+            THEN 
+                ALTER TABLE ezcontentobject ALTER COLUMN published TYPE BIGINT;
+                ALTER TABLE ezcontentobject ALTER COLUMN modified TYPE BIGINT; 
+            END IF; 
+        END $do$';
+        $this->db->query($sql);
     }
 
     private function installSchemaAndData($baseSchema, $baseData, $dfsSchema)
@@ -170,6 +187,7 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
                 throw $e;
             }
         }
+        $this->installSchemaExtras();
 
         $dfsSchemaArray = [];
         if ($this->installDfsSchema) {

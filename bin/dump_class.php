@@ -12,17 +12,18 @@ $script = eZScript::instance([
 ]);
 
 $script->startup();
-$options = $script->getOptions('[url:][id:][data:]',
+$options = $script->getOptions('[url:][id:][data:][do-not-append]',
     '',
     array(
         'url' => "Remote url or file path class definition",
         'id' => "Local content class identifier",
         'data' => "Directory of installer data",
+        'do-not-append' => 'do-not-append'
     )
 );
 $script->initialize();
 $cli = eZCLI::instance();
-
+$doNotAppend = $options['do-not-append'];
 if ($options['url']) {
 
     $json = file_get_contents($options['url']);
@@ -45,10 +46,12 @@ if ($json) {
 
         $identifier = $serializer->serializeToYaml($json, $options['data']);
 
-        \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data'], [
-            'type' => 'class',
-            'identifier' => $identifier
-        ]);
+        if (!$doNotAppend) {
+            \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($options['data'], [
+                'type' => 'class',
+                'identifier' => $identifier
+            ]);
+        }
 
     } else {
         print_r(Yaml::dump($serializer->serialize($json), 10));

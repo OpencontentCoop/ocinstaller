@@ -76,7 +76,7 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
         $contentRepository->setEnvironment(EnvironmentLoader::loadPreset('content'));
 
         foreach ($contents as $identifier => $content){
-            $this->logger->info(" - " . $content['metadata']['remoteId']);
+            $this->logger->info(" - $identifier " . $content['metadata']['remoteId']);
 
             $sortData = false;
             if (isset($content['sort_data'])){
@@ -140,10 +140,20 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
                 $this->setSortAndPriority($node, $sortData);
             }
 
+            $this->rename($node);
+
             $this->installerVars['contenttree_' . $this->identifier . '_' . $identifier .  '_node'] = $node->attribute('node_id');
             $this->installerVars['contenttree_' . $this->identifier . '_' . $identifier . '_object'] = $node->attribute('contentobject_id');
             $this->installerVars['contenttree_' . $this->identifier . '_' . $identifier . '_path_string'] = $node->attribute('path_string');
         }
+    }
+
+    private function rename(\eZContentObjectTreeNode $node)
+    {
+        $object = $node->attribute('object');
+        $class = $object->contentClass();
+        $object->setName($class->contentObjectName($object));
+        $object->store();
     }
 
     private function installFromRemote($remoteUrl, $parentNodeId)

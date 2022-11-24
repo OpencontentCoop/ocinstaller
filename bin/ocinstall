@@ -62,6 +62,10 @@ try {
     $purgeStorage = $options['purge-storage'];
     $installOnlySchema = $options['only-schema'] !== null;
 
+    if ($cleanDb && $options['only-step']){
+        throw new Exception("Cannot set --cleanup and --only-step arguments at the same time");
+    }
+
     $cleanDataDirectory = $options['cleandata'] ? rtrim($options['cleandata']) : false;
 
     $languages = $options['languages'] ? $options['languages'] : 'ita-IT,eng-GB';

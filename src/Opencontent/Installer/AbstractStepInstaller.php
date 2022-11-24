@@ -4,7 +4,7 @@ namespace Opencontent\Installer;
 
 use eZDBInterface;
 
-abstract class AbstractStepInstaller
+abstract class AbstractStepInstaller implements InterfaceStepInstaller
 {
     /**
      * @var Logger

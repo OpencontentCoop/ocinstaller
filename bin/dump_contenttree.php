@@ -14,7 +14,7 @@ $script = eZScript::instance([
 ]);
 
 $script->startup();
-$options = $script->getOptions('[url:][id:][data:][prefix:][recursion:][classes:][append]',
+$options = $script->getOptions('[url:][id:][data:][prefix:][recursion:][classes:][append][do-not-append]',
     '',
     array(
         'url' => "Remote url class definition (https://.../api/opendata/v2/content/browse/...)",
@@ -24,6 +24,7 @@ $options = $script->getOptions('[url:][id:][data:][prefix:][recursion:][classes:
         'recursion' => "Recursion",
         'classes' => "Classes comma separated",
         'append' => "Append to installer.yml",
+        'do-not-append' => 'do-not-append'
     )
 );
 $script->initialize();
@@ -32,10 +33,12 @@ $cli = eZCLI::instance();
 $user = eZUser::fetchByName( 'admin' );
 eZUser::setCurrentlyLoggedInUser( $user , $user->attribute( 'contentobject_id' ) );
 
+$doNotAppend = $options['do-not-append'];
+
 function dumpContent($dataArray, $dataDir, $contentTreeName)
 {
     $contentNames = $dataArray['metadata']['name'];
-    $contentName = current($contentNames);
+    $contentName = isset($contentNames['ita-IT']) ? $contentNames['ita-IT'] : current($contentNames);
     $contentName = \Opencontent\Installer\Dumper\Tool::slugize($contentName);
     $filename = $contentName . '.yml';
 
@@ -56,6 +59,9 @@ function dumpContent($dataArray, $dataDir, $contentTreeName)
     if ($dataArray['data']['ita-IT']['aggiornamento'][0] == '') unset($dataArray['data']['ita-IT']['aggiornamento']);
     if ($dataArray['data']['ita-IT']['termine_pubblicazione'][0] == '') unset($dataArray['data']['ita-IT']['termine_pubblicazione']);
     if (empty($dataArray['data']['ita-IT']['fields_blocks'])) unset($dataArray['data']['ita-IT']['fields_blocks']);
+
+    rsort($cleanMetadata['languages']);
+    krsort($dataArray['data']);
 
     $cleanDataArray = [
         'metadata' => $cleanMetadata,
@@ -79,12 +85,12 @@ $avoidDuplications = [];
 
 function dumpTree($remoteRoot, $contentClient, $browser, $dataDir, $prefix, $maxRecursion = 3, $classes = false, $append = false, $recursion = 0, $parentTreeName = '')
 {
-    global $avoidDuplications;
+    global $avoidDuplications, $doNotAppend;
 
     $remoteRoot = json_decode(json_encode($remoteRoot), true);
     $dataList = [];
     $contentTreeNames = $remoteRoot['name'];
-    $contentTreeName = current($contentTreeNames);
+    $contentTreeName = isset($contentTreeNames['ita-IT']) ? $contentTreeNames['ita-IT'] : current($contentTreeNames);
     $currentTreeName = \Opencontent\Installer\Dumper\Tool::slugize($contentTreeName);
     $contentTreeName = $parentTreeName . \Opencontent\Installer\Dumper\Tool::slugizeAndCompress($contentTreeName);
     if (isset($avoidDuplications[$contentTreeName])){
@@ -109,7 +115,7 @@ function dumpTree($remoteRoot, $contentClient, $browser, $dataDir, $prefix, $max
     }
 
     eZCLI::instance()->warning($prefix . $contentTreeName);
-    if ($dataDir) {
+    if ($dataDir && !$doNotAppend) {
         \Opencontent\Installer\Dumper\Tool::appendToInstallerSteps($dataDir, [
             'type' => 'contenttree',
             'identifier' => $prefix . $contentTreeName,
