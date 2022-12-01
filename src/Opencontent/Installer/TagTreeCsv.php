@@ -314,6 +314,7 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
         /** @var Tag $tag */
         $tag = $result['tag'];
         $this->setTagTranslationsAndSynonyms($tag, $sourceRow);
+        $this->setTagDescriptions($tagObj, $sourceRow);
 
         $tagObj = \eZTagsObject::fetch((int)$tag->id);
         $tagObj->setAttribute('remote_id', $sourceRow['remote_id']);
@@ -323,12 +324,37 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
         return $tag;
     }
 
+    private function setTagDescriptions(\eZTagsObject $tag, $sourceRow)
+    {
+        $tagDescription = new \eZTagsDescription([
+            'keyword_id' => (int)$tag->attribute('id'),
+            'locale' => 'ita-IT',
+            'description_text' => $sourceRow['description_it']
+        ]);
+        $tagDescription->store();
+
+        $tagDescription = new \eZTagsDescription([
+            'keyword_id' => (int)$tag->attribute('id'),
+            'locale' => 'ger-DE',
+            'description_text' => $sourceRow['description_de']
+        ]);
+        $tagDescription->store();
+
+        $tagDescription = new \eZTagsDescription([
+            'keyword_id' => (int)$tag->attribute('id'),
+            'locale' => 'eng-GB',
+            'description_text' => $sourceRow['description_en']
+        ]);
+        $tagDescription->store();
+    }
+
     private function updateTag($sourceRow, $parentTag = null)
     {
         $tag = \eZTagsObject::fetchByRemoteID($sourceRow['remote_id']);
         if ($tag instanceof \eZTagsObject) {
             $tagValue = $this->tagRepository->read((int)$tag->attribute('id'), 0, 0);
             $this->setTagTranslationsAndSynonyms($tagValue, $sourceRow);
+            $this->setTagDescriptions($tag, $sourceRow);
         }
     }
 
