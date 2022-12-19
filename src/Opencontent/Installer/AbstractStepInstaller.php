@@ -119,5 +119,7 @@ abstract class AbstractStepInstaller implements InterfaceStepInstaller
         $this->db = $db;
     }
 
-
+    public function sync()
+    {
+    }
 }

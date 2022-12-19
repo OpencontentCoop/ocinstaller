@@ -62,4 +62,12 @@ abstract class ChainStepInstaller extends AbstractStepInstaller implements Inter
         }
         parent::setLogger($logger);
     }
+
+    public function sync()
+    {
+//        foreach ($this->stepInstallers as $stepInstaller){
+//            $stepInstaller->sync();
+//        }
+//        parent::sync();
+    }
 }

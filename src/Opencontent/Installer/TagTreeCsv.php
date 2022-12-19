@@ -2,6 +2,8 @@
 
 namespace Opencontent\Installer;
 
+use eZDB;
+use Opencontent\Installer\Dumper\Tool;
 use Opencontent\Opendata\Api\Structs\TagStruct;
 use Opencontent\Opendata\Api\Structs\TagSynonymStruct;
 use Opencontent\Opendata\Api\Structs\TagTranslationStruct;
@@ -85,7 +87,7 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
 
     public static function createTagList()
     {
-        $db = \eZDB::instance();
+        $db = eZDB::instance();
         $viewQuery = "
         CREATE MATERIALIZED VIEW IF NOT EXISTS ocinstall_tags AS
             with tag_list as (
@@ -140,12 +142,12 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
 
     public static function refreshTagList()
     {
-        \eZDB::instance()->query('REFRESH MATERIALIZED VIEW ocinstall_tags');
+        eZDB::instance()->query('REFRESH MATERIALIZED VIEW ocinstall_tags');
     }
 
     public static function dropTagList()
     {
-        \eZDB::instance()->query('DROP MATERIALIZED VIEW IF EXISTS ocinstall_tags');
+        eZDB::instance()->query('DROP MATERIALIZED VIEW IF EXISTS ocinstall_tags');
     }
 
     private function formatSynonymList($list)
@@ -156,7 +158,7 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
         return implode(';', $array);
     }
 
-    public function syncTagList($filepath, $doUpdate = false)
+    private function getTagList($filepath)
     {
         $fp = @fopen($filepath, 'r');
         $headers = [];
@@ -190,7 +192,14 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
             }
             $i++;
         }
+        @fclose($filepath);
 
+        return $source;
+    }
+
+    public function syncTagList($filepath, $doUpdate = false)
+    {
+        $source = $this->getTagList($filepath);
         $sourceHashes = array_column($source, 'hash');
         $sourceRoot = array_shift($source);
 
@@ -208,12 +217,12 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
         $modifiedSql = "select * from ocinstall_tags  
                             where path_string like $pathStringLikeSql 
                               and hash not in ('" . implode("','", $sourceHashes) . "')";
-        $hashIsNotInSource = \eZDB::instance()->arrayQuery($modifiedSql);
+        $hashIsNotInSource = eZDB::instance()->arrayQuery($modifiedSql);
         $hashIsNotInSourceRemoteIdList = array_column($hashIsNotInSource, 'remote_id');
 
         $needToUpdate = $needToAdd = $needToRemove = $missingHash = $removeHash = [];
 
-        $locals = \eZDB::instance()->arrayQuery(
+        $locals = eZDB::instance()->arrayQuery(
             "select * from ocinstall_tags where path_string like $pathStringLikeSql"
         );
 
@@ -241,7 +250,7 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
             if (count($needToUpdateRemoteIdList)) {
                 $sql .= " and remote_id not in ('" . implode("','", $needToUpdateRemoteIdList) . "')";
             }
-            $needToRemove = \eZDB::instance()->arrayQuery($sql);
+            $needToRemove = eZDB::instance()->arrayQuery($sql);
         }
 
         if (!$this->async) {
@@ -314,11 +323,11 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
         /** @var Tag $tag */
         $tag = $result['tag'];
         $this->setTagTranslationsAndSynonyms($tag, $sourceRow);
-        $this->setTagDescriptions($tagObj, $sourceRow);
 
         $tagObj = \eZTagsObject::fetch((int)$tag->id);
         $tagObj->setAttribute('remote_id', $sourceRow['remote_id']);
         $tagObj->store();
+        $this->setTagDescriptions($tagObj, $sourceRow);
 
         self::refreshTagList();
         return $tag;
@@ -347,6 +356,7 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
         ]);
         $tagDescription->store();
     }
+
 
     private function updateTag($sourceRow, $parentTag = null)
     {
@@ -411,4 +421,67 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
             }
         }
     }
+
+    public function sync()
+    {
+        self::createTagList();
+        self::refreshTagList();
+
+        $delimiter = ',';
+        $enclosure = '"';
+
+        $identifiers = (array)$this->step['identifiers'];
+        foreach ($identifiers as $identifier) {
+            $this->logger->info("Sync tag csv " . $identifier);
+            $filepath = $this->ioTools->getFile('tagtree_csv/' . $identifier . '.csv');
+            $source = $this->getTagList($filepath);
+            $sourceRoot = array_shift($source);
+            $rootTag = \eZTagsObject::fetchByRemoteID($sourceRoot['remote_id']);
+            $parentTagId = $rootTag->attribute('id');
+            $db = eZDB::instance();
+            $sql = "select * from ocinstall_tags where path_string = '/{$parentTagId}' or path_string like '/{$parentTagId}/%' order by path_string;";
+            $rows = $db->arrayQuery($sql);
+            $rows = $this->remapRows($rows);
+            if (count($rows)) {
+                $firstRow = array_shift($rows);
+                array_unshift($rows, $firstRow);
+                array_unshift($rows, array_keys($firstRow));
+                $fp = fopen($filepath, 'w');
+                foreach ($rows as $line) {
+                    fputcsv($fp, $line, $delimiter, $enclosure);
+                }
+                fclose($fp);
+            }
+        }
+
+        $tables = ['eztags', 'eztags_keyword'];
+        foreach ($tables as $table) {
+            $rows = pg_copy_to(eZDB::instance()->DBConnection, $table);
+            $tsv = implode("", $rows);
+            $filename = $table . '.tsv';
+            Tool::createFile(
+                $this->ioTools->getDataDir(),
+                'sql',
+                $filename,
+                $tsv
+            );
+        }
+    }
+
+    private function remapRows($source)
+    {
+        $map = [];
+        $i = 1;
+        foreach ($source as $index => $row){
+            $map[$row['id']] = $i;
+            $source[$index]['id'] = $i;
+            $i++;
+        }
+        foreach ($source as $index => $row){
+            $source[$index]['parent_id'] = $map[$row['parent_id']] ?? 0;
+        }
+
+        return $source;
+    }
+
 }

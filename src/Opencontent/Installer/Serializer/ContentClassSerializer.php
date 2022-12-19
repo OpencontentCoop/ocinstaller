@@ -4,7 +4,6 @@ namespace Opencontent\Installer\Serializer;
 
 use Opencontent\Installer\InstallerVars;
 use Symfony\Component\Yaml\Yaml;
-use Opencontent\Installer\Logger;
 
 class ContentClassSerializer
 {
@@ -47,15 +46,6 @@ class ContentClassSerializer
         'serialized_data_text' => 'SerializedDataText'
     );
 
-    private $identifier;
-
-    private $filename;
-
-    /**
-     * @var Logger
-     */
-    private $logger;
-
     /**
      * @var InstallerVars
      */
@@ -67,12 +57,14 @@ class ContentClassSerializer
 
     private $ignoreDefaultValues = true;
 
-    public function __construct(InstallerVars $installerVars = null)
+    private $preSerializer;
+
+    public function __construct(InstallerVars $installerVars = null, callable $preSerializer = null)
     {
-        $this->logger = new Logger();
         $this->installerVars = $installerVars;
         $this->attributeDefinition = \eZContentClassAttribute::definition()['fields'];
         $this->classDefinition = \eZContentClass::definition()['fields'];
+        $this->preSerializer = $preSerializer;
     }
 
     /**
@@ -98,9 +90,6 @@ class ContentClassSerializer
         } else {
             $data = $json;
         }
-
-        $this->identifier = $data['Identifier'];
-        $this->filename = $this->identifier . '.yml';
 
         $simplifiedData = [];
 
@@ -144,52 +133,14 @@ class ContentClassSerializer
 
     private function preSerialize($data)
     {
-        $staticMap = [
-            '"51"' => '"$content_Images_node"',
-            '"53"' => '"$content_Multimedia_node"',
-            '"66"' => '"$contenttree_OpenCity_Servizi_node"',
-            '"96"' => '"$contenttree_Classificazioni_Punti-di-contatto_node"',
-            '"82"' => '"$contenttree_Documenti-e-dati_Dataset_node"',
-            '"86"' => '"$contenttree_Documenti-e-dati_Documenti-tecnici-di-supporto_node"',
-            '"75"' => '"$contenttree_Amministrazione_Politici_node"',
-            '"76"' => '"$contenttree_Amministrazione_Uffici_node"',
-            '"60"' => '"$contenttree_OpenCity_Argomenti_node"',
-            '"90"' => '"$contenttree_Classificazioni_Condizioni-di-accesso_node"',
-            '"71"' => '"$contenttree_Amministrazione_Enti-e-fondazioni_node"',
-            '"70"' => '"$contenttree_Amministrazione_Aree-amministrative_node"',
-            '"73"' => '"$contenttree_Amministrazione_Organi-politici_node"',
-            '"92"' => '"$contenttree_Classificazioni_Costi-e-tariffe_node"',
-            '"97"' => '"$contenttree_Classificazioni_Regole-leggi-riferimenti-normativi-e-linee-guida-per-i-servizi_node"',
-            '"95"' => '"$contenttree_Classificazioni_Orari-strutture_node"',
-            '"93"' => '"$contenttree_Classificazioni_Estensioni-temporali-dei-dataset_node"',
-            '"94"' => '"$contenttree_Classificazioni_Orari-servizi_node"',
-            '"89"' => '"$contenttree_Classificazioni_Canali-digitali_node"',
-            '"91"' => '"$contenttree_Classificazioni_Cosa-puoi-richiedere_node"',
-            '"72"' => '"$contenttree_Vivere-il-comune_Luoghi_node"',
-            '"79"' => '"$contenttree_Vivere-il-comune_Eventi_node"',
-            '"59"' => '"$contenttree_OpenCity_Amministrazione_node"',
-            '"87"' => '"$contenttree_Documenti-e-dati_Modulistica_node"',
-            '"83"' => '"$contenttree_Documenti-e-dati_Documenti-albo-pretorio_node"',
-            '"88"' => '"$contenttree_Documenti-e-dati_Normative_node"',
-            '"139"' => '"$content_Ruoli_node"',
-
-        ];
-        foreach ($data['DataMap'] as $index => $dataMap){
-            foreach ($dataMap as $identifier => $datum){
-                if ($datum['DataTypeString'] === 'ezobjectrelationlist'){
-                    $dataText5 = $datum['DataText5'];
-                    foreach ($staticMap as $find => $replace){
-                        $dataText5 = str_replace($find, $replace, $dataText5);
-                    }
-                    $data['DataMap'][$index][$identifier]['DataText5'] = $dataText5;
-                }
-            }
+        if (is_callable($this->preSerializer)){
+            $data = call_user_func($this->preSerializer, $data);
         }
 
         return $data;
     }
 
-    public function serializeToYaml($source, $targetDir)
+    public function serializeToYaml($source, $targetDir, $storeData = true)
     {
         if (is_string($source)) {
             $source = json_decode($source, true);
@@ -199,7 +150,16 @@ class ContentClassSerializer
         $data = $this->serialize($source);
         $dataYaml = Yaml::dump($data, 10);
 
-        $identifier = \Opencontent\Installer\Dumper\Tool::slugize($data['identifier']);
+        if (!$storeData){
+            return $dataYaml;
+        }
+
+        return $this->storeData($data['identifier'], $dataYaml, $targetDir);
+    }
+
+    private function storeData($identifier, $dataYaml, $targetDir)
+    {
+        $identifier = \Opencontent\Installer\Dumper\Tool::slugize($identifier);
         $filename = $identifier . '.yml';
 
         $directory = rtrim($targetDir, '/') . '/classes';

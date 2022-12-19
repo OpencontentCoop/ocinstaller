@@ -31,28 +31,30 @@ class Installer
     /**
      * @var Logger
      */
-    private $logger;
+    protected $logger;
 
     /**
      * @var IOTools
      */
-    private $ioTools;
+    protected $ioTools;
 
     /**
      * @var StepInstallerFactory
      */
-    private $installerFactory;
+    protected $installerFactory;
 
     /**
      * @var bool
      */
-    private $dryRun = false;
+    protected $dryRun = false;
 
-    private $type;
+    protected $type;
 
-    private $currentVersion;
+    protected $currentVersion;
 
-    private $ignoreVersionCheck = false;
+    protected $ignoreVersionCheck = false;
+
+    protected $initLogMessage = 'Install %s version %s';
 
     /**
      * OpenContentInstaller constructor.
@@ -77,7 +79,7 @@ class Installer
             throw new Exception("Invalid installer type $this->type");
         }
 
-        $this->logger->info("Install " . $this->installerData['name'] . ' version ' . $this->installerData['version']);
+        $this->logger->info(sprintf($this->initLogMessage, $this->installerData['name'], $this->installerData['version']));
 
         $this->ioTools = new IOTools($this->dataDir, $this->installerVars);
 
@@ -245,6 +247,10 @@ class Installer
     protected function buildInstallerByType($type) :AbstractStepInstaller
     {
         switch ($type) {
+
+            case 'rename':
+                $installer = new Renamer();
+                break;
 
             case 'tagtree_csv':
                 $installer = new TagTreeCsv();

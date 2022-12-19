@@ -5,6 +5,8 @@ namespace Opencontent\Installer;
 
 class InstallerVars extends \ArrayObject
 {
+    public static $useExceptions = true;
+
     /**
      * @var Logger
      */
@@ -52,7 +54,7 @@ class InstallerVars extends \ArrayObject
     {
         if (is_string($value)) {
             if (strpos($value, '::') !== false) {
-                list($class, $method) = explode('::', $value);
+                [$class, $method] = explode('::', $value);
                 if (method_exists($class, $method)) {
                     $value = $class::{$method}();
                 }else{
@@ -78,7 +80,7 @@ class InstallerVars extends \ArrayObject
 
             if (strpos($value, 'ini(') !== false) {
                 $iniVariable = substr($value, 4, -1);
-                list($group, $variable, $file) = explode(',', $iniVariable);
+                [$group, $variable, $file] = explode(',', $iniVariable);
                 $value = \eZINI::instance($file)->variable($group, $variable);
             }
 
@@ -150,7 +152,12 @@ class InstallerVars extends \ArrayObject
                     }
                 }
             }
-            throw new \Exception("[$context] Unresolved variables: " . implode(', ', $unknowVars));
+            $errorMessage = "[$context] Unresolved variables: " . implode(', ', $unknowVars);
+            if (self::$useExceptions === true){
+                throw new \Exception($errorMessage);
+            }elseif (self::$useExceptions === false){
+                $this->getLogger()->error($errorMessage);
+            }
         }
     }
 

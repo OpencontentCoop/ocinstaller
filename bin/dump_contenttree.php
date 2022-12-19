@@ -99,8 +99,7 @@ function dumpTree($remoteRoot, $contentClient, $browser, $dataDir, $prefix, $max
     }else{
         $avoidDuplications[$contentTreeName] = 1;
     }
-    eZCLI::instance()->output("[$recursion] Fetch $contentTreeName");
-
+    eZCLI::instance()->output("[$recursion/$maxRecursion] Fetch $contentTreeName");
     foreach ($remoteRoot['children'] as $childNode) {
         $childNode = (array)$childNode;
         if ((is_array($classes) && in_array($childNode['classIdentifier'], $classes)) || $classes === false) {
