@@ -19,7 +19,9 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
     public function dryRun()
     {
         $identifier = $this->step['identifier'];
-        $this->logger->info("Install content " . $identifier);
+        $needLock = $this->step['lock'] ?? false;
+        $lockLog = $needLock ?? ' and lock';
+        $this->logger->info("Install{$lockLog} content " . $identifier);
         $this->installerVars['content_' . $identifier . '_node'] = 0;
         $this->installerVars['content_' . $identifier . '_object'] = 0;
         $this->installerVars['content_' . $identifier . '_path_string'] = 0;
@@ -27,6 +29,8 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
 
     public function install()
     {
+        $needLock = $this->step['lock'] ?? false;
+        $lockLog = $needLock ?? ' and lock';
         $this->identifier = $this->step['identifier'];
         $this->swapWith = isset($this->step['swap_with']) ? $this->step['swap_with'] : false;
         $this->removeSwapped = isset($this->step['remove_swapped']) && $this->step['remove_swapped'] == true;
@@ -50,7 +54,7 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
         $alreadyExists = isset($content['metadata']['remoteId']) ? \eZContentObject::fetchByRemoteID($content['metadata']['remoteId']) : false;
         
         if ($alreadyExists){
-            $this->logger->info("Update content " . $this->identifier);
+            $this->logger->info("Update{$lockLog} content " . $this->identifier);
             $content['metadata']['parentNodes'] = [$alreadyExists->mainNode()->attribute('parent_node_id')];
             if ($this->doUpdate) {
                 $result = $contentRepository->update($content);
@@ -61,7 +65,7 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
             }
             $isUpdate = true;
         }else {
-            $this->logger->info("Install content " . $this->identifier);
+            $this->logger->info("Install{$lockLog} content " . $this->identifier);
             $result = $contentRepository->create($content);
             $nodeId = $result['content']['metadata']['mainNodeId'];
         }
@@ -85,6 +89,11 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
         $this->installerVars['content_' . $this->identifier . '_node'] = $node->attribute('node_id');
         $this->installerVars['content_' . $this->identifier . '_object'] = $node->attribute('contentobject_id');
         $this->installerVars['content_' . $this->identifier . '_path_string'] = $node->attribute('path_string');
+
+        $object = \eZContentObject::fetch((int)$result['content']['metadata']['id']);
+        if ($object && $needLock){
+            $this->lockObject($object);
+        }
     }
 
     private function rename(\eZContentObjectTreeNode $node)

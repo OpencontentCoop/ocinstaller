@@ -122,4 +122,24 @@ abstract class AbstractStepInstaller implements InterfaceStepInstaller
     public function sync()
     {
     }
+
+    protected function lockObject(\eZContentObject $object)
+    {
+        $stateGroup = \eZContentObjectStateGroup::fetchByIdentifier('opencity_lock');
+        if ($stateGroup instanceof \eZContentObjectStateGroup) {
+            $state = \eZContentObjectState::fetchByIdentifier('locked', $stateGroup->attribute('id'));
+            $object->assignState($state);
+            $this->getLogger()->info(' -> lock');
+        }
+    }
+
+    protected function unlockObject(\eZContentObject $object)
+    {
+        $stateGroup = \eZContentObjectStateGroup::fetchByIdentifier('opencity_lock');
+        if ($stateGroup instanceof \eZContentObjectStateGroup) {
+            $state = \eZContentObjectState::fetchByIdentifier('not_locked', $stateGroup->attribute('id'));
+            $object->assignState($state);
+            $this->getLogger()->info(' -> unlock');
+        }
+    }
 }
