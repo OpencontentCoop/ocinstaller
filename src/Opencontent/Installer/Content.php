@@ -25,6 +25,19 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
         $this->installerVars['content_' . $identifier . '_path_string'] = 0;
     }
 
+    private function parseVars($item)
+    {
+        if (is_array($item)) {
+            foreach ($item as $index => $i) {
+                $item[$index] = $this->parseVars($i);
+            }
+
+            return $item;
+        }
+
+        return $this->installerVars->parseVarValue($item);
+    }
+
     public function install()
     {
         $this->identifier = $this->step['identifier'];
@@ -35,7 +48,9 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
             $this->doUpdate = $this->step['update'] == 1;
         }
 
-        $content = $this->ioTools->getJsonContents("contents/{$this->identifier}.yml");
+        $content = $this->parseVars(
+            $this->ioTools->getJsonContents("contents/{$this->identifier}.yml")
+        );
 
         $sortData = false;
         if (isset($content['sort_data'])){

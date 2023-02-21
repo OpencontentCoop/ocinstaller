@@ -127,6 +127,15 @@ class InstallerVars extends \ArrayObject
                 $expressionResult = implode(',', $list);
                 $value = trim(substr($parts[0], 0, -1)) . $expressionResult . implode(')', $rightParts);
             }
+
+            if (strpos($value, 'node_id_from_remote_id(') !== false) {
+                $var = trim(substr($value, 23, -1));
+                $object = \eZContentObject::fetchByRemoteID($var);
+                if (!$object instanceof \eZContentObject){
+                    throw new \Exception("Object with remote_id $var not found");
+                }
+                $value = $object->mainNode()->attribute('node_id');
+            }
         }
 
         return $value;
