@@ -44,7 +44,8 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
         $class = $tools->getLocale();
         $this->installerVars['class_' . $this->identifier] = $class->attribute('id');
 
-        OCOpenDataClassRepositoryCache::clearCache();
+        $repository = new \Opencontent\Opendata\Api\ClassRepository();
+        $repository->clearCache($this->identifier);
 
         $handler = \eZExpiryHandler::instance();
         $handler->setTimestamp('class-identifier-cache', -1);

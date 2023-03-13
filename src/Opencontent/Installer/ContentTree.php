@@ -123,7 +123,10 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
                     
                 }else{
                     $this->getLogger()->error(' -> already exists');
-                    $nodeId = $alreadyExists->mainNode()->attribute('node_id');
+                    $node = $alreadyExists->mainNode();
+                    if ($node instanceof \eZContentObjectTreeNode) {
+                        $nodeId = $node->attribute('node_id');
+                    }
                 }
                 $isUpdate = true;
             }else {
@@ -131,9 +134,9 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
                 $nodeId = $result['content']['metadata']['mainNodeId'];
             }
 
-            $node = \eZContentObjectTreeNode::fetch($nodeId);
+            $node = \eZContentObjectTreeNode::fetch((int)$nodeId);
             if (!$node instanceof \eZContentObjectTreeNode){
-                throw new \Exception("Node $nodeId not found");
+                throw new \Exception("Node $nodeId not found for existing object " . $content['metadata']['remoteId']);
             }
 
             if ($sortData && (($this->doUpdate && $isUpdate) || !$isUpdate)){
