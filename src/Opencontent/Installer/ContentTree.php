@@ -19,6 +19,7 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
     {
         $this->identifier = $this->step['identifier'];
         $this->logger->info("Install contenttree " . $this->identifier);
+        $contents = [];
         if (is_dir($this->ioTools->getDataDir() . "/contenttrees/{$this->identifier}")) {
             $files = \eZDir::findSubitems($this->ioTools->getDataDir() . "/contenttrees/{$this->identifier}", 'f');
             foreach ($files as $file) {
@@ -32,6 +33,10 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
             $this->installerVars['contenttree_' . $this->identifier . '_' . $identifier .  '_node'] = 0;
             $this->installerVars['contenttree_' . $this->identifier . '_' . $identifier . '_object'] = 0;
             $this->installerVars['contenttree_' . $this->identifier . '_' . $identifier . '_path_string'] = 0;
+        }
+        $resetFields = $this->step['reset'] ?? [];
+        if (count($resetFields)) {
+            $this->logger->info(" - reset " . implode(', ', $resetFields));
         }
     }
 
@@ -120,7 +125,7 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
                         \eZContentOperationCollection::removeNodes(array_keys($removeNodeAssignments));
                         $nodeId = \eZContentObject::fetchByRemoteID($payload['metadata']['remoteId'])->mainNodeID();
                     }
-                    
+
                 }else{
                     $this->getLogger()->error(' -> already exists');
                     $node = $alreadyExists->mainNode();
@@ -143,6 +148,11 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
                 $this->setSortAndPriority($node, $sortData);
             }
 
+            $resetFields = $this->step['reset'] ?? [];
+            if (count($resetFields) && $isUpdate) {
+                $this->resetContentFields($resetFields, $payload, $node, $contentRepository);
+            }
+
             $this->rename($node);
 
             $this->installerVars['contenttree_' . $this->identifier . '_' . $identifier .  '_node'] = $node->attribute('node_id');
@@ -150,6 +160,7 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
             $this->installerVars['contenttree_' . $this->identifier . '_' . $identifier . '_path_string'] = $node->attribute('path_string');
         }
     }
+
 
     private function rename(\eZContentObjectTreeNode $node)
     {

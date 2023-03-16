@@ -3,6 +3,8 @@
 namespace Opencontent\Installer;
 
 use eZDBInterface;
+use Opencontent\Opendata\Api\ContentRepository;
+use Opencontent\Opendata\Rest\Client\PayloadBuilder;
 
 abstract class AbstractStepInstaller implements InterfaceStepInstaller
 {
@@ -121,5 +123,48 @@ abstract class AbstractStepInstaller implements InterfaceStepInstaller
 
     public function sync()
     {
+    }
+
+    protected function resetContentFields(
+        array $resetFields,
+        PayloadBuilder $payload,
+        \eZContentObjectTreeNode $node,
+        ContentRepository $contentRepository
+    ) {
+        if (count($resetFields)) {
+            $data = $payload->getData();
+            foreach ($data as $locale => $values){
+                foreach ($values as $id => $value){
+                    if (!in_array($id, $resetFields)){
+                        $payload->unSetData($id, $locale);
+                    }elseif (empty($value)){
+                        $zoneRemoteId = substr('empty_' . md5(mt_rand() . microtime()), 0, 6);
+                        $dataMap = $node->dataMap();
+                        if ($dataMap[$id]->DataTypeString === \eZPageType::DATA_TYPE_STRING) {
+                            $payload->setData($locale, $id, [
+                                'zone_layout' => 'desItaGlobal',
+                                'global' => [
+                                    'zone_id' => $zoneRemoteId,
+                                    'blocks' => [
+                                        [
+                                            'id' => 'empty_html_block',
+                                            'name' => '',
+                                            'type' => 'HTML',
+                                            'view' => 'html',
+                                            'custom_attributes' => [
+                                                'html' => '',
+                                            ],
+                                            'valid_items' => []
+                                        ]
+                                    ],
+                                ],
+                            ]);
+                        }
+                    }
+                }
+            }
+            $this->logger->warning(" - Reset fields: " . implode(', ', $resetFields));
+            $contentRepository->update($payload->getArrayCopy());
+        }
     }
 }

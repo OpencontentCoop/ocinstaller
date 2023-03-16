@@ -5,6 +5,7 @@ namespace Opencontent\Installer;
 use Opencontent\Opendata\Api\ContentRepository;
 use Opencontent\Opendata\Api\EnvironmentLoader;
 use eZContentOperationCollection;
+use Opencontent\Opendata\Rest\Client\PayloadBuilder;
 
 class Content extends AbstractStepInstaller implements InterfaceStepInstaller
 {
@@ -20,6 +21,10 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
     {
         $identifier = $this->step['identifier'];
         $this->logger->info("Install content " . $identifier);
+        $resetFields = $this->step['reset'] ?? [];
+        if (count($resetFields)) {
+            $this->logger->info(" - reset " . implode(', ', $resetFields));
+        }
         $this->installerVars['content_' . $identifier . '_node'] = 0;
         $this->installerVars['content_' . $identifier . '_object'] = 0;
         $this->installerVars['content_' . $identifier . '_path_string'] = 0;
@@ -93,6 +98,11 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
 
         if ($sortData && (($this->doUpdate && $isUpdate) || !$isUpdate)){
             $this->setSortAndPriority($node, $sortData);
+        }
+
+        $resetFields = $this->step['reset'] ?? [];
+        if (count($resetFields) && $isUpdate) {
+            $this->resetContentFields($resetFields, new PayloadBuilder($content), $node, $contentRepository);
         }
 
         $this->rename($node);
