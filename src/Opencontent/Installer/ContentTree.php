@@ -102,9 +102,7 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
             $isUpdate = false;
             $alreadyExists = isset($content['metadata']['remoteId']) ? \eZContentObject::fetchByRemoteID($payload['metadata']['remoteId']) : false;
             if ($alreadyExists){
-
                 if ($this->doUpdate) {
-
                     $removeNodeAssignments = [];
                     if ($this->doRemoveLocations) {
 
@@ -150,7 +148,7 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
 
             $resetFields = $this->step['reset'] ?? [];
             if (count($resetFields) && $isUpdate) {
-                $this->resetContentFields($resetFields, $payload, $node, $contentRepository);
+                $this->resetContentFields($resetFields, $payload, $alreadyExists);
             }
 
             $this->rename($node);
@@ -164,7 +162,8 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
 
     private function rename(\eZContentObjectTreeNode $node)
     {
-        $object = $node->attribute('object');
+        \eZContentObject::clearCache([$node->attribute('contentobject_id')]);
+        $object = \eZContentObject::fetch((int)$node->attribute('contentobject_id'));
         $class = $object->contentClass();
         $object->setName($class->contentObjectName($object));
         $object->store();

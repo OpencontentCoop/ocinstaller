@@ -102,7 +102,7 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
 
         $resetFields = $this->step['reset'] ?? [];
         if (count($resetFields) && $isUpdate) {
-            $this->resetContentFields($resetFields, new PayloadBuilder($content), $node, $contentRepository);
+            $this->resetContentFields($resetFields, new PayloadBuilder($content), $alreadyExists);
         }
 
         $this->rename($node);
@@ -114,7 +114,8 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
 
     private function rename(\eZContentObjectTreeNode $node)
     {
-        $object = $node->attribute('object');
+        \eZContentObject::clearCache([$node->attribute('contentobject_id')]);
+        $object = \eZContentObject::fetch((int)$node->attribute('contentobject_id'));
         $class = $object->contentClass();
         $object->setName($class->contentObjectName($object));
         $object->store();

@@ -4,6 +4,7 @@ namespace Opencontent\Installer;
 
 use eZDBInterface;
 use Opencontent\Opendata\Api\ContentRepository;
+use Opencontent\Opendata\Api\EnvironmentLoader;
 use Opencontent\Opendata\Rest\Client\PayloadBuilder;
 
 abstract class AbstractStepInstaller implements InterfaceStepInstaller
@@ -128,10 +129,9 @@ abstract class AbstractStepInstaller implements InterfaceStepInstaller
     protected function resetContentFields(
         array $resetFields,
         PayloadBuilder $payload,
-        \eZContentObjectTreeNode $node,
-        ContentRepository $contentRepository
+        \eZContentObject $object = null
     ) {
-        if (count($resetFields)) {
+        if (count($resetFields) && $object instanceof \eZContentObject && $this->installerVars['reset']) {
             $data = $payload->getData();
             foreach ($data as $locale => $values){
                 foreach ($values as $id => $value){
@@ -139,7 +139,7 @@ abstract class AbstractStepInstaller implements InterfaceStepInstaller
                         $payload->unSetData($id, $locale);
                     }elseif (empty($value)){
                         $zoneRemoteId = substr('empty_' . md5(mt_rand() . microtime()), 0, 6);
-                        $dataMap = $node->dataMap();
+                        $dataMap = $object->dataMap();
                         if ($dataMap[$id]->DataTypeString === \eZPageType::DATA_TYPE_STRING) {
                             $payload->setData($locale, $id, [
                                 'zone_layout' => 'desItaGlobal',
@@ -163,8 +163,12 @@ abstract class AbstractStepInstaller implements InterfaceStepInstaller
                     }
                 }
             }
-            $this->logger->warning(" - Reset fields: " . implode(', ', $resetFields));
+            $contentRepository = new ContentRepository();
+            $contentRepository->setEnvironment(EnvironmentLoader::loadPreset('content'));
+            \eZContentObject::clearCache([$object->attribute('id')]);
             $contentRepository->update($payload->getArrayCopy());
+            $this->logger->warning(" - Reset fields: " . implode(', ', $resetFields));
+            \eZContentObject::clearCache([$object->attribute('id')]);
         }
     }
 }
