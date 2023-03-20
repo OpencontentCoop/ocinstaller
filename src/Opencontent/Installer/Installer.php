@@ -222,6 +222,15 @@ class Installer
 
         $this->loadDataVariables();
 
+        if (isset($options['vars']) && !empty($options['vars'])){
+            $keyValueList = explode(',', $options['vars']);
+            foreach ($keyValueList as $keyValue){
+                [$key, $value] = explode(':', $keyValue);
+                $this->logger->warning("Override variable $key = $value");
+                $this->installerVars[trim($key)] = trim($value);
+            }
+        }
+
         foreach ($steps as $index => $step) {
 
             $stepName = isset($step['identifier']) ? $step['type'] . ' ' . $step['identifier'] : $step['type'];

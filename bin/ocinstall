@@ -12,7 +12,7 @@ $script = eZScript::instance([
 ]);
 
 $script->startup();
-$options = $script->getOptions('[languages:][cleandata:][cleanup][exlude-extension-schemas][only-schema][only-data][embed-dfs-schema][dry-run][force][only-step:][no-interaction][purge-cache][purge-storage]',
+$options = $script->getOptions('[languages:][cleandata:][cleanup][exlude-extension-schemas][only-schema][only-data][embed-dfs-schema][dry-run][force][only-step:][no-interaction][purge-cache][purge-storage][vars:]',
     '[data]',
     array(
         'cleanup' => "Cleanup db before install",
@@ -28,6 +28,7 @@ $options = $script->getOptions('[languages:][cleandata:][cleanup][exlude-extensi
         'no-interaction' => 'Don\'t ask don\'t tell',
         'purge-cache' => 'Delete cache directory before install',
         'purge-storage' => 'Delete storage directory before install',
+        'vars' => 'Add or override installer vars in format key:value,key2:value2',
     )
 );
 
