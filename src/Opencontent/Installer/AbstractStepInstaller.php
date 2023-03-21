@@ -2,6 +2,7 @@
 
 namespace Opencontent\Installer;
 
+use eZContentObject;
 use eZDBInterface;
 use Opencontent\Opendata\Api\ContentRepository;
 use Opencontent\Opendata\Api\EnvironmentLoader;
@@ -129,15 +130,15 @@ abstract class AbstractStepInstaller implements InterfaceStepInstaller
     protected function resetContentFields(
         array $resetFields,
         PayloadBuilder $payload,
-        \eZContentObject $object = null
+        eZContentObject $object = null
     ) {
-        if (count($resetFields) && $object instanceof \eZContentObject && $this->installerVars['reset']) {
+        if (count($resetFields) && $object instanceof eZContentObject && $this->installerVars['reset']) {
             $data = $payload->getData();
-            foreach ($data as $locale => $values){
-                foreach ($values as $id => $value){
-                    if (!in_array($id, $resetFields)){
+            foreach ($data as $locale => $values) {
+                foreach ($values as $id => $value) {
+                    if (!in_array($id, $resetFields)) {
                         $payload->unSetData($id, $locale);
-                    }elseif (empty($value)){
+                    } elseif (empty($value)) {
                         $zoneRemoteId = substr('empty_' . md5(mt_rand() . microtime()), 0, 6);
                         $dataMap = $object->dataMap();
                         if ($dataMap[$id]->DataTypeString === \eZPageType::DATA_TYPE_STRING) {
@@ -165,10 +166,45 @@ abstract class AbstractStepInstaller implements InterfaceStepInstaller
             }
             $contentRepository = new ContentRepository();
             $contentRepository->setEnvironment(EnvironmentLoader::loadPreset('content'));
-            \eZContentObject::clearCache([$object->attribute('id')]);
+            eZContentObject::clearCache([$object->attribute('id')]);
             $contentRepository->update($payload->getArrayCopy());
             $this->logger->warning(" - Reset fields: " . implode(', ', $resetFields));
-            \eZContentObject::clearCache([$object->attribute('id')]);
+            eZContentObject::clearCache([$object->attribute('id')]);
         }
     }
+
+    protected function lockContentByNode(\eZContentObjectTreeNode $node)
+    {
+        eZContentObject::clearCache();
+        $this->lockContent($node->object());
+    }
+
+    protected function lockContent(eZContentObject $object)
+    {
+        $stateGroup = \eZContentObjectStateGroup::fetchByIdentifier('opencity_lock');
+        if ($stateGroup instanceof \eZContentObjectStateGroup) {
+            $state = \eZContentObjectState::fetchByIdentifier('locked', $stateGroup->attribute('id'));
+            $object->assignState($state);
+            $this->getLogger()->warning(' -> Lock content');
+        }
+    }
+
+    protected function lockContentByRemoteId($remoteId)
+    {
+        eZContentObject::clearCache();
+        $object = eZContentObject::fetchByRemoteID($remoteId);
+        if ($object instanceof eZContentObject) {
+            $this->lockContent($object);
+        }
+    }
+
+//    protected function unlockObject(eZContentObject $object)
+//    {
+//        $stateGroup = \eZContentObjectStateGroup::fetchByIdentifier('opencity_lock');
+//        if ($stateGroup instanceof \eZContentObjectStateGroup) {
+//            $state = \eZContentObjectState::fetchByIdentifier('not_locked', $stateGroup->attribute('id'));
+//            $object->assignState($state);
+//            $this->getLogger()->info(' -> unlock');
+//        }
+//    }
 }
