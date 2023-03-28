@@ -14,7 +14,7 @@ $script = eZScript::instance([
 ]);
 
 $script->startup();
-$options = $script->getOptions('[file:]', '', []);
+$options = $script->getOptions('[file:][dry-run]', '', []);
 $cli = eZCLI::instance();
 $script->initialize();
 
@@ -25,11 +25,18 @@ if (!file_exists($file)){
     $error = false;
     eZSiteData::create('ocinstall_ttc_' . md5($file), 1)->store();
     try {
+        TagTreeCsv::createTagList();
+        TagTreeCsv::refreshTagList();
         $installer = new TagTreeCsv();
-        $installer->setLogger(new Logger());
-        $installer->syncTagList($options['file'], true);
+        $logger = new Logger();
+        $logger->isVerbose = $options['verbose'];
+        $installer->setLogger($logger);
+        $doUpdate = !$options['dry-run'];
+        $doRemove = !$options['dry-run'];
+        $installer->syncTagList($options['file'], $doUpdate, $doRemove);
     }catch (Exception $e){
         $error = $e->getMessage();
+        $cli->error($error);
     }
     eZSiteData::fetchByName('ocinstall_ttc_' . md5($file))->remove();
     $script->shutdown(intval($error !== false), $error);

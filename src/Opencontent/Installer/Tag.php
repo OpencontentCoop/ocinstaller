@@ -197,11 +197,13 @@ class Tag extends TagTree
             }
 
             $tagTranslation = eZTagsKeyword::fetch($tag->attribute('id'), $locale, true);
-            $tagTranslation->setAttribute('keyword', $newKeyword);
-            $tagTranslation->setAttribute('status', eZTagsKeyword::STATUS_PUBLISHED);
-            $tagTranslation->store();
-            $tag->updateMainTranslation($locale);
-            $tag->setAlwaysAvailable($alwaysAvailable);
+            if ($tagTranslation) {
+                $tagTranslation->setAttribute('keyword', $newKeyword);
+                $tagTranslation->setAttribute('status', eZTagsKeyword::STATUS_PUBLISHED);
+                $tagTranslation->store();
+                $tag->updateMainTranslation($locale);
+                $tag->setAlwaysAvailable($alwaysAvailable);
+            }
 
             $tag->setAttribute('parent_id', $newParentID);
             $tag->store();

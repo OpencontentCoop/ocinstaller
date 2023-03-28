@@ -197,7 +197,7 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
         return $source;
     }
 
-    public function syncTagList($filepath, $doUpdate = false)
+    public function syncTagList($filepath, $doUpdate = false, $doRemove = false)
     {
         $source = $this->getTagList($filepath);
         $sourceHashes = array_column($source, 'hash');
@@ -268,21 +268,31 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
         }
 
         if ($doUpdate) {
+            if (count($needToAdd) || count($needToUpdate) || count($needToRemove)) {
+                $this->logger->debug('Process modifications');
+            }
             array_unshift($source, $sourceRoot);
             foreach ($needToAdd as $item) {
                 $parentTag = $this->findParent($item, $source);
-                if (!$this->async) $this->logger->notice('   + ' . $item['keyword_it']);
+                if (!$this->async) $this->logger->debug(' - add #' . $item['id'] . ' ' . $item['keyword_it']);
                 $this->createTag($item, $parentTag);
             }
             foreach ($needToUpdate as $item) {
                 $parentTag = $this->findParent($item, $source);
-                if (!$this->async) $this->logger->warning('   * ' . $item['keyword_it']);
+                if (!$this->async) $this->logger->debug(' - update #' . $item['id'] . ' ' . $item['keyword_it']);
                 $this->updateTag($item, $parentTag);
             }
             foreach ($needToRemove as $item) {
-                $parentTag = $this->findParent($item, $source);
-//                if (!$this->async) $this->logger->error('   - ' . $item['keyword_it']);
-                $this->removeTag($item, $parentTag);
+                if ($doRemove) {
+                    $itemTag = \eZTagsObject::fetch(($item['id']));
+                    if ($itemTag instanceof \eZTagsObject) {
+                        $parentTag = $itemTag->getParent();
+                        if (!$this->async) {
+                            $this->logger->debug(' - remove #' . $item['id'] . ' ' . $item['keyword_it']);
+                        }
+                        $this->removeTag($item, $parentTag);
+                    }
+                }
             }
         }
     }
@@ -290,6 +300,7 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
     private function findParent($needle, $stack)
     {
         foreach ($stack as $item) {
+            $this->logger->debug($item['id'] . ' ' . $needle['parent_id'] );
             if ($item['id'] == $needle['parent_id']) {
                 $parent = \eZTagsObject::fetchByRemoteID($item['remote_id']);
                 if ($parent instanceof \eZTagsObject) {
@@ -370,7 +381,23 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
 
     private function removeTag($sourceRow, $parentTag = null)
     {
-        //@todo
+        $tagInstaller = new \Opencontent\Installer\Tag();
+        $tagInstaller->setLogger($this->getLogger());
+        $installerVars = new InstallerVars();
+        $installerVars->setLogger($this->getLogger());
+        $tagInstaller->setInstallerVars($this->installerVars ?? $installerVars);
+        $tagInstaller->setStep([
+            'type' => 'remove_tag',
+            'parent' => $parentTag instanceof \eZTagsObject ? $parentTag->attribute('id') : 0,
+            'tags' => [
+                [
+                    'keyword' => $sourceRow['keyword_it'],
+                    'locale' => 'ita-IT',
+                    'alwaysAvailable' => true
+                ]
+            ]
+        ]);
+        $tagInstaller->install();
     }
 
     private function setTagTranslationsAndSynonyms(Tag $tag, $sourceRow)
