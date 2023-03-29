@@ -300,7 +300,7 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
     private function findParent($needle, $stack)
     {
         foreach ($stack as $item) {
-            $this->logger->debug($item['id'] . ' ' . $needle['parent_id'] );
+//            $this->logger->debug($item['id'] . ' ' . $needle['parent_id'] );
             if ($item['id'] == $needle['parent_id']) {
                 $parent = \eZTagsObject::fetchByRemoteID($item['remote_id']);
                 if ($parent instanceof \eZTagsObject) {
