@@ -190,6 +190,23 @@ class Installer
             $version->setAttribute('value', $this->installerData['version']);
         }
         $version->store();
+        $this->storeDataDirForVersion();
+    }
+
+    private function storeDataDirForVersion()
+    {
+        $siteDataName = 'path_' . $this->getSiteDataName() . '@' . $this->installerData['version'];
+        $dataDir = realpath($this->dataDir);
+        $version = eZSiteData::fetchByName($siteDataName);
+        if (!$version instanceof eZSiteData) {
+            $version = new eZSiteData([
+                'name' => $siteDataName,
+                'value' => $dataDir
+            ]);
+        } else {
+            $version->setAttribute('value', $dataDir);
+        }
+        $version->store();
     }
 
     /**
