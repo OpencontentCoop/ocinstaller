@@ -202,6 +202,7 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
         $source = $this->getTagList($filepath);
         $sourceHashes = array_column($source, 'hash');
         $sourceRoot = array_shift($source);
+        array_unshift($source, $sourceRoot);
 
         $rootTag = \eZTagsObject::fetchByRemoteID($sourceRoot['remote_id']);
         if (!$rootTag instanceof \eZTagsObject) {
@@ -320,6 +321,9 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
      */
     private function createTag($sourceRow, $parentTag = null)
     {
+        if ($sourceRow['keyword_it'].$sourceRow['keyword_de'].$sourceRow['keyword_en'] === ''){
+            throw new Exception('Empty tag detected');
+        }
         $parentTagId = $parentTag instanceof \eZTagsObject ? (int)$parentTag->attribute('id') : 0;
         if ($this->async) {
             \eZDebug::writeError('Create tag ' . $sourceRow['keyword_it'], 'Installer');
