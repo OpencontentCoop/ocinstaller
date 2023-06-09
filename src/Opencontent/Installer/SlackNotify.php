@@ -4,7 +4,7 @@ namespace Opencontent\Installer;
 
 class SlackNotify
 {
-    public static function notify($slackEndpoint, $message)
+    public static function notify($endpoint, $message)
     {
         $ch = curl_init($endpoint);
         $data = json_encode([
