@@ -95,8 +95,21 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
                 unset($content['sort_data']);
             }
 
-            $client = new HttpClient('');
-            $payload = $client->getPayload($content);
+            unset($content['metadata']['id']);
+            unset($content['metadata']['class']);
+            unset($content['metadata']['sectionIdentifier']);
+            unset($content['metadata']['ownerId']);
+            unset($content['metadata']['ownerName']);
+            unset($content['metadata']['mainNodeId']);
+            unset($content['metadata']['published']);
+            unset($content['metadata']['modified']);
+            unset($content['metadata']['name']);
+            unset($content['metadata']['link']);
+//            unset($content['metadata']['stateIdentifiers']);
+            unset($content['metadata']['assignedNodes']);
+            unset($content['metadata']['classDefinition']);
+            $payload = new PayloadBuilder($content);
+
             $payload->setParentNodes([$parentNodeId]);
             $payload->unSetData('image');
             $payload->unSetData('managed_by_area');
