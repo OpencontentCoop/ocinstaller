@@ -17,7 +17,7 @@ $script = eZScript::instance([
 
 $script->startup();
 $options = $script->getOptions(
-        '[languages:][cleandata:][cleanup][exlude-extension-schemas][only-schema][only-data][embed-dfs-schema][dry-run][force][only-step:][no-interaction][purge-cache][purge-storage][vars:][slack-token:][slack-channel:]',
+        '[languages:][cleandata:][cleanup][exlude-extension-schemas][only-schema][only-data][embed-dfs-schema][dry-run][force][only-step:][no-interaction][purge-cache][purge-storage][vars:][slack-endpoint:]',
     '[data]',
     array(
         'cleanup' => "Cleanup db before install",
@@ -67,8 +67,7 @@ try {
     $purgeCache = $options['purge-cache'];
     $purgeStorage = $options['purge-storage'];
     $installOnlySchema = $options['only-schema'] !== null;
-    $slackToken = $options['slack-token'];
-    $slackChannel = $options['slack-channel'];
+    $slackEndpoint = $options['slack-endpoint'];
 
     if ($cleanDb && $options['only-step']){
         throw new Exception("Cannot set --cleanup and --only-step arguments at the same time");
@@ -212,7 +211,7 @@ try {
 
     $cli->output("Installer logfile: " . $installer->getLogger()->getLogFilePath());
     $slackMessage = "[SUCCESS] Install $dataDir on " .  $db->DB;
-    SlackNotify::notify($slackToken, $slackChannel, $slackMessage);
+    SlackNotify::notify($slackEndpoint, $slackMessage);
 
 } catch (Throwable $e) {
     if ($e instanceof eZDBException) {
@@ -232,7 +231,7 @@ try {
         $cli->output($e->getTraceAsString());
     }
     $slackMessage = "[ERROR] Install $dataDir on " .  $db->DB . ': ' . $e->getMessage();
-    SlackNotify::notify($slackToken, $slackChannel, $slackMessage);
+    SlackNotify::notify($slackEndpoint, $slackMessage);
 }
 
 $script->shutdown();
