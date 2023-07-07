@@ -8,34 +8,134 @@ use Symfony\Component\Yaml\Exception\ParseException;
 require 'autoload.php';
 
 $script = eZScript::instance([
-    'description' => "Installer",
+    'description' => "
+                         =:                       
+                        .***=-.                   
+                      ##.*******=-.               
+                .##=  --.***********=-.           
+                 ++-    .**************+-         
+            :-:    ...  .***************+         
+            #@@    +%+  .***************+         
+            ...         .***************+         
+            .:  =@@#     -=+************+         
+            +*. :++= .@@+   .-=*********+         
+                      ==:       :=+*****+         
+               +%-                 .-=**+         
+         .            @@@@@-           :-         
+         +*+-.        @@@@@-        .:-=-         
+         +*****=-.    +++++.    .:-=====-         
+         +*********=:        .-=========-         
+         +************=-..:-============-         
+         +**************+===============-         
+         +**************+===============-         
+         +**************+===============-         
+         =**************+===============-         
+          .:=+**********+============-.           
+              .-=+******+========-:               
+                  .-=***+====-:.                  
+                      .-=-:.      
+                                                                               
+    #########################################
+    ######## OpenContent Installer ##########
+    #########################################
+    
+    Install eZPublish Legacy based on an installer.yml in DATA path
+    Learn more (but still incomplete) at https://github.com/OpencontentCoop/ocinstaller
+    
+    ",
     'use-session' => false,
     'use-extensions' => true,
     'use-modules' => false,
     'debug-timing' => true
 ]);
 
+$optionsConfigList = [
+    [
+        'identifier' => 'languages',
+        'config' => '[languages:]',
+        'help' => 'Comma separates language code list, first is primary (default is: ita-IT,eng-GB)',
+    ],
+    [
+        'identifier' => 'cleandata',
+        'config' => '[cleandata:]',
+        'help' => 'Override directory of clean db_schema.dba and db_data.dba files',
+    ],
+    [
+        'identifier' => 'cleanup',
+        'config' => '[cleanup]',
+        'help' => 'Cleanup db before install',
+    ],
+    [
+        'identifier' => 'exlude-extension-schemas',
+        'config' => '[exlude-extension-schemas]',
+        'help' => 'Install only base without extension schema',
+    ],
+    [
+        'identifier' => 'only-schema',
+        'config' => '[only-schema]',
+        'help' => 'Install only base and extension schema without data',
+    ],
+    [
+        'identifier' => 'only-data',
+        'config' => '[only-data]',
+        'help' => 'Install only data without base and extension schema',
+    ],
+    [
+        'identifier' => 'embed-dfs-schema',
+        'config' => '[embed-dfs-schema]',
+        'help' => 'Install dfs schema in main db',
+    ],
+    [
+        'identifier' => 'dry-run',
+        'config' => '[dry-run]',
+        'help' => 'Only check vars',
+    ],
+    [
+        'identifier' => 'force',
+        'config' => '[force]',
+        'help' => 'Ignore version check',
+    ],
+    [
+        'identifier' => 'only-step',
+        'config' => '[only-step:]',
+        'help' => 'Step index (comma separated): install only data step without base and extension schema',
+    ],
+    [
+        'identifier' => 'no-interaction',
+        'config' => '[no-interaction]',
+        'help' => 'Don\'t ask don\'t tell',
+    ],
+    [
+        'identifier' => 'purge-cache',
+        'config' => '[purge-cache]',
+        'help' => 'Delete cache directory before install',
+    ],
+    [
+        'identifier' => 'purge-storage',
+        'config' => '[purge-storage]',
+        'help' => 'Delete storage directory before install',
+    ],
+    [
+        'identifier' => 'vars',
+        'config' => '[vars:]',
+        'help' => 'Add or override installer vars in format key:value,key2:value2',
+    ],
+    [
+        'identifier' => 'slack-endpoint',
+        'config' => '[slack-endpoint:]',
+        'help' => 'Notify result to slack endpoint',
+    ],
+];
+$configs = array_column($optionsConfigList, 'config');
+sort($configs);
+$optionsHelp = [];
+foreach ($optionsConfigList as $optionsConfig){
+    $optionsHelp[$optionsConfig['identifier']] = $optionsConfig['help'];
+}
+ksort($optionsHelp);
+
 $script->startup();
-$options = $script->getOptions(
-        '[languages:][cleandata:][cleanup][exlude-extension-schemas][only-schema][only-data][embed-dfs-schema][dry-run][force][only-step:][no-interaction][purge-cache][purge-storage][vars:][slack-endpoint:]',
-    '[data]',
-    array(
-        'cleanup' => "Cleanup db before install",
-        'exlude-extension-schemas' => "Install only base without extension schema",
-        'only-schema' => "Install only base and extension schema without data",
-        'only-data' => "Install only data without base and extension schema",
-        'only-step' => "Step index (comma separated): install only data step without base and extension schema",
-        'languages' => "Comma separates language code list, first is primary (default is: ita-IT,eng-GB)",
-        'cleandata' => "Override directory of clean db_schema.dba and db_data.dba files",
-        'embed-dfs-schema' => "Install dfs schema in main db",
-        'dry-run' => "Only check vars",
-        'force' => "Ignore version check",
-        'no-interaction' => 'Don\'t ask don\'t tell',
-        'purge-cache' => 'Delete cache directory before install',
-        'purge-storage' => 'Delete storage directory before install',
-        'vars' => 'Add or override installer vars in format key:value,key2:value2',
-    )
-);
+$options = $script->getOptions(implode('',$configs), '[data]', $optionsHelp);
 
 eZINI::instance()->setVariable('DatabaseSettings', 'ConnectRetries', '100');
 $fileHandler = eZINI::instance('file.ini')->variable('ClusteringSettings', 'FileHandler');
@@ -78,10 +178,18 @@ try {
     $languages = $options['languages'] ?: 'ita-IT,eng-GB';
     $languageList = explode(',', $languages);
 
+    $prebuiltDataDirList = [
+        'opencity' => 'vendor/opencity-labs/opencity-installer',
+    ];
     $dataDir = $options['arguments'][0];
-    if ($dataDir && !is_dir($dataDir)) {
+    if (isset($prebuiltDataDirList[$dataDir]) && is_dir($prebuiltDataDirList[$dataDir])){
+        $dataDir = $prebuiltDataDirList[$dataDir];
+    }elseif ($dataDir && !is_dir($dataDir)) {
         throw new Exception("Directory $dataDir not found");
+    }elseif (!$dataDir){
+        throw new Exception("Missing data argument");
     }
+    $dataDir = realpath($dataDir);
 
     // install
     $installer = new Installer($db, $dataDir);
@@ -89,12 +197,17 @@ try {
         $installer->getLogger()->isVerbose = true;
     }
     $installer->getLogger()->debug(implode(' ', $GLOBALS['argv']));
-    $installer->getLogger()->warning("Using db " . $db->DB);
+    $installer->getLogger()->warning("Using installer data: " . $dataDir);
+    $installer->getLogger()->warning("Using db: " . $db->DB);
 
     $continue = true;
     if ($interactive) {
         $question = ezcConsoleQuestionDialog::YesNoQuestion($output, "Continue?", "y");
         $continue = ezcConsoleDialogViewer::displayDialog($question) == "y";
+    }
+    if (!$continue){
+        $installer->getLogger()->warning("Process aborted by user");
+        $script->shutdown(0);
     }
 
     if ($options['dry-run']) {
@@ -114,6 +227,10 @@ try {
             if ($interactive) {
                 $question = ezcConsoleQuestionDialog::YesNoQuestion($output, "Continue?", "y");
                 $continue = ezcConsoleDialogViewer::displayDialog($question) == "y";
+            }
+            if (!$continue){
+                $installer->getLogger()->warning("Process aborted by user");
+                $script->shutdown(0);
             }
             if (is_dir($cacheDfsDir)) {
                 $allowedDirs = $modifiedAllowedDirs = eZINI::instance()->variable('FileSettings', 'AllowedDeletionDirs');
@@ -140,6 +257,10 @@ try {
             if ($interactive) {
                 $question = ezcConsoleQuestionDialog::YesNoQuestion($output, "Continue?", "y");
                 $continue = ezcConsoleDialogViewer::displayDialog($question) == "y";
+            }
+            if (!$continue){
+                $installer->getLogger()->warning("Process aborted by user");
+                $script->shutdown(0);
             }
             if (is_dir($storageDfsDir)) {
                 $allowedDirs = $modifiedAllowedDirs = eZINI::instance()->variable('FileSettings', 'AllowedDeletionDirs');
