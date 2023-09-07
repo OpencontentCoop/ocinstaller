@@ -263,7 +263,7 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
             }
             if (count($needToRemove)) {
                 $this->logger->warning(
-                    ' - found obsolete tags ' . implode(', ', array_column($needToRemove, 'keyword_it'))
+                    ' - found obsolete tags <' . implode('> <', array_column($needToRemove, 'keyword_it')) . '>'
                 );
             }
         }
