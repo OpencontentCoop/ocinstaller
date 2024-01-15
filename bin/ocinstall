@@ -180,6 +180,7 @@ try {
 
     $prebuiltDataDirList = [
         'opencity' => 'vendor/opencity-labs/opencity-installer',
+        'openagenda' => 'vendor/opencity-labs/openagenda-installer',
     ];
     $dataDir = $options['arguments'][0];
     if (isset($prebuiltDataDirList[$dataDir]) && is_dir($prebuiltDataDirList[$dataDir])){
