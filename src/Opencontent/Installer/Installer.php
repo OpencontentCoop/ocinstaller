@@ -48,6 +48,11 @@ class Installer
      */
     protected $dryRun = false;
 
+    /**
+     * @var bool
+     */
+    protected $isWaitForUser = false;
+
     protected $type;
 
     protected $currentVersion;
@@ -474,6 +479,14 @@ class Installer
                     $this->logger->debug("[$index] $stepName");
                     if ($this->dryRun) {
                         $installer->dryRun();
+                        if ($this->isWaitForUser && !$this->waitForUser('Next step?')){
+                            throw new \RuntimeException('Aborted');
+                        }
+                    } elseif ($this->isWaitForUser) {
+                        $installer->dryRun();
+                        if ($this->waitForUser('Install step?')){
+                            $installer->install();
+                        }
                     } else {
                         $installer->install();
                     }
@@ -519,5 +532,20 @@ class Installer
     public function isDryRun() :bool
     {
         return $this->dryRun === true;
+    }
+
+    public function setIsWaitForUser()
+    {
+        $this->logger->info("Wait mode enabled");
+        $this->isWaitForUser = true;
+    }
+
+    private function waitForUser(string $question)
+    {
+        return \ezcConsoleDialogViewer::displayDialog(
+            \ezcConsoleQuestionDialog::YesNoQuestion(
+                new \ezcConsoleOutput(), $question, 'y'
+            )
+        ) === 'y';
     }
 }

@@ -33,7 +33,7 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
                 throw new Exception('File csv not found');
             }
             $this->logger->info("Install tag tree " . $identifier);
-            $this->syncTagList($this->ioTools->getFile('tagtree_csv/' . $identifier . '.csv'), false);
+            $this->syncTagList($this->ioTools->getFile('tagtree_csv/' . $identifier . '.csv'), false, false);
         }
         self::dropTagList();
     }
@@ -170,6 +170,7 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
                 $headers[] = 'hash';
             } else {
                 $row['hash'] = '';
+                $row = array_map('trim', $row);
                 $rowWithHeader = array_combine($headers, $row);
                 $rowWithHeader['synonyms_it'] = $this->formatSynonymList($rowWithHeader['synonyms_it']);
                 $rowWithHeader['synonyms_de'] = $this->formatSynonymList($rowWithHeader['synonyms_de']);
@@ -206,6 +207,9 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
 
         $rootTag = \eZTagsObject::fetchByRemoteID($sourceRoot['remote_id']);
         if (!$rootTag instanceof \eZTagsObject) {
+            if (!$doUpdate){
+                throw new Exception('Parent tag not found ' . var_export($sourceRoot, true));
+            }
             $tag = $this->createTag($sourceRoot);
             $rootTag = \eZTagsObject::fetch($tag->id);
         }
@@ -256,15 +260,22 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
 
         if (!$this->async) {
             if (count($needToAdd)) {
-                $this->logger->debug(' - add tags ' . implode(', ', array_column($needToAdd, 'keyword_it')));
+                $this->logger->debug(' - add tags:');
+                foreach ($needToAdd as $item){
+                    $this->logger->debug('    - it(' . $item['keyword_it'] . ') en(' . $item['keyword_en'] . ') de(' . $item['keyword_de'] . ')');
+                }
             }
             if (count($needToUpdate)) {
-                $this->logger->debug(' - update tags ' . implode(', ', array_column($needToUpdate, 'keyword_it')));
+                $this->logger->debug(' - update tags:');
+                foreach ($needToUpdate as $item){
+                    $this->logger->debug('    - it(' . $item['keyword_it'] . ') en(' . $item['keyword_en'] . ') de(' . $item['keyword_de'] . ')');
+                }
             }
             if (count($needToRemove)) {
-                $this->logger->warning(
-                    ' - found obsolete tags <' . implode('> <', array_column($needToRemove, 'keyword_it')) . '>'
-                );
+                $this->logger->warning(' - found obsolete tags:');
+                foreach ($needToRemove as $item){
+                    $this->logger->debug('    - it(' . $item['keyword_it'] . ') en(' . $item['keyword_en'] . ') de(' . $item['keyword_de'] . ')');
+                }
             }
         }
 
@@ -275,7 +286,6 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
             array_unshift($source, $sourceRoot);
             foreach ($needToAdd as $item) {
                 $parentTag = $this->findParent($item, $source);
-                if (!$this->async) $this->logger->debug(' - add #' . $item['id'] . ' ' . $item['keyword_it']);
                 $this->createTag($item, $parentTag);
             }
             foreach ($needToUpdate as $item) {
@@ -334,7 +344,7 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
         $struct->locale = 'ita-IT';
         $struct->alwaysAvailable = true;
         $result = $this->tagRepository->create($struct);
-
+        $this->logger->debug(' - add #' . $sourceRow['id'] . ' ' . $sourceRow['keyword_it'] . ' ==> ' . $result['message'] . ' ' . $result['tag']->id);
         /** @var Tag $tag */
         $tag = $result['tag'];
         $this->setTagTranslationsAndSynonyms($tag, $sourceRow);
@@ -463,7 +473,6 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
 
         $identifiers = (array)$this->step['identifiers'];
         foreach ($identifiers as $identifier) {
-            $this->logger->info("Sync tag csv " . $identifier);
             $filepath = $this->ioTools->getFile('tagtree_csv/' . $identifier . '.csv');
             $source = $this->getTagList($filepath);
             $sourceRoot = array_shift($source);
@@ -485,18 +494,18 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
             }
         }
 
-        $tables = ['eztags', 'eztags_keyword'];
-        foreach ($tables as $table) {
-            $rows = pg_copy_to(eZDB::instance()->DBConnection, $table);
-            $tsv = implode("", $rows);
-            $filename = $table . '.tsv';
-            Tool::createFile(
-                $this->ioTools->getDataDir(),
-                'sql',
-                $filename,
-                $tsv
-            );
-        }
+//        $tables = ['eztags', 'eztags_keyword'];
+//        foreach ($tables as $table) {
+//            $rows = pg_copy_to(eZDB::instance()->DBConnection, $table);
+//            $tsv = implode("", $rows);
+//            $filename = $table . '.tsv';
+//            Tool::createFile(
+//                $this->ioTools->getDataDir(),
+//                'sql',
+//                $filename,
+//                $tsv
+//            );
+//        }
     }
 
     private function remapRows($source)
@@ -510,6 +519,7 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
         }
         foreach ($source as $index => $row){
             $source[$index]['parent_id'] = $map[$row['parent_id']] ?? 0;
+            $source[$index]['hash'] = '';
         }
 
         return $source;

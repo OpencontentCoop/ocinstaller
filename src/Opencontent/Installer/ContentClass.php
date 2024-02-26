@@ -5,6 +5,7 @@ namespace Opencontent\Installer;
 use OCClassTools;
 use OCOpenDataClassRepositoryCache;
 use Opencontent\Installer\Serializer\ContentClassSerializer;
+use Symfony\Component\Yaml\Yaml;
 
 class ContentClass extends AbstractStepInstaller implements InterfaceStepInstaller
 {
@@ -14,6 +15,18 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
     {
         $identifier = $this->step['identifier'];
         $this->logger->info("Install class $identifier");
+
+        $sourcePath = "classes/{$identifier}.yml";
+        $definitionData = $this->ioTools->getJsonContents($sourcePath);
+        $definitionJsonFile = $this->createJsonFile($sourcePath);
+        try {
+            $tools = new OCClassTools($definitionData['identifier'], false, [], $definitionJsonFile);
+            $tools->compare();
+            $this->logCompare($tools->getData());
+        } catch (\Exception $e) {
+            $this->logger->warning('    ' . $e->getMessage());
+        }
+
         $this->installerVars['class_' . $identifier] = 0;
     }
 
@@ -34,7 +47,7 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
             $this->logger->info(' - removing extra attributes');
         }
 
-        $tools = new OCClassTools($definitionData['identifier'], true, array(), $definitionJsonFile);
+        $tools = new OCClassTools($definitionData['identifier'], true, [], $definitionJsonFile);
 
         $tools->compare();
         $this->logCompare($tools->getData());
@@ -73,46 +86,51 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
             $errors = array_intersect(array_keys($result->errors), $identifiers);
             $warnings = array_intersect(array_keys($result->warnings), $identifiers);
 
-            if (count($errors) > 0)
+            if (count($errors) > 0) {
                 $this->logger->debug('    Attributi che differiscono dal prototipo: ' . count($result->diffAttributes));
-            elseif (count($warnings) > 0)
+            } elseif (count($warnings) > 0) {
                 $this->logger->debug('    Attributi che differiscono dal prototipo: ' . count($result->diffAttributes));
-            else
+            } else {
                 $this->logger->debug('    Attributi che differiscono dal prototipo: ' . count($result->diffAttributes));
+            }
 
             foreach ($result->diffAttributes as $identifier => $value) {
-                if (isset($result->errors[$identifier]))
+                if (isset($result->errors[$identifier])) {
                     $this->logger->debug("     -> $identifier");
-                elseif (isset($result->warnings[$identifier]))
+                } elseif (isset($result->warnings[$identifier])) {
                     $this->logger->debug("     -> $identifier");
-                else
+                } else {
                     $this->logger->debug("     -> $identifier");
+                }
 
                 foreach ($value as $diff) {
-                    if (isset($result->errors[$identifier][$diff['field_name']]))
+                    if (isset($result->errors[$identifier][$diff['field_name']])) {
                         $this->logger->debug("        {$diff['field_name']}");
-                    elseif (isset($result->warnings[$identifier][$diff['field_name']]))
+                    } elseif (isset($result->warnings[$identifier][$diff['field_name']])) {
                         $this->logger->debug("        {$diff['field_name']}");
-                    else
+                    } else {
                         $this->logger->debug("        {$diff['field_name']}");
+                    }
                 }
             }
         }
         if ($result->hasDiffProperties) {
-            if (isset($result->errors['properties']))
+            if (isset($result->errors['properties'])) {
                 $this->logger->debug('    Proprietà che differiscono dal prototipo: ' . count($result->diffProperties));
-            elseif (isset($result->warnings['properties']))
+            } elseif (isset($result->warnings['properties'])) {
                 $this->logger->debug('    Proprietà che differiscono dal prototipo: ' . count($result->diffProperties));
-            else
+            } else {
                 $this->logger->debug('    Proprietà che differiscono dal prototipo: ' . count($result->diffProperties));
+            }
 
             foreach ($result->diffProperties as $property) {
-                if (isset($result->errors['properties'][$property['field_name']]))
+                if (isset($result->errors['properties'][$property['field_name']])) {
                     $this->logger->debug("        {$property['field_name']}");
-                elseif (isset($result->warnings['properties'][$property['field_name']]))
+                } elseif (isset($result->warnings['properties'][$property['field_name']])) {
                     $this->logger->debug("        {$property['field_name']}");
-                else
+                } else {
                     $this->logger->debug("        {$property['field_name']}");
+                }
             }
         }
     }
@@ -136,142 +154,98 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
 
     public function sync()
     {
-        $identifier = $this->step['identifier'];
+        $this->identifier = $this->step['identifier'];
+        $sourcePath = "classes/{$this->identifier}.yml";
+        $filePath = $this->ioTools->getFile($sourcePath);
+        $definitionData = Yaml::parseFile($filePath);
 
-        try {
-            $tools = new OCClassTools($identifier);
-            $result = $tools->getLocale();
-            $result->attribute('data_map');
-            $result->fetchGroupList();
-            $result->fetchAllGroups();
-            $json = json_encode($result);
+        $classIdentifier = $definitionData['identifier'] ?? str_replace('_with_related', '', $this->identifier);
+        $class = \eZContentClass::fetchByIdentifier($classIdentifier);
+        if (!$class instanceof \eZContentClass){
+            return;
+        }
 
-            $preSerializer = function ($data){
-                $relationNodes = [
-                    '"51"' => '"$content_Images_node"',
-                    '"53"' => '"$content_Multimedia_node"',
-                    '"77"' => '"$contenttree_OpenCity_Servizi_node"',
-                    '"100"' => '"$contenttree_Classificazioni_Punti-di-contatto_node"',
-                    '"97"' => '"$contenttree_Documenti-e-dati_Dataset_node"',
-                    '"93"' => '"$contenttree_Documenti-e-dati_Documenti-tecnici-di-supporto_node"',
-                    '"80"' => '"$contenttree_Amministrazione_Politici_node"',
-                    '"83"' => '"$contenttree_Amministrazione_Uffici_node"',
-                    '"70"' => '"$contenttree_OpenCity_Argomenti_node"',
-                    '"106"' => '"$contenttree_Classificazioni_Condizioni-di-accesso_node"',
-                    '"78"' => '"$contenttree_Amministrazione_Enti-e-fondazioni_node"',
-                    '"82"' => '"$contenttree_Amministrazione_Aree-amministrative_node"',
-                    '"79"' => '"$contenttree_Amministrazione_Organi-politici_node"',
-                    '"105"' => '"$contenttree_Classificazioni_Costi-e-tariffe_node"',
-                    '"??"' => '"$contenttree_Classificazioni_Regole-leggi-riferimenti-normativi-e-linee-guida-per-i-servizi_node"',
-                    '"103"' => '"$contenttree_Classificazioni_Orari-strutture_node"',
-                    '"102"' => '"$contenttree_Classificazioni_Estensioni-temporali-dei-dataset_node"',
-                    '"104"' => '"$contenttree_Classificazioni_Orari-servizi_node"',
-                    '"107"' => '"$contenttree_Classificazioni_Canali-digitali_node"',
-                    '"101"' => '"$contenttree_Classificazioni_Cosa-puoi-richiedere_node"',
-                    '"90"' => '"$contenttree_Vivere-il-comune_Luoghi_node"',
-                    '"91"' => '"$contenttree_Vivere-il-comune_Eventi_node"',
-                    '"76"' => '"$contenttree_OpenCity_Amministrazione_node"',
-                    '"95"' => '"$contenttree_Documenti-e-dati_Modulistica_node"',
-                    '"94"' => '"$contenttree_Documenti-e-dati_Documenti-albo-pretorio_node"',
-                    '"99"' => '"$contenttree_Documenti-e-dati_Normative_node"',
-                    '"191"' => '"$content_Ruoli_node"',
-
-                ];
-                $reverseRelations = [
-                    '{"attribute_id_list":[450,470],"sort":"name","order":"asc","limit":4,"attribute_id_subtree":{"95":0,"99":0}}'
-                 => '{"attribute_id_list":[classattributeid_list(public_service/has_module_input,public_service/is_compliant_with_rule)],"sort":"name","order":"asc","limit":4,"attribute_id_subtree":{"$contenttree_Documenti-e-dati_Modulistica_node":0,"$contenttree_Documenti-e-dati_Normative_node":0}}',
-
-
-                ];
-                $identifierHash = array_flip(self::classAttributeIdentifiersHash());
-                foreach ($data['DataMap'] as $index => $dataMap){
-                    foreach ($dataMap as $attributeIdentifier => $datum){
-                        if ($datum['DataTypeString'] === 'ezobjectrelationlist'){
-                            $dataText5 = $datum['DataText5'];
-                            foreach ($relationNodes as $find => $replace){
-                                $dataText5 = str_replace($find, $replace, $dataText5);
-                            }
-                            $data['DataMap'][$index][$attributeIdentifier]['DataText5'] = $dataText5;
-                        }
-                        if ($datum['DataTypeString'] === 'openpareverserelationlist'){
-                            $dataText5 = $datum['DataText5'];
-                            foreach ($relationNodes as $find => $replace){
-                                $dataText5 = str_replace($find, $replace, $dataText5);
-                            }
-
-                            $settings = json_decode($dataText5, true);
-                            //'{"attribute_id_list":[classattributeid_list(public_service/has_module_input,public_service/is_compliant_with_rule)],"sort":"name","order":"asc","limit":4,"attribute_id_subtree":{"$contenttree_Documenti-e-dati_Modulistica_node":0,"$contenttree_Documenti-e-dati_Normative_node":0}}'
-                            $attrIdListPlaceholder = '##ail##';
-                            $attrIdFunctionString = '[classattributeid_list(';
-                            foreach ($settings['attribute_id_list'] as $indexAil => $attributeId){
-                                if ($indexAil > 0)
-                                    $attrIdFunctionString .= ',';
-
-                                if (isset($identifierHash[$attributeId])) {
-                                    $attrIdFunctionString .= $identifierHash[$attributeId];
-                                }
-                            }
-                            $attrIdFunctionString .= ')]';
-                            $settings['attribute_id_list'] = $attrIdListPlaceholder;
-                            $data['DataMap'][$index][$attributeIdentifier]['DataText5'] = str_replace("\"$attrIdListPlaceholder\"", $attrIdFunctionString, json_encode($settings));
-                        }
+        if (isset($definitionData['identifier'])) {
+            foreach (
+                $this->deserialize($class->attribute('serialized_name_list'), new \eZContentClassNameList())
+                as $language => $value
+            ) {
+                if ($definitionData['serialized_name_list'][$language] !== $value) {
+                    $definitionData['serialized_name_list'][$language] = $value;
+                }
+            }
+            foreach ($this->deserialize($class->attribute('serialized_description_list')) as $language => $value) {
+                if ($definitionData['serialized_description_list'][$language] !== $value) {
+                    $definitionData['serialized_description_list'][$language] = $value;
+                }
+            }
+        }
+        /** @var \eZContentClassAttribute[] $dataMap */
+        $dataMap = $class->dataMap();
+        foreach ($dataMap as $identifier => $attribute) {
+            if (isset($definitionData['data_map'][$identifier])) {
+                foreach ($this->deserialize($attribute->attribute('serialized_name_list')) as $language => $value) {
+                    if ($definitionData['data_map'][$identifier]['serialized_name_list'][$language] !== $value) {
+                        $definitionData['data_map'][$identifier]['serialized_name_list'][$language] = $value;
                     }
                 }
-
-                return $data;
-            };
-
-            $serializer = new ContentClassSerializer($this->installerVars, $preSerializer);
-            $serializer->serializeToYaml($json, $this->ioTools->getDataDir());
-        }catch (\Exception $e){
-            $this->getLogger()->error($e->getMessage());
+                foreach ($this->deserialize($attribute->attribute('serialized_description_list')) as $language => $value) {
+                    if ($definitionData['data_map'][$identifier]['serialized_description_list'][$language] !== $value) {
+                        $definitionData['data_map'][$identifier]['serialized_description_list'][$language] = $value;
+                    }
+                }
+            }
         }
+        file_put_contents($filePath, Yaml::dump($definitionData, 10));
+    }
+
+    private function deserialize($value, $nameList = null)
+    {
+        $nameList = $nameList ?? new \eZSerializedObjectNameList();
+        $nameList->initFromSerializedList($value);
+        return $nameList->NameList;
     }
 
     private static $identifierHash;
 
     private static function classAttributeIdentifiersHash()
     {
-        if ( self::$identifierHash === null )
-        {
+        if (self::$identifierHash === null) {
             $db = \eZDB::instance();
-            $dbName = md5( $db->DB );
+            $dbName = md5($db->DB);
 
             $cacheDir = \eZSys::cacheDirectory();
-            $phpCache = new \eZPHPCreator( $cacheDir,
+            $phpCache = new \eZPHPCreator(
+                $cacheDir,
                 'classattributeidentifiers_' . $dbName . '.php',
                 '',
-                array( 'clustering' => 'classattridentifiers' ) );
+                ['clustering' => 'classattridentifiers']
+            );
 
             $handler = \eZExpiryHandler::instance();
             $expiryTime = 0;
-            if ( $handler->hasTimestamp( 'class-identifier-cache' ) )
-            {
-                $expiryTime = $handler->timestamp( 'class-identifier-cache' );
+            if ($handler->hasTimestamp('class-identifier-cache')) {
+                $expiryTime = $handler->timestamp('class-identifier-cache');
             }
 
-            if ( $phpCache->canRestore( $expiryTime ) )
-            {
-                $var = $phpCache->restore( array( 'identifierHash' => 'identifier_hash' ) );
+            if ($phpCache->canRestore($expiryTime)) {
+                $var = $phpCache->restore(['identifierHash' => 'identifier_hash']);
                 self::$identifierHash = $var['identifierHash'];
-            }
-            else
-            {
+            } else {
                 // Fetch identifier/id pair from db
                 $query = "SELECT ezcontentclass_attribute.id as attribute_id, ezcontentclass_attribute.identifier as attribute_identifier, ezcontentclass.identifier as class_identifier
                           FROM ezcontentclass_attribute, ezcontentclass
                           WHERE ezcontentclass.id=ezcontentclass_attribute.contentclass_id";
-                $identifierArray = $db->arrayQuery( $query );
+                $identifierArray = $db->arrayQuery($query);
 
-                self::$identifierHash = array();
-                foreach ( $identifierArray as $identifierRow )
-                {
+                self::$identifierHash = [];
+                foreach ($identifierArray as $identifierRow) {
                     $combinedIdentifier = $identifierRow['class_identifier'] . '/' . $identifierRow['attribute_identifier'];
-                    self::$identifierHash[$combinedIdentifier] = (int) $identifierRow['attribute_id'];
+                    self::$identifierHash[$combinedIdentifier] = (int)$identifierRow['attribute_id'];
                 }
 
                 // Store identifier list to cache file
-                $phpCache->addVariable( 'identifier_hash', self::$identifierHash );
+                $phpCache->addVariable('identifier_hash', self::$identifierHash);
                 $phpCache->store();
             }
         }

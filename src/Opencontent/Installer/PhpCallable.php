@@ -22,6 +22,6 @@ class PhpCallable extends AbstractStepInstaller
             throw new Exception("Callable $identifier is not callable");
         }
         $this->logger->info("Install callable $identifier");
-        call_user_func($identifier);
+        call_user_func($identifier, $this);
     }
 }

@@ -91,6 +91,11 @@ $optionsConfigList = [
         'help' => 'Only check vars',
     ],
     [
+        'identifier' => 'ask',
+        'config' => '[ask]',
+        'help' => 'Wait user confirmation to run each step',
+    ],
+    [
         'identifier' => 'force',
         'config' => '[force]',
         'help' => 'Ignore version check',
@@ -213,6 +218,9 @@ try {
 
     if ($options['dry-run']) {
         $installer->setDryRun();
+    }
+    if ($options['ask']) {
+        $installer->setIsWaitForUser();
     }
 
     if ($options['force']) {

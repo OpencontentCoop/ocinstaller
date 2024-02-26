@@ -49,7 +49,7 @@ class eZPgsqlSchema extends eZDBSchemaInterface
     const FETCH_TABLE_DEF_QUERY = '
         SELECT a.attname,
                pg_catalog.format_type(a.atttypid, a.atttypmod),
-               (SELECT substring(d.adsrc for 128) FROM pg_catalog.pg_attrdef d
+               (SELECT substring(pg_get_expr(d.adbin, d.adrelid) for 128) FROM pg_catalog.pg_attrdef d
                 WHERE d.adrelid = a.attrelid AND d.adnum = a.attnum AND a.atthasdef) as default,
                a.attnotnull, a.attnum
         FROM pg_catalog.pg_attribute a
@@ -419,6 +419,9 @@ class eZPgsqlSchema extends eZDBSchemaInterface
 
             case 'timestamp without time zone':
                 return 'timestamp';
+
+            case 'json':
+                return 'json';
 
             default:
                 die ( "ERROR UNHANDLED TYPE: $type " . __LINE__ );

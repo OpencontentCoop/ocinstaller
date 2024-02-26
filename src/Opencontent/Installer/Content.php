@@ -6,6 +6,7 @@ use Opencontent\Opendata\Api\ContentRepository;
 use Opencontent\Opendata\Api\EnvironmentLoader;
 use eZContentOperationCollection;
 use Opencontent\Opendata\Rest\Client\PayloadBuilder;
+use Symfony\Component\Yaml\Yaml;
 
 class Content extends AbstractStepInstaller implements InterfaceStepInstaller
 {
@@ -20,14 +21,26 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
     public function dryRun()
     {
         $identifier = $this->step['identifier'];
-        $this->logger->info("Install content " . $identifier);
+
+        $needLock = $this->step['lock'] ?? false;
+        $lockLog = $needLock ?? ' and lock';
+        $this->logger->info("Install{$lockLog} content " . $identifier);
+
+        $content = $this->parseVars(
+            $this->ioTools->getJsonContents("contents/{$identifier}.yml")
+        );
+        $alreadyExists = isset($content['metadata']['remoteId']) ? \eZContentObject::fetchByRemoteID($content['metadata']['remoteId']) : false;
+        if ($alreadyExists) {
+            $this->logger->info(" - Update content " . $identifier);
+
+        }else{
+            $this->logger->warning(" - Create content " . $identifier);
+            sleep(1);
+        }
         $resetFields = $this->step['reset'] ?? [];
         if (count($resetFields)) {
             $this->logger->info(" - reset " . implode(', ', $resetFields));
         }
-        $needLock = $this->step['lock'] ?? false;
-        $lockLog = $needLock ?? ' and lock';
-        $this->logger->info("Install{$lockLog} content " . $identifier);
         $this->installerVars['content_' . $identifier . '_node'] = 0;
         $this->installerVars['content_' . $identifier . '_object'] = 0;
         $this->installerVars['content_' . $identifier . '_path_string'] = 0;
@@ -153,5 +166,41 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
         $node->setAttribute('priority', $data['priority']);
 
         $node->store();
+    }
+
+    public function sync()
+    {
+        $this->identifier = $this->step['identifier'];
+        $sourcePath = "contents/{$this->identifier}.yml";
+        $filePath = $this->ioTools->getFile($sourcePath);
+        $definitionData = Yaml::parseFile($filePath);
+
+        if (isset($definitionData['metadata']['remoteId'])) {
+            $isModified = false;
+            $object = isset($definitionData['metadata']['remoteId']) ? \eZContentObject::fetchByRemoteID(
+                $definitionData['metadata']['remoteId']
+            ) : false;
+            if ($object instanceof \eZContentObject) {
+                $contentData = (array)\Opencontent\Opendata\Api\Values\Content::createFromEzContentObject($object);
+                foreach ($object->dataMap() as $identifier => $attribute) {
+                    if (in_array($attribute->attribute('data_type_string'), [
+                        \eZStringType::DATA_TYPE_STRING,
+                        \eZTextType::DATA_TYPE_STRING,
+                    ])) {
+                        foreach ($contentData['data'] as $language => $contentDatum) {
+                            if ($language == 'ita-IT') continue;
+                            if (in_array($language, $definitionData['metadata']['languages'])
+                                && $definitionData['data'][$language][$identifier] != $contentDatum[$identifier]['content']) {
+                                $definitionData['data'][$language][$identifier] = $contentDatum[$identifier]['content'];
+                                $isModified = true;
+                            }
+                        }
+                    }
+                }
+            }
+            if ($isModified) {
+                file_put_contents($filePath, Yaml::dump($definitionData, 10));
+            }
+        }
     }
 }

@@ -7,6 +7,7 @@ use Opencontent\Opendata\Api\ContentRepository;
 use Opencontent\Opendata\Api\EnvironmentLoader;
 use Opencontent\Opendata\Rest\Client\HttpClient;
 use Opencontent\Opendata\Rest\Client\PayloadBuilder;
+use Symfony\Component\Yaml\Yaml;
 
 class ContentTree extends AbstractStepInstaller implements InterfaceStepInstaller
 {
@@ -28,7 +29,16 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
             foreach ($files as $file) {
                 if (\eZFile::suffix($file) == 'yml') {
                     $identifier = substr(basename($file), 0, -4);
-                    $contents[$identifier] = "/contenttrees/{$this->identifier}/$file";
+                    //$contents[$identifier] = "/contenttrees/{$this->identifier}/$file";
+                    $contents[$identifier] = $this->ioTools->getJsonContents("/contenttrees/{$this->identifier}/$file");
+                    $alreadyExists = isset($contents[$identifier]['metadata']['remoteId']) ? \eZContentObject::fetchByRemoteID($contents[$identifier]['metadata']['remoteId']) : false;
+                    if ($alreadyExists) {
+                        $this->logger->info(" - Update content " . $identifier);
+
+                    }else{
+                        $this->logger->warning(" - Create content " . $identifier);
+                        sleep(1);
+                    }
                 }
             }
         }
@@ -65,6 +75,8 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
             $this->installFromRemote($source, $parentNodeId);
         } elseif (is_dir($this->ioTools->getDataDir() . "/contenttrees/{$this->identifier}")) {
             $this->installFromLocal($parentNodeId);
+        } else {
+            $this->logger->error("Content tree $this->identifier not found");
         }
     }
 
@@ -191,7 +203,6 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
         }
     }
 
-
     private function rename(\eZContentObjectTreeNode $node)
     {
         \eZContentObject::clearCache([$node->attribute('contentobject_id')]);
@@ -273,4 +284,49 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
 
         $node->store();
     }
+
+    public function sync()
+    {
+        $this->identifier = $this->step['identifier'];
+        if (is_dir($this->ioTools->getDataDir() . "/contenttrees/{$this->identifier}")) {
+            $files = \eZDir::findSubitems($this->ioTools->getDataDir() . "/contenttrees/{$this->identifier}", 'f');
+            foreach ($files as $file) {
+                if (\eZFile::suffix($file) == 'yml') {
+                    $identifier = substr(basename($file), 0, -4);
+                    $filePath = $this->ioTools->getFile("/contenttrees/{$this->identifier}/$file");
+                    $definitionData = Yaml::parseFile($filePath);
+
+                    if (isset($definitionData['metadata']['remoteId'])) {
+                        $isModified = false;
+                        $object = isset($definitionData['metadata']['remoteId']) ? \eZContentObject::fetchByRemoteID(
+                            $definitionData['metadata']['remoteId']
+                        ) : false;
+                        if ($object instanceof \eZContentObject) {
+                            $contentData = (array)\Opencontent\Opendata\Api\Values\Content::createFromEzContentObject($object);
+                            foreach ($object->dataMap() as $identifier => $attribute) {
+                                if (in_array($attribute->attribute('data_type_string'), [
+                                    \eZStringType::DATA_TYPE_STRING,
+                                    \eZTextType::DATA_TYPE_STRING,
+                                ])) {
+                                    foreach ($contentData['data'] as $language => $contentDatum) {
+                                        if ($language == 'ita-IT') continue;
+                                        if (in_array($language, $definitionData['metadata']['languages'])
+                                            && $definitionData['data'][$language][$identifier] != $contentDatum[$identifier]['content']) {
+                                            $definitionData['data'][$language][$identifier] = $contentDatum[$identifier]['content'];
+                                            $isModified = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if ($isModified) {
+                            file_put_contents($filePath, Yaml::dump($definitionData, 10));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
 }

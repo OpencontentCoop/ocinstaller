@@ -31,19 +31,29 @@ class ContentClassExtra extends AbstractStepInstaller implements InterfaceStepIn
     public function sync()
     {
         $identifier = $this->step['identifier'];
+        $sourcePath = "classextra/{$identifier}.yml";
+        $filePath = $this->ioTools->getFile($sourcePath);
+        $definitionData = Yaml::parseFile($filePath);
 
-        try {
-            $class = eZContentClass::fetchByIdentifier($identifier);
-            $data = OCClassExtraParametersManager::instance($class)->getAllParameters();
-            $dataYaml = Yaml::dump($data, 10);
-            Tool::createFile(
-                $this->ioTools->getDataDir(),
-                'classextra',
-                $identifier . '.yml',
-                $dataYaml
-            );
-        }catch (\Exception $e){
-            $this->getLogger()->error($e->getMessage());
+        $class = \eZContentClass::fetchByIdentifier($identifier);
+        if (!$class instanceof \eZContentClass){
+            return;
         }
+
+        $extra = (new \OpenPAAttributeGroupClassExtraParameters($class))->getParameters();
+
+        if (!empty($extra)) {
+            foreach ($extra as $item){
+                $key = $item->attribute('key');
+                if (strpos($key, '::') !== false){
+                    if (isset($definitionData['attribute_group'][$key]['*'])
+                        && $definitionData['attribute_group'][$key]['*'] !== $item->attribute('value')){
+                        $definitionData['attribute_group'][$key]['*'] = $item->attribute('value');
+                    }
+                }
+            }
+        }
+
+        file_put_contents($filePath, Yaml::dump($definitionData, 10));
     }
 }

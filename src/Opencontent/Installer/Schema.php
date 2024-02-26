@@ -59,8 +59,14 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
 
         if ($this->installBaseSchema) {
             $this->logger->info("Install schema " . $baseSchema);
-            $this->installerVars['schema_already_exists'] = false;
-            $this->installerVars['is_install_from_scratch'] = true;
+            try {
+                $this->db->query('select id from ezcontentobject limit 1');
+                $this->installerVars['schema_already_exists'] = true;
+                $this->installerVars['is_install_from_scratch'] = false;
+            } catch (\eZDBException $e) {
+                $this->installerVars['schema_already_exists'] = false;
+                $this->installerVars['is_install_from_scratch'] = true;
+            }
         }
 
         if ($this->installDfsSchema) {
