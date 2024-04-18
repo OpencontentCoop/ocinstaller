@@ -386,6 +386,10 @@ class Installer
                 $installer = new ImagesFromUrl();
                 break;
 
+            case 'move_content':
+                $installer = new MoveContent();
+                break;
+
             default:
                 throw new Exception("Step type $type not handled");
         }
