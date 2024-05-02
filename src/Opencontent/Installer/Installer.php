@@ -189,7 +189,7 @@ class Installer
         if (!$version instanceof eZSiteData) {
             $version = new eZSiteData([
                 'name' => $this->getSiteDataName(),
-                'value' => $this->installerData['version']
+                'value' => $this->installerData['version'],
             ]);
         } else {
             $version->setAttribute('value', $this->installerData['version']);
@@ -206,7 +206,7 @@ class Installer
         if (!$version instanceof eZSiteData) {
             $version = new eZSiteData([
                 'name' => $siteDataName,
-                'value' => $dataDir
+                'value' => $dataDir,
             ]);
         } else {
             $version->setAttribute('value', $dataDir);
@@ -551,5 +551,53 @@ class Installer
                 new \ezcConsoleOutput(), $question, 'y'
             )
         ) === 'y';
+    }
+
+    public static function parseDataDir(?string $dataDir = null): string
+    {
+        if (!$dataDir){
+            throw new Exception("Missing data argument");
+        }
+
+        if (is_dir($dataDir)){
+            return realpath($dataDir);
+        }
+
+        $prebuiltDataDirList = [
+            'opencity' => 'vendor/opencity-labs/opencity-installer',
+            'openagenda' => 'vendor/opencity-labs/openagenda-installer',
+        ];
+
+        $installerDirectory = $dataDir;
+        $module = false;
+        if (strpos($dataDir, '::')){
+            [$installerDirectory, $module] = explode('::', $dataDir, 2);
+            if (empty($module)){
+                $module = '?';
+            }
+        }
+        if (isset($prebuiltDataDirList[$installerDirectory]) && is_dir($prebuiltDataDirList[$installerDirectory])){
+            $installerDirectory = $prebuiltDataDirList[$installerDirectory];
+            if ($module === '?'){
+                throw new Exception("Missing module suffix in data argument. Available modules are: " . PHP_EOL . implode(PHP_EOL, self::findModules($installerDirectory)));
+            }
+            if ($module){
+                $installerDirectory .= '/modules/' . $module;
+            }
+        }
+
+        if (!is_dir($installerDirectory)){
+            throw new Exception("Installer $dataDir not found");
+        }
+
+        return realpath($installerDirectory);
+    }
+
+    private static function findModules(string $baseDir)
+    {
+        $dirs = \eZDir::findSubitems($baseDir . '/modules', 'd');
+        sort($dirs);
+
+        return $dirs;
     }
 }

@@ -182,20 +182,8 @@ try {
 
     $languages = $options['languages'] ?: 'ita-IT,eng-GB';
     $languageList = explode(',', $languages);
-
-    $prebuiltDataDirList = [
-        'opencity' => 'vendor/opencity-labs/opencity-installer',
-        'openagenda' => 'vendor/opencity-labs/openagenda-installer',
-    ];
-    $dataDir = $options['arguments'][0];
-    if (isset($prebuiltDataDirList[$dataDir]) && is_dir($prebuiltDataDirList[$dataDir])){
-        $dataDir = $prebuiltDataDirList[$dataDir];
-    }elseif ($dataDir && !is_dir($dataDir)) {
-        throw new Exception("Directory $dataDir not found");
-    }elseif (!$dataDir){
-        throw new Exception("Missing data argument");
-    }
-    $dataDir = realpath($dataDir);
+    
+    $dataDir = Installer::parseDataDir($options['arguments'][0]);
 
     // install
     $installer = new Installer($db, $dataDir);
@@ -360,7 +348,7 @@ try {
         $cli->error('At line ' . $e->getLine() . ' of ' . $e->getFile());
         $cli->output($e->getTraceAsString());
     }
-    $slackMessage = "[ERROR] Install $dataDir on " .  $db->DB . ': ' . $e->getMessage();
+    $slackMessage = "[ERROR] Install " . $options['arguments'][0] . " on " . $db->DB . ': ' . $e->getMessage();
     SlackNotify::notify($slackEndpoint, $slackMessage);
 }
 
