@@ -25,6 +25,8 @@ class ContentClassExtra extends AbstractStepInstaller implements InterfaceStepIn
             throw new \Exception("Class $identifier not found", 1);
         }
         $data = $this->ioTools->getJsonContents("classextra/{$identifier}.yml");
+        $identifierEscaped = \eZDB::instance()->escapeString($identifier);
+        \eZDB::instance()->arrayQuery("DELETE FROM occlassextraparameters WHERE class_identifier = '$identifierEscaped'");
         OCClassExtraParametersManager::instance($class)->sync($data);
     }
 
