@@ -21,7 +21,7 @@ class Installer
 
     protected $dataDir;
 
-    protected $installerData = array();
+    protected $installerData = [];
 
     /**
      * @var InstallerVars
@@ -59,7 +59,7 @@ class Installer
 
     protected $ignoreVersionCheck = false;
 
-    protected $initLogMessage = 'Install %s version %s';
+    protected $initLogMessage = '%s version %s';
 
     /**
      * OpenContentInstaller constructor.
@@ -84,7 +84,9 @@ class Installer
             throw new Exception("Invalid installer type $this->type");
         }
 
-        $this->logger->info(sprintf($this->initLogMessage, $this->installerData['name'], $this->installerData['version']));
+        $this->logger->info(
+            sprintf($this->initLogMessage, $this->installerData['name'], $this->installerData['version'])
+        );
 
         $this->ioTools = new IOTools($this->dataDir, $this->installerVars);
 
@@ -99,7 +101,7 @@ class Installer
     /**
      * @return Logger
      */
-    public function getLogger() :Logger
+    public function getLogger(): Logger
     {
         return $this->logger;
     }
@@ -107,7 +109,7 @@ class Installer
     /**
      * @return InstallerVars
      */
-    public function getInstallerVars() :InstallerVars
+    public function getInstallerVars(): InstallerVars
     {
         return $this->installerVars;
     }
@@ -126,9 +128,24 @@ class Installer
      * @param $installDfsSchema
      * @return AbstractStepInstaller
      */
-    public function installSchema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory, $installDfsSchema) :AbstractStepInstaller
-    {
-        $installer = $this->installerFactory->factory(new Schema($cleanDb, $installBaseSchema, $installExtensionsSchema, $languageList, $cleanDataDirectory, $installDfsSchema));
+    public function installSchema(
+        $cleanDb,
+        $installBaseSchema,
+        $installExtensionsSchema,
+        $languageList,
+        $cleanDataDirectory,
+        $installDfsSchema
+    ): AbstractStepInstaller {
+        $installer = $this->installerFactory->factory(
+            new Schema(
+                $cleanDb,
+                $installBaseSchema,
+                $installExtensionsSchema,
+                $languageList,
+                $cleanDataDirectory,
+                $installDfsSchema
+            )
+        );
         if ($this->dryRun) {
             $installer->dryRun();
         } else {
@@ -138,12 +155,12 @@ class Installer
         return $installer;
     }
 
-    public function canInstallSchema() :bool
+    public function canInstallSchema(): bool
     {
         return $this->type == self::INSTALLER_TYPE_DEFAULT;
     }
 
-    private function getSiteDataName() :string
+    private function getSiteDataName(): string
     {
         if ($this->type == self::INSTALLER_TYPE_MODULE) {
             $identifier = eZCharTransform::instance()->transformByGroup($this->installerData['name'], 'identifier');
@@ -154,9 +171,23 @@ class Installer
         return 'ocinstaller_version';
     }
 
+    public function getName()
+    {
+        return $this->installerData['name'];
+    }
+
+    public function canUpdate()
+    {
+        return $this->getCurrentVersion() !== '0.0.0' && version_compare(
+                $this->getCurrentVersion(),
+                $this->installerData['version'],
+                '<'
+            );
+    }
+
     public function needUpdate()
     {
-        if ($this->ignoreVersionCheck){
+        if ($this->ignoreVersionCheck) {
             return true;
         }
         $this->getLogger()->info("Installed version " . $this->getCurrentVersion());
@@ -171,7 +202,7 @@ class Installer
 
     private function getCurrentVersion()
     {
-        if ($this->currentVersion === null){
+        if ($this->currentVersion === null) {
             $version = eZSiteData::fetchByName($this->getSiteDataName());
             if (!$version instanceof eZSiteData) {
                 $this->currentVersion = '0.0.0';
@@ -182,7 +213,7 @@ class Installer
 
         return $this->currentVersion;
     }
-    
+
     private function storeVersion()
     {
         $version = eZSiteData::fetchByName($this->getSiteDataName());
@@ -219,7 +250,7 @@ class Installer
      * @return void
      * @throws Throwable
      */
-    public function install(array $options = array())
+    public function install(array $options = [])
     {
         if (eZContentObjectTrashNode::trashListCount(['Limitation' => []]) > 0) {
             throw new Exception("There are objects in trash: please empty trash before running installer");
@@ -244,9 +275,9 @@ class Installer
 
         $this->loadDataVariables();
 
-        if (isset($options['vars']) && !empty($options['vars'])){
+        if (isset($options['vars']) && !empty($options['vars'])) {
             $keyValueList = explode(',', $options['vars']);
-            foreach ($keyValueList as $keyValue){
+            foreach ($keyValueList as $keyValue) {
                 [$key, $value] = explode(':', $keyValue);
                 $this->logger->warning("Override variable $key = $value");
                 $this->installerVars[trim($key)] = trim($value);
@@ -254,7 +285,6 @@ class Installer
         }
 
         foreach ($steps as $index => $step) {
-
             $stepName = isset($step['identifier']) ? $step['type'] . ' ' . $step['identifier'] : $step['type'];
             if (!in_array($index, $onlySteps)) {
                 $this->logger->debug("(skip) [$index] $stepName");
@@ -275,10 +305,9 @@ class Installer
      * @return AbstractStepInstaller
      * @throws Exception
      */
-    protected function buildInstallerByType($type) :AbstractStepInstaller
+    protected function buildInstallerByType($type): AbstractStepInstaller
     {
         switch ($type) {
-
             case 'rename':
                 $installer = new Renamer();
                 break;
@@ -424,52 +453,79 @@ class Installer
                 $countVersionCheck = 0;
                 $versionCheckValidCount = 0;
                 $skipByVersionDebug = [];
-                if (isset($installer->getStep()['current_version_lt'])){
-                    $check = version_compare($this->getCurrentVersion(), $installer->getStep()['current_version_lt'], 'lt');
-                    if ($check){
+                if (isset($installer->getStep()['current_version_lt'])) {
+                    $check = version_compare(
+                        $this->getCurrentVersion(),
+                        $installer->getStep()['current_version_lt'],
+                        'lt'
+                    );
+                    if ($check) {
                         $versionCheckValidCount++;
                     }
-                    $skipByVersionDebug['current_version_lt'] = $this->getCurrentVersion() . ' < ' . $installer->getStep()['current_version_lt'] . ' -> ' . (int)$check;
+                    $skipByVersionDebug['current_version_lt'] = $this->getCurrentVersion(
+                        ) . ' < ' . $installer->getStep()['current_version_lt'] . ' -> ' . (int)$check;
                     $countVersionCheck++;
                 }
-                if (isset($installer->getStep()['current_version_le'])){
-                    $check = version_compare($this->getCurrentVersion(), $installer->getStep()['current_version_le'], 'le');
-                    if ($check){
+                if (isset($installer->getStep()['current_version_le'])) {
+                    $check = version_compare(
+                        $this->getCurrentVersion(),
+                        $installer->getStep()['current_version_le'],
+                        'le'
+                    );
+                    if ($check) {
                         $versionCheckValidCount++;
                     }
-                    $skipByVersionDebug['current_version_le'] = $this->getCurrentVersion() . ' <= ' . $installer->getStep()['current_version_le'] . ' -> ' . (int)$check;
+                    $skipByVersionDebug['current_version_le'] = $this->getCurrentVersion(
+                        ) . ' <= ' . $installer->getStep()['current_version_le'] . ' -> ' . (int)$check;
                     $countVersionCheck++;
                 }
-                if (isset($installer->getStep()['current_version_eq'])){
-                    $check = version_compare($this->getCurrentVersion(), $installer->getStep()['current_version_eq'], 'eq');
-                    if ($check){
+                if (isset($installer->getStep()['current_version_eq'])) {
+                    $check = version_compare(
+                        $this->getCurrentVersion(),
+                        $installer->getStep()['current_version_eq'],
+                        'eq'
+                    );
+                    if ($check) {
                         $versionCheckValidCount++;
                     }
-                    $skipByVersionDebug['current_version_eq'] = $this->getCurrentVersion() . ' = ' . $installer->getStep()['current_version_eq'] . ' -> ' . (int)$check;
+                    $skipByVersionDebug['current_version_eq'] = $this->getCurrentVersion(
+                        ) . ' = ' . $installer->getStep()['current_version_eq'] . ' -> ' . (int)$check;
                     $countVersionCheck++;
                 }
-                if (isset($installer->getStep()['current_version_ge'])){
-                    $check = version_compare($this->getCurrentVersion(), $installer->getStep()['current_version_ge'], 'ge');
-                    if ($check){
+                if (isset($installer->getStep()['current_version_ge'])) {
+                    $check = version_compare(
+                        $this->getCurrentVersion(),
+                        $installer->getStep()['current_version_ge'],
+                        'ge'
+                    );
+                    if ($check) {
                         $versionCheckValidCount++;
                     }
-                    $skipByVersionDebug['current_version_ge'] = $this->getCurrentVersion() . ' >= ' . $installer->getStep()['current_version_ge'] . ' -> ' . (int)$check;
+                    $skipByVersionDebug['current_version_ge'] = $this->getCurrentVersion(
+                        ) . ' >= ' . $installer->getStep()['current_version_ge'] . ' -> ' . (int)$check;
                     $countVersionCheck++;
                 }
-                if (isset($installer->getStep()['current_version_gt'])){
-                    $check = version_compare($this->getCurrentVersion(), $installer->getStep()['current_version_gt'], 'gt');
-                    if ($check){
+                if (isset($installer->getStep()['current_version_gt'])) {
+                    $check = version_compare(
+                        $this->getCurrentVersion(),
+                        $installer->getStep()['current_version_gt'],
+                        'gt'
+                    );
+                    if ($check) {
                         $versionCheckValidCount++;
                     }
-                    $skipByVersionDebug['current_version_gt'] = $this->getCurrentVersion() . ' > ' . $installer->getStep()['current_version_gt'] . ' -> ' . (int)$check;
+                    $skipByVersionDebug['current_version_gt'] = $this->getCurrentVersion(
+                        ) . ' > ' . $installer->getStep()['current_version_gt'] . ' -> ' . (int)$check;
                     $countVersionCheck++;
                 }
-                if ($countVersionCheck > 0){
+                if ($countVersionCheck > 0) {
                     $skip = $countVersionCheck != $versionCheckValidCount;
-                    if ($skip){
-                        $this->logger->debug("[$index] $stepName skipped by version compare parameters ($versionCheckValidCount/$countVersionCheck)");
+                    if ($skip) {
+                        $this->logger->debug(
+                            "[$index] $stepName skipped by version compare parameters ($versionCheckValidCount/$countVersionCheck)"
+                        );
                     }
-                    foreach ($skipByVersionDebug as $skipCond => $skipDebug){
+                    foreach ($skipByVersionDebug as $skipCond => $skipDebug) {
                         $this->logger->debug("[$index] version compare: $skipCond $skipDebug");
                     }
                 }
@@ -479,16 +535,16 @@ class Installer
                     $skip = true;
                 }
 
-                if (!$skip){
+                if (!$skip) {
                     $this->logger->debug("[$index] $stepName");
                     if ($this->dryRun) {
                         $installer->dryRun();
-                        if ($this->isWaitForUser && !$this->waitForUser('Next step?')){
+                        if ($this->isWaitForUser && !$this->waitForUser('Next step?')) {
                             throw new \RuntimeException('Aborted');
                         }
                     } elseif ($this->isWaitForUser) {
                         $installer->dryRun();
-                        if ($this->waitForUser('Install step?')){
+                        if ($this->waitForUser('Install step?')) {
                             $installer->install();
                         }
                     } else {
@@ -533,7 +589,7 @@ class Installer
         $this->dryRun = true;
     }
 
-    public function isDryRun() :bool
+    public function isDryRun(): bool
     {
         return $this->dryRun === true;
     }
@@ -547,19 +603,21 @@ class Installer
     private function waitForUser(string $question)
     {
         return \ezcConsoleDialogViewer::displayDialog(
-            \ezcConsoleQuestionDialog::YesNoQuestion(
-                new \ezcConsoleOutput(), $question, 'y'
-            )
-        ) === 'y';
+                \ezcConsoleQuestionDialog::YesNoQuestion(
+                    new \ezcConsoleOutput(),
+                    $question,
+                    'y'
+                )
+            ) === 'y';
     }
 
     public static function parseDataDir(?string $dataDir = null): string
     {
-        if (!$dataDir){
+        if (!$dataDir) {
             throw new Exception("Missing data argument");
         }
 
-        if (is_dir($dataDir)){
+        if (is_dir($dataDir)) {
             return realpath($dataDir);
         }
 
@@ -570,23 +628,28 @@ class Installer
 
         $installerDirectory = $dataDir;
         $module = false;
-        if (strpos($dataDir, '::')){
+        if (strpos($dataDir, '::')) {
             [$installerDirectory, $module] = explode('::', $dataDir, 2);
-            if (empty($module)){
+            if (empty($module)) {
                 $module = '?';
             }
         }
-        if (isset($prebuiltDataDirList[$installerDirectory]) && is_dir($prebuiltDataDirList[$installerDirectory])){
+        if (isset($prebuiltDataDirList[$installerDirectory]) && is_dir($prebuiltDataDirList[$installerDirectory])) {
             $installerDirectory = $prebuiltDataDirList[$installerDirectory];
-            if ($module === '?'){
-                throw new Exception("Missing module suffix in data argument. Available modules are: " . PHP_EOL . implode(PHP_EOL, self::findModules($installerDirectory)));
+            if ($module === '?') {
+                throw new Exception(
+                    "Missing module suffix in data argument. Available modules are: " . PHP_EOL . implode(
+                        PHP_EOL,
+                        self::findModules($installerDirectory)
+                    )
+                );
             }
-            if ($module){
+            if ($module) {
                 $installerDirectory .= '/modules/' . $module;
             }
         }
 
-        if (!is_dir($installerDirectory)){
+        if (!is_dir($installerDirectory)) {
             throw new Exception("Installer $dataDir not found");
         }
 
@@ -599,5 +662,43 @@ class Installer
         sort($dirs);
 
         return $dirs;
+    }
+
+    public function getCurrentVersions()
+    {
+        $list = [];
+        $installerDirectory = $this->dataDir;
+        if (strpos($installerDirectory, '/modules/')) {
+            $installerDirectory = realpath(rtrim($installerDirectory . '/') . '/../..');
+        }
+        $list = [];
+        $installerData = Yaml::parse(file_get_contents($installerDirectory . '/installer.yml'));
+        $list['version'] = [
+            'current' => 'not-installed',
+            'available' => $installerData['version'],
+        ];
+        $modules = self::findModules($installerDirectory);
+        foreach ($modules as $module) {
+            if (empty($module)) {
+                continue;
+            }
+            if (file_exists($installerDirectory . '/modules/' . $module . '/installer.yml')) {
+                $installerData = Yaml::parse(
+                    file_get_contents($installerDirectory . '/modules/' . $module . '/installer.yml')
+                );
+                $moduleName = eZCharTransform::instance()->transformByGroup($installerData['name'], 'identifier');
+                $list[$moduleName] = [
+                    'current' => 'not-installed',
+                    'available' => $installerData['version'],
+                ];
+            }
+        }
+        $rows = eZSiteData::fetchObjectList(eZSiteData::definition(), null, ['name' => ['like', 'ocinstaller_%']]);
+        foreach ($rows as $row) {
+            $name = str_replace(['ocinstaller_', '_version'], '', $row->attribute('name'));
+            $list[$name]['current'] = $row->attribute('value');
+        }
+        krsort($list);
+        return $list;
     }
 }
