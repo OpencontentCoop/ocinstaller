@@ -335,6 +335,7 @@ try {
 
     eZINI::instance('file.ini')->setVariable('ClusteringSettings', 'FileHandler', $fileHandler);
 
+    $installerWasRun = false;
     if ($options['update'] && !$installer->canUpdate()){
         $installer->getLogger()->info("No update needed or module is not installed");
     }elseif ($installOnlySchema) {
@@ -342,7 +343,7 @@ try {
     } else {
         if ($installer->needUpdate() || $options['only-step'] !== null || $installer->isDryRun()) {
             $installer->install($options);
-
+            $installerWasRun = true;
             if (!$installer->isDryRun()) {
                 if ($installer->canInstallSchema()
                     && $installBaseSchema
@@ -377,7 +378,11 @@ try {
     }
 
     $cli->output("Installer logfile: " . $installer->getLogger()->getLogFilePath());
-    $slackMessage = "[SUCCESS] Runned installer $dataDir on " . $db->DB;
+    if ($installerWasRun) {
+        $slackMessage = "[SUCCESS] The installer $dataDir was run on " . $db->DB;
+    } else {
+        $slackMessage = "[SUCCESS] Do not need to run the installer $dataDir on " . $db->DB;
+    }
     SlackNotify::notify($slackEndpoint, $slackMessage);
 } catch (Throwable $e) {
     if ($e instanceof eZDBException) {
