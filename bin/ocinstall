@@ -381,7 +381,7 @@ try {
     if ($installerWasRun) {
         $slackMessage = "[SUCCESS] [$db->DB] The installer $dataDir was run";
     } else {
-        $slackMessage = "[SUCCESS] [$db->DB] Do not need to run the installer $dataDir";
+        $slackMessage = "[INFO] [$db->DB] Do not need to run the installer $dataDir";
     }
     SlackNotify::notify($slackEndpoint, $slackMessage);
 } catch (Throwable $e) {
