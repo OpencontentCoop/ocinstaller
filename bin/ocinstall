@@ -379,9 +379,9 @@ try {
 
     $cli->output("Installer logfile: " . $installer->getLogger()->getLogFilePath());
     if ($installerWasRun) {
-        $slackMessage = "[SUCCESS] The installer $dataDir was run on " . $db->DB;
+        $slackMessage = "[SUCCESS] [$db->DB] The installer $dataDir was run";
     } else {
-        $slackMessage = "[SUCCESS] Do not need to run the installer $dataDir on " . $db->DB;
+        $slackMessage = "[SUCCESS] [$db->DB] Do not need to run the installer $dataDir";
     }
     SlackNotify::notify($slackEndpoint, $slackMessage);
 } catch (Throwable $e) {
@@ -401,7 +401,7 @@ try {
         $cli->error('At line ' . $e->getLine() . ' of ' . $e->getFile());
         $cli->output($e->getTraceAsString());
     }
-    $slackMessage = "[ERROR] Running installer " . $options['arguments'][0] . " on " . $db->DB . ': ' . $e->getMessage();
+    $slackMessage = "[ERROR] [$db->DB] Running installer " . $options['arguments'][0] . ': ' . $e->getMessage();
     SlackNotify::notify($slackEndpoint, $slackMessage);
 }
 
