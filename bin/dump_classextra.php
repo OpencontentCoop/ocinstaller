@@ -57,7 +57,7 @@ if ($data) {
         }
 
     } else {
-        print_r($data);
+        print_r($dataYaml);
     }
 }
 

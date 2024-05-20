@@ -198,9 +198,9 @@ try {
     // install
     $installer = new Installer($db, $dataDir);
     if ($options['list']){
-        $rows = [['Name', 'Available', 'Current',]];
-        foreach($installer->getCurrentVersions() as $name => $versions){
-            $rows[] = [$name, $versions['available'], $versions['current'],];
+        $rows = [['Name', 'Identifier', 'Path', 'Available', 'Current',]];
+        foreach($installer->getCurrentVersions() as $versions){
+            $rows[] = [$versions['name'], $versions['identifier'], $versions['path'], $versions['available'], $versions['current'],];
         }
 
         $table = new ezcConsoleTable($output, 300);
