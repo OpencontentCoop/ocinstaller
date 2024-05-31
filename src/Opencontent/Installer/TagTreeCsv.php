@@ -88,6 +88,15 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
     public static function createTagList()
     {
         $db = eZDB::instance();
+
+        $tableCreateSql = "CREATE TABLE IF NOT EXISTS eztags_description (
+           keyword_id integer not null default 0,
+           description_text TEXT,
+           locale varchar(255) NOT NULL default '',
+           PRIMARY KEY (keyword_id, locale)
+        );";
+        $db->query($tableCreateSql);
+
         $viewQuery = "
         CREATE MATERIALIZED VIEW IF NOT EXISTS ocinstall_tags AS
             with tag_list as (
