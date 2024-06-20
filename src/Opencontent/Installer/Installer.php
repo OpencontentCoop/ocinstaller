@@ -178,6 +178,9 @@ class Installer
 
     public function canUpdate()
     {
+        if (\eZINI::instance('openpa.ini')->hasVariable('CreditsSettings', 'IsArchived')){
+            return false;
+        }
         return $this->getCurrentVersion() !== '0.0.0' && version_compare(
                 $this->getCurrentVersion(),
                 $this->installerData['version'],
@@ -674,6 +677,9 @@ class Installer
         $list = [];
         $installerData = Yaml::parse(file_get_contents($installerDirectory . '/installer.yml'));
         $list['version'] = [
+            'name' => $installerData['name'],
+            'path' => '',
+            'identifier' => $moduleName,
             'current' => 'not-installed',
             'available' => $installerData['version'],
         ];
@@ -688,6 +694,9 @@ class Installer
                 );
                 $moduleName = eZCharTransform::instance()->transformByGroup($installerData['name'], 'identifier');
                 $list[$moduleName] = [
+                    'name' => $installerData['name'],
+                    'path' => $module,
+                    'identifier' => $moduleName,
                     'current' => 'not-installed',
                     'available' => $installerData['version'],
                 ];
@@ -696,7 +705,17 @@ class Installer
         $rows = eZSiteData::fetchObjectList(eZSiteData::definition(), null, ['name' => ['like', 'ocinstaller_%']]);
         foreach ($rows as $row) {
             $name = str_replace(['ocinstaller_', '_version'], '', $row->attribute('name'));
-            $list[$name]['current'] = $row->attribute('value');
+            if (isset($list[$name])) {
+                $list[$name]['current'] = $row->attribute('value');
+            }else{
+                $list[$name] = [
+                    'name' => '?',
+                    'path' => '?',
+                    'identifier' => $name,
+                    'current' => $row->attribute('value'),
+                    'available' => '?',
+                ];
+            }
         }
         krsort($list);
         return $list;

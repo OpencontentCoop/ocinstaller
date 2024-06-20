@@ -136,6 +136,11 @@ class InstallerVars extends \ArrayObject
                 }
                 $value = $object->mainNode()->attribute('node_id');
             }
+
+            if (strpos($value, 'base64(') !== false) {
+                $var = trim(substr($value, 7, -1));
+                $value = base64_encode(file_get_contents($var));
+            }
         }
 
         return $value;
