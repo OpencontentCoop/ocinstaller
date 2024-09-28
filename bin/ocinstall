@@ -81,10 +81,16 @@ $optionsConfigList = [
         'help' => 'Install only data without base and extension schema',
     ],
     [
+        'identifier' => 'exclude-dfs-schema',
+        'config' => '[exclude-dfs-schema]',
+        'help' => 'Exclude dfs schema in main db',
+    ],
+    [
         'identifier' => 'embed-dfs-schema',
         'config' => '[embed-dfs-schema]',
-        'help' => 'Install dfs schema in main db',
+        'help' => 'DEPRECATED: the dfs schema is installed by default, use --exclude-dfs-schema options to avoid dfs schema installation',
     ],
+
     [
         'identifier' => 'dry-run',
         'config' => '[dry-run]',
@@ -108,7 +114,7 @@ $optionsConfigList = [
     [
         'identifier' => 'no-interaction',
         'config' => '[no-interaction]',
-        'help' => 'Don\'t ask don\'t tell',
+        'help' => 'Skip user interaction',
     ],
     [
         'identifier' => 'purge-cache',
@@ -126,6 +132,11 @@ $optionsConfigList = [
         'help' => 'Add or override installer vars in format key:value,key2:value2',
     ],
     [
+        'identifier' => 'list-vars',
+        'config' => '[list-vars]',
+        'help' => 'List available variables set in installer file and exit',
+    ],
+    [
         'identifier' => 'slack-endpoint',
         'config' => '[slack-endpoint:]',
         'help' => 'Notify result to slack endpoint',
@@ -139,6 +150,11 @@ $optionsConfigList = [
         'identifier' => 'list',
         'config' => '[list]',
         'help' => 'List installed modules',
+    ],
+    [
+        'identifier' => 'trash-purge',
+        'config' => '[trash-purge]',
+        'help' => 'Purge trash before run',
     ],
 ];
 $configs = array_column($optionsConfigList, 'config');
@@ -167,6 +183,11 @@ $cli = eZCLI::instance();
 $script->initialize();
 $output = new ezcConsoleOutput();
 
+if ($options['trash-purge']) {
+    $purgeHandler = new eZScriptTrashPurge($cli);
+    $purgeHandler->run();
+}
+
 /** @var eZDBInterface $db */
 $db = eZDB::instance();
 eZDB::setErrorHandling(eZDB::ERROR_HANDLING_EXCEPTIONS);
@@ -178,11 +199,18 @@ try {
     $cleanDb = $options['cleanup'];
     $installBaseSchema = $options['only-data'] === null && $options['only-step'] === null;
     $installExtensionsSchema = !$options['exlude-extension-schemas'];
-    $installDfsSchema = $options['embed-dfs-schema'];
+    $installDfsSchema = !$options['exclude-dfs-schema'];
     $purgeCache = $options['purge-cache'];
     $purgeStorage = $options['purge-storage'];
     $installOnlySchema = $options['only-schema'] !== null;
     $slackEndpoint = $options['slack-endpoint'];
+    $doListVariables = $options['list-vars'];
+
+    if ($options['embed-dfs-schema']) {
+        $cli->warning(
+            'Option \'embed-dfs-schema\' is deprecated: the dfs schema is installed by default, use --exclude-dfs-schema options to avoid dfs schema installation'
+        );
+    }
 
     if ($cleanDb && $options['only-step']) {
         throw new Exception("Cannot set --cleanup and --only-step arguments at the same time");
@@ -197,10 +225,27 @@ try {
 
     // install
     $installer = new Installer($db, $dataDir);
-    if ($options['list']){
+    if ($doListVariables) {
+        $table = new ezcConsoleTable($output, 300);
+        foreach ($installer->getVariables() as $index => $variable) {
+            $table[$index][]->content = (string)$variable['name'];
+            $table[$index][]->content = (string)$variable['value'];
+        }
+        $table->outputTable();
+        $output->outputLine();
+
+        $script->shutdown(0);
+    }
+    if ($options['list']) {
         $rows = [['Name', 'Identifier', 'Path', 'Available', 'Current',]];
-        foreach($installer->getCurrentVersions() as $versions){
-            $rows[] = [$versions['name'], $versions['identifier'], $versions['path'], $versions['available'], $versions['current'],];
+        foreach ($installer->getCurrentVersions() as $versions) {
+            $rows[] = [
+                $versions['name'],
+                $versions['identifier'],
+                $versions['path'],
+                $versions['available'],
+                $versions['current'],
+            ];
         }
 
         $table = new ezcConsoleTable($output, 300);
@@ -336,9 +381,9 @@ try {
     eZINI::instance('file.ini')->setVariable('ClusteringSettings', 'FileHandler', $fileHandler);
 
     $installerWasRun = false;
-    if ($options['update'] && !$installer->canUpdate()){
+    if ($options['update'] && !$installer->canUpdate()) {
         $installer->getLogger()->info("No update needed or module is not installed");
-    }elseif ($installOnlySchema) {
+    } elseif ($installOnlySchema) {
         $installer->getLogger()->info("Data installation skipped");
     } else {
         if ($installer->needUpdate() || $options['only-step'] !== null || $installer->isDryRun()) {
@@ -358,15 +403,13 @@ try {
                 $cacheHelper->clearItems(eZCache::fetchList(), false);
                 //$cli->setIsQuiet($script->isQuiet());
 
-                $optionArray = [
-                    'iniFile' => 'site.ini',
-                    'iniSection' => 'ContentSettings',
-                    'iniVariable' => 'StaticCacheHandler',
-                ];
                 try {
-                    $options = new ezpExtensionOptions($optionArray);
                     /** @var eZStaticCache $staticCacheHandler */
-                    $staticCacheHandler = eZExtension::getHandlerClass($options);
+                    $staticCacheHandler = eZExtension::getHandlerClass(new ezpExtensionOptions([
+                        'iniFile' => 'site.ini',
+                        'iniSection' => 'ContentSettings',
+                        'iniVariable' => 'StaticCacheHandler',
+                    ]));
                     $staticCacheHandler->generateCache(true, true);
                 } catch (Exception $e) {
                     $installer->getLogger()->error($e->getMessage());
