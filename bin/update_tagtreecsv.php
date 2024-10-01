@@ -19,21 +19,9 @@ $cli = eZCLI::instance();
 $script->initialize();
 
 $installerDirectory = rtrim($options['arguments'][0], '/');
-$allFiles = [
-    $installerDirectory . '/tagtree_csv/tipi_di_notizia.csv',
-    $installerDirectory . '/tagtree_csv/costi_e_prezzi.csv',
-    $installerDirectory . '/tagtree_csv/data_themes_eurovocs.csv',
-    $installerDirectory . '/tagtree_csv/dataset.csv',
-    $installerDirectory . '/tagtree_csv/documenti.csv',
-    $installerDirectory . '/tagtree_csv/esito_servizi_al_cittadino.csv',
-    $installerDirectory . '/tagtree_csv/eventi.csv',
-    $installerDirectory . '/tagtree_csv/lingue_in_cui_e_disponibile_un_servizio_un_evento.csv',
-    $installerDirectory . '/tagtree_csv/licenze.csv',
-    $installerDirectory . '/tagtree_csv/luoghi.csv',
-    $installerDirectory . '/tagtree_csv/organizzazione.csv',
-    $installerDirectory . '/tagtree_csv/persone.csv',
-    $installerDirectory . '/tagtree_csv/servizi_pubblici.csv',
-];
+if (is_dir($installerDirectory)) {
+    $allFiles = eZDir::findSubitems($installerDirectory . '/tagtree_csv', 'f', true);
+}
 
 $files = $options['file'] ?? $allFiles;
 if (!is_array($files)){

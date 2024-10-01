@@ -176,6 +176,11 @@ class Installer
         return $this->installerData['name'];
     }
 
+    public function getVariables()
+    {
+        return $this->installerData['variables'];
+    }
+
     public function canUpdate()
     {
         if (\eZINI::instance('openpa.ini')->hasVariable('CreditsSettings', 'IsArchived')){
@@ -256,7 +261,12 @@ class Installer
     public function install(array $options = [])
     {
         if (eZContentObjectTrashNode::trashListCount(['Limitation' => []]) > 0) {
-            throw new Exception("There are objects in trash: please empty trash before running installer");
+            $trashErrorMessage = "There are objects in trash: please empty trash before running installer";
+            if ($this->isDryRun()){
+                $this->getLogger()->error($trashErrorMessage);
+            }else {
+                throw new Exception($trashErrorMessage);
+            }
         }
 
         $this->installerVars['current_version'] = $this->getCurrentVersion();
@@ -542,12 +552,12 @@ class Installer
                     $this->logger->debug("[$index] $stepName");
                     if ($this->dryRun) {
                         $installer->dryRun();
-                        if ($this->isWaitForUser && !$this->waitForUser('Next step?')) {
+                        if ($this->isWaitForUser && !$this->waitForUser('  -> next step?')) {
                             throw new \RuntimeException('Aborted');
                         }
                     } elseif ($this->isWaitForUser) {
                         $installer->dryRun();
-                        if ($this->waitForUser('Install step?')) {
+                        if ($this->waitForUser(' -> install step?')) {
                             $installer->install();
                         }
                     } else {
@@ -627,6 +637,7 @@ class Installer
         $prebuiltDataDirList = [
             'opencity' => 'vendor/opencity-labs/opencity-installer',
             'openagenda' => 'vendor/opencity-labs/openagenda-installer',
+            'opencity-asl' => 'vendor/opencity-labs/opencity-asl-installer',
         ];
 
         $installerDirectory = $dataDir;
