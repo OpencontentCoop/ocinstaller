@@ -78,6 +78,12 @@ class InstallerVars extends \ArrayObject
                 $value = '"' . date($dateFormat) . '"';
             }
 
+            if (strpos($value, 'openpaini(') !== false) {
+                $iniVariable = substr($value, 10, -1);
+                [$group, $variable, $default] = explode(',', $iniVariable);
+                $value = \OpenPAINI::variable($group, $variable, $default);
+            }
+
             if (strpos($value, 'ini(') !== false) {
                 $iniVariable = substr($value, 4, -1);
                 [$group, $variable, $file] = explode(',', $iniVariable);

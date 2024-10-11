@@ -178,7 +178,12 @@ class Installer
 
     public function getVariables()
     {
-        return $this->installerData['variables'];
+        $installerVariables = $this->installerData['variables'];
+        $varParser = new InstallerVars();
+        foreach ($installerVariables as $key => $value) {
+            $installerVariables[$key]['parsed_value'] = $varParser->parseVarValue($value['value']);
+        }
+        return $installerVariables;
     }
 
     public function canUpdate()

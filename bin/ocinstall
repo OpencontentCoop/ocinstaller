@@ -230,6 +230,7 @@ try {
         foreach ($installer->getVariables() as $index => $variable) {
             $table[$index][]->content = (string)$variable['name'];
             $table[$index][]->content = (string)$variable['value'];
+            $table[$index][]->content = var_export($variable['parsed_value'], true);
         }
         $table->outputTable();
         $output->outputLine();
