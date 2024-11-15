@@ -275,7 +275,7 @@ class ContentClassSerializer
         $unserializedData = [];
         foreach (self::$fields as $source => $target) {
             if (isset($data[$source])) {
-                $value = $this->installerVars ? $this->installerVars->parseVarValue($data[$source]) : $data[$source];
+                $value = $this->installerVars ? $this->installerVars->recursiveParseVarValue($data[$source]) : $data[$source];
                 $unserializedData[$target] = $this->unserializeValue($value, $source, $data);
             } else {
                 $unserializedData[$target] = $this->attributeDefinition[$source]['default'];

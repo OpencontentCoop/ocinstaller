@@ -736,4 +736,14 @@ class Installer
         krsort($list);
         return $list;
     }
+
+    public static function getModuleVersion($moduleName)
+    {
+        $row = eZSiteData::fetchByName('ocinstaller_' . $moduleName . '_version');
+        if ($row instanceof eZSiteData) {
+            return $row->attribute('value');
+        }
+
+        return null;
+    }
 }

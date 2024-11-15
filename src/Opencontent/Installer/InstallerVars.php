@@ -147,6 +147,28 @@ class InstallerVars extends \ArrayObject
                 $var = trim(substr($value, 7, -1));
                 $value = base64_encode(file_get_contents($var));
             }
+
+            if (strpos($value, 'has_module(') !== false) {
+                $var = trim(substr($value, 11, -1));
+                $value = Installer::getModuleVersion($var) !== null;
+            }
+        }
+
+        return $value;
+    }
+
+    public function recursiveParseVarValue($value)
+    {
+        if (is_string($value)) {
+            return $this->parseVarValue($value);
+        }
+
+        if (is_array($value)) {
+            $copyValue = $value;
+            foreach ($value as $key => $item){
+                $copyValue[$key] = $this->recursiveParseVarValue($item);
+            }
+            return $copyValue;
         }
 
         return $value;
