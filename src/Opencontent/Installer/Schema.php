@@ -137,7 +137,7 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
                     !preg_match($matchRegexp, $relationItem))
                     continue;
 
-                if (!$this->db->removeRelation($relationItem, $relationType)) {
+                if (!$this->db->removeRelation($relationItem . ' CASCADE', $relationType)) {
                     $result = false;
                     break;
                 }
