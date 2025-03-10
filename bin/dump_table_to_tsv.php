@@ -49,3 +49,6 @@ if ($options['table']) {
 }
 
 $script->shutdown();
+
+//php vendor/opencontent/ocinstaller/bin/dump_table_to_tsv.php -sopencitybuglianoqa_backend --table=eztags --data=vendor/opencity-labs/opencity-installer
+//php vendor/opencontent/ocinstaller/bin/dump_table_to_tsv.php -sopencitybuglianoqa_backend --table=eztags_keyword --data=vendor/opencity-labs/opencity-installer
