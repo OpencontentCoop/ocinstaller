@@ -340,6 +340,10 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
      */
     private function createTag($sourceRow, $parentTag = null)
     {
+        $tagObj = \eZTagsObject::fetchByRemoteID($sourceRow['remote_id']);
+        if ($tagObj instanceof \eZTagsObject){
+            return $this->updateTag($sourceRow, $parentTag);
+        }
         if ($sourceRow['keyword_it'].$sourceRow['keyword_de'].$sourceRow['keyword_en'] === ''){
             throw new Exception('Empty tag detected');
         }
@@ -359,6 +363,7 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
         $this->setTagTranslationsAndSynonyms($tag, $sourceRow);
 
         $tagObj = \eZTagsObject::fetch((int)$tag->id);
+
         $tagObj->setAttribute('remote_id', $sourceRow['remote_id']);
         $tagObj->store();
         $this->setTagDescriptions($tagObj, $sourceRow);
