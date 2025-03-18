@@ -7,6 +7,7 @@ use eZTagsKeyword;
 use eZTagsObject;
 use Opencontent\Opendata\Api\Structs\TagSynonymStruct;
 use Opencontent\Opendata\Api\TagRepository;
+use Psr\Log\LoggerInterface;
 
 class Tag extends TagTree
 {
@@ -140,6 +141,13 @@ class Tag extends TagTree
         }
     }
 
+    public static function fetchDeprecatedTagRoot(?LoggerInterface $logger = null)
+    {
+        $self = new self();
+        $self->setLogger(new Logger());
+        return $self->getDeprecatedTagRoot();
+    }
+
     private function getDeprecatedTagRoot()
     {
         if ($this->deprecatedTagRoot === null) {
@@ -150,7 +158,7 @@ class Tag extends TagTree
                     'locale' => 'ita-IT',
                     'alwaysAvailable' => true,
                     'synonyms' => [],
-                    'keywordTranslations' => ['ita-IT' => 'Classificazioni deprecate']
+                    'keywordTranslations' => ['ita-IT' => 'Classificazioni deprecate'],
                 ], 0);
                 $this->deprecatedTagRoot = eZTagsObject::fetchByUrl('Classificazioni deprecate');
             }
