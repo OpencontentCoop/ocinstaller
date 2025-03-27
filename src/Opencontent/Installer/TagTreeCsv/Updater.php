@@ -73,14 +73,14 @@ class Updater
 
             $projection = (new Projection($this->languages))->refresh();
             if ($this->logger) {
-                $this->logger->info(sprintf('Search diff with %s', $file));
+                $this->logger->debug(sprintf('Search diff with %s', $file));
             }
             $localDiffTree = $projection->getTreeDiffByParentId(
                 (int)$this->rootTag->attribute('id'),
                 $csvTree
             );
             if ($this->logger) {
-                $this->logger->info(sprintf('Found %s diff', $localDiffTree->count()));
+                $this->logger->info(sprintf('Found %s diff in file %s', $localDiffTree->count(), $file));
             }
             $reparentList = [];
             foreach ($localDiffTree->getItems() as $item) {

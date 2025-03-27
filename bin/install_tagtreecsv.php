@@ -1,7 +1,7 @@
 <?php
 
 use Opencontent\Installer\Logger;
-use Opencontent\Installer\TagTreeCsv;
+use Opencontent\Installer\TagTreeCsvV1 as TagTreeCsv;
 
 require 'autoload.php';
 

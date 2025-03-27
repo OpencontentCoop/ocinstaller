@@ -245,6 +245,9 @@ class Installer
     private function storeDataDirForVersion()
     {
         $siteDataName = 'path_' . $this->getSiteDataName() . '@' . $this->installerData['version'];
+        if (mb_strlen($siteDataName) > 60){
+            $siteDataName = 'path_' . substr($this->getSiteDataName(),0, 45) . '@' . $this->installerData['version'];
+        }
         $dataDir = realpath($this->dataDir);
         $version = eZSiteData::fetchByName($siteDataName);
         if (!$version instanceof eZSiteData) {

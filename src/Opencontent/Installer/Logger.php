@@ -16,73 +16,105 @@ class Logger implements LoggerInterface
 
     public $isVerbose = false;
 
-    public function __construct()
+    private $prefix;
+
+    private $prevPrefix;
+
+    public function __construct($prefix = '')
     {
         $time = time();
         $this->logName = 'installer_' . $time . '.log';
-        $varDir = eZINI::instance()->variable( 'FileSettings', 'VarDir' );
+        $varDir = eZINI::instance()->variable('FileSettings', 'VarDir');
         $this->logDir = $varDir . '/log';
         eZDir::mkdir($this->logDir, false, true);
+        $this->prefix = $this->prevPrefix = $prefix;
     }
 
-    public function emergency($message, array $context = array())
+    public function setPrefix(string $prefix): Logger
     {
+        $this->prevPrefix = $this->prefix;
+        $this->prefix = $prefix;
+        return $this;
+    }
+
+    public function resetPrefix(): Logger
+    {
+        $this->prefix = $this->prevPrefix;
+        return $this;
+    }
+
+    private function decorateMessage($message)
+    {
+        return $this->prefix . $message;
+    }
+
+    public function emergency($message, array $context = [])
+    {
+        $message = $this->decorateMessage($message);
         eZCLI::instance()->error($message);
         $this->write('emergency', $message);
     }
 
-    public function alert($message, array $context = array())
+    public function alert($message, array $context = [])
     {
+        $message = $this->decorateMessage($message);
         eZCLI::instance()->error($message);
         $this->write('alert', $message);
     }
 
-    public function critical($message, array $context = array())
+    public function critical($message, array $context = [])
     {
+        $message = $this->decorateMessage($message);
         eZCLI::instance()->error($message);
         $this->write('critical', $message);
     }
 
-    public function error($message, array $context = array())
+    public function error($message, array $context = [])
     {
+        $message = $this->decorateMessage($message);
         eZCLI::instance()->error($message);
         $this->write('error', $message);
     }
 
-    public function warning($message, array $context = array())
+    public function warning($message, array $context = [])
     {
+        $message = $this->decorateMessage($message);
         eZCLI::instance()->warning($message);
         $this->write('warning', $message);
     }
 
-    public function notice($message, array $context = array())
+    public function notice($message, array $context = [])
     {
+        $message = $this->decorateMessage($message);
         $color = eZCLI::instance()->terminalStyle('white');
         $colorEnd = eZCLI::instance()->terminalStyle('white-end');
         $normal = eZCLI::instance()->terminalStyle('normal');
-        eZCLI::instance()->output($color.$message.$colorEnd.$normal);
+        eZCLI::instance()->output($color . $message . $colorEnd . $normal);
         $this->write('notice', $message);
     }
 
-    public function info($message, array $context = array())
+    public function info($message, array $context = [])
     {
+        $message = $this->decorateMessage($message);
         eZCLI::instance()->notice($message);
         $this->write('info', $message);
     }
 
-    public function debug($message, array $context = array())
+    public function debug($message, array $context = [])
     {
+        $message = $this->decorateMessage($message);
         if ($this->isVerbose) {
             $color = eZCLI::instance()->terminalStyle('cyan');
             $colorEnd = eZCLI::instance()->terminalStyle('cyan-end');
             $normal = eZCLI::instance()->terminalStyle('normal');
-            eZCLI::instance()->output($color.$message.$colorEnd.$normal);
+            eZCLI::instance()->output($color . $message . $colorEnd . $normal);
         }
         $this->write('debug', $message);
     }
 
-    public function log($level, $message, array $context = array())
+    public function log($level, $message, array $context = [])
     {
+        $message = $this->decorateMessage($message);
         eZCLI::instance()->output($message);
         $this->write('log', $message);
     }
