@@ -35,6 +35,8 @@ class Updater
 
     private $waitForUser = false;
 
+    private $moveInDeprecated = false;
+
     public function __construct(array $languages, array $files)
     {
         $this->languages = $languages;
@@ -53,10 +55,14 @@ class Updater
         $this->removeTranslation = $removeTranslation;
     }
 
+    public function setMoveInDeprecated(bool $moveInDeprecated): void
+    {
+        $this->moveInDeprecated = $moveInDeprecated;
+    }
+
     public function run()
     {
         foreach ($this->files as $index => $file) {
-
             if ($this->waitForUser) {
                 \ezcConsoleDialogViewer::displayDialog(
                     \ezcConsoleQuestionDialog::YesNoQuestion(
@@ -98,9 +104,9 @@ class Updater
                         }
                     } else {
                         $diff = $item->diff($sourceItem);
-                        if (strpos($diff, '~p') !== false){
+                        if (strpos($diff, '~p') !== false) {
                             $reparentList[] = [$localTag, $sourceItem, $diff, $path];
-                        }else {
+                        } else {
                             if ($this->logger) {
                                 $this->logger->warning(' ~ ' . $path . ' ' . $diff);
                             }
@@ -111,14 +117,18 @@ class Updater
                     }
                 } else {
                     if ($this->logger) {
-                        $this->logger->error(' - ' . $path);
+                        $this->logger->error(
+                            ($this->moveInDeprecated) ?
+                                ' - ' . $path :
+                                ' * ' . $path
+                        );
                     }
                     if (!$this->dryRun) {
                         $this->removeTag($localTag, $item);
                     }
                 }
             }
-            foreach ($reparentList as $reparent){
+            foreach ($reparentList as $reparent) {
                 if ($this->logger) {
                     $this->logger->warning(' ~> ' . $reparent[3] . ' ' . $reparent[2]);
                 }
@@ -161,7 +171,7 @@ class Updater
         $tagValue = $this->tagRepository->read((int)$tag->attribute('id'), 0, 0);
         $this->setTagTranslationsAndSynonyms($tag, $tagValue, $item);
         $this->setTagDescriptions($tag, $item);
-        if ($reparent){
+        if ($reparent) {
             $parentTag = $item->findParentTagObject($this->rootTag);
             $this->moveTag($tag, $parentTag);
         }
@@ -169,11 +179,11 @@ class Updater
 
     private function removeTag(eZTagsObject $tag, TagTreeItem $item)
     {
-        $this->moveTag($tag, $this->deprecatedTagRoot);
-        if ($this->logger) {
-            $this->logger->debug(
-                ' - remove #' . $item->keywords['it']
-            );
+        if ($this->moveInDeprecated) {
+            $this->moveTag($tag, $this->deprecatedTagRoot);
+            if ($this->logger) {
+                $this->logger->debug(' - remove #' . $item->keywords['it']);
+            }
         }
     }
 

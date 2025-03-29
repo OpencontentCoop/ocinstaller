@@ -43,12 +43,16 @@ foreach ($files as $index => $file) {
         $script->shutdown(1, "File $file not found");
     }
 }
+$dryRun = (bool)$options['dry-run'];
 
-$languages = ['ita-IT' => 'it', 'eng-GB' => 'en', 'ita-PA' => 'pa', 'ger-DE' => 'de'];
+$languages = ['ita-IT' => 'it', 'eng-GB' => 'en', 'ita-PA' => 'pa', 'ger-DE' => 'de']; //@todo
+
 $updater = new TagTreeCsv\Updater($languages, $files);
 $updater->setLogger(new Logger());
-$updater->setDryRun((bool)$options['dry-run']);
+$updater->setDryRun($dryRun);
 $updater->setRemoveTranslation((bool)$options['remove-deprecated-translations']);
+$updater->setMoveInDeprecated(!$dryRun);
+
 try {
     $updater->run();
 } catch (Throwable $e) {
