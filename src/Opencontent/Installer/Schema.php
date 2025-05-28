@@ -126,7 +126,9 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
     private function cleanup()
     {
         $this->logger->info('Cleanup db');
-        TagTreeCsv::dropTagList();
+        \eZDB::instance()->query('DROP MATERIALIZED VIEW IF EXISTS ocinstall_tags');
+        \eZDB::instance()->query('DROP MATERIALIZED VIEW IF EXISTS ocinstall_tags_tree');
+        \eZDB::instance()->query('DROP MATERIALIZED VIEW IF EXISTS ocbooking');
         $relationTypes = $this->db->supportedRelationTypes();
         $result = true;
         $matchRegexp = "#^ez|^sql|^oc|^openpa|^cjw|tmp_notification_rule_s#";

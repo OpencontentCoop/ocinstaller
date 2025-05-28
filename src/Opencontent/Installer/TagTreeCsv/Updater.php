@@ -75,7 +75,12 @@ class Updater
 
             $csv = new Csv($file, $this->languages);
             $csvTree = $csv->getTree();
-            $this->rootTag = $csvTree->getRoot()->getTagObject();
+            try {
+                $this->rootTag = $csvTree->getRoot()->getTagObject();
+            }catch (\RuntimeException $e){
+                $tag = $this->createTag($csvTree->getRoot(), true);
+                $this->rootTag = eZTagsObject::fetch((int)$tag->id);
+            }
 
             $projection = (new Projection($this->languages))->refresh();
             if ($this->logger) {
@@ -139,10 +144,13 @@ class Updater
         }
     }
 
-    private function createTag(TagTreeItem $item): Tag
+    private function createTag(TagTreeItem $item, bool $isRoot = false): Tag
     {
         $parentTag = $item->parentId > 0 ? $item->findParentTagObject($this->rootTag) : $this->rootTag;
         $parentTagId = $parentTag instanceof eZTagsObject ? (int)$parentTag->attribute('id') : 0;
+        if ($isRoot) {
+            $parentTagId = 0;
+        }
 
         $struct = new TagStruct();
         $struct->parentTagId = $parentTagId;
