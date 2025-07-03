@@ -10,15 +10,15 @@ use Psr\Log\LoggerInterface;
 
 class Logger implements LoggerInterface
 {
-    private $logName;
+    protected $logName;
 
-    private $logDir;
+    protected $logDir;
 
     public $isVerbose = false;
 
-    private $prefix;
+    protected $prefix;
 
-    private $prevPrefix;
+    protected $prevPrefix;
 
     public function __construct($prefix = '')
     {
@@ -43,7 +43,7 @@ class Logger implements LoggerInterface
         return $this;
     }
 
-    private function decorateMessage($message)
+    protected function decorateMessage($message)
     {
         return $this->prefix . $message;
     }
@@ -119,7 +119,7 @@ class Logger implements LoggerInterface
         $this->write('log', $message);
     }
 
-    private function write($level, $message)
+    protected function write($level, $message)
     {
         eZLog::write('[' . str_pad($level, 9, ' ', STR_PAD_BOTH) . '] ' . $message, $this->logName, $this->logDir);
     }

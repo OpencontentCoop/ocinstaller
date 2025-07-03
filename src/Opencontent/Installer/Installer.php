@@ -10,6 +10,8 @@ use eZSiteData;
 use eZUser;
 use Symfony\Component\Yaml\Yaml;
 use Throwable;
+use Psr\Log\LoggerInterface;
+
 
 class Installer
 {
@@ -67,9 +69,9 @@ class Installer
      * @param $dataDir
      * @throws Exception
      */
-    public function __construct(eZDBInterface $db, $dataDir)
+    public function __construct(eZDBInterface $db, $dataDir, ?LoggerInterface $logger = null)
     {
-        $this->logger = new Logger();
+        $this->logger = $logger ?? new Logger();
         $this->installerVars = new InstallerVars();
         $this->installerVars->setLogger($this->logger);
 
@@ -698,9 +700,12 @@ class Installer
         $list['version'] = [
             'name' => $installerData['name'],
             'path' => '',
-            'identifier' => $moduleName,
+            'identifier' => '__main__',
             'current' => 'not-installed',
             'available' => $installerData['version'],
+            'enable_gui' => $installerData['enable_gui'] ?? true,
+            'type' => 'main',
+            'data_dir' => $installerDirectory,
         ];
         $modules = self::findModules($installerDirectory);
         foreach ($modules as $module) {
@@ -718,6 +723,9 @@ class Installer
                     'identifier' => $moduleName,
                     'current' => 'not-installed',
                     'available' => $installerData['version'],
+                    'enable_gui' => $installerData['enable_gui'] ?? true,
+                    'type' => 'module',
+                    'data_dir' => $installerDirectory . '/modules/' . $module,
                 ];
             }
         }
@@ -733,6 +741,9 @@ class Installer
                     'identifier' => $name,
                     'current' => $row->attribute('value'),
                     'available' => '?',
+                    'enable_gui' => false,
+                    'type' => '?',
+                    'data_dir' => '?',
                 ];
             }
         }
