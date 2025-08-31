@@ -2,6 +2,9 @@
 
 namespace Opencontent\Installer;
 
+use eZDBInterface;
+use Psr\Log\LoggerInterface;
+
 abstract class ChainStepInstaller extends AbstractStepInstaller implements InterfaceStepInstaller
 {
     /**
@@ -9,14 +12,14 @@ abstract class ChainStepInstaller extends AbstractStepInstaller implements Inter
      */
     protected $stepInstallers = [];
 
-    public function dryRun()
+    public function dryRun(): void
     {
         foreach ($this->stepInstallers as $stepInstaller){
             $stepInstaller->dryRun();
         }
     }
 
-    public function install()
+    public function install(): void
     {
         foreach ($this->stepInstallers as $stepInstaller){
             $stepInstaller->install();
@@ -31,7 +34,7 @@ abstract class ChainStepInstaller extends AbstractStepInstaller implements Inter
         parent::setStep($step);
     }
 
-    public function setInstallerVars($installerVars)
+    public function setInstallerVars(InstallerVars $installerVars): void
     {
         foreach ($this->stepInstallers as $stepInstaller){
             $stepInstaller->setInstallerVars($installerVars);
@@ -39,7 +42,7 @@ abstract class ChainStepInstaller extends AbstractStepInstaller implements Inter
         parent::setInstallerVars($installerVars);
     }
 
-    public function setDb($db)
+    public function setDb(eZDBInterface $db): void
     {
         foreach ($this->stepInstallers as $stepInstaller){
             $stepInstaller->setDb($db);
@@ -47,7 +50,7 @@ abstract class ChainStepInstaller extends AbstractStepInstaller implements Inter
         parent::setDb($db);
     }
 
-    public function setIoTools($ioTools)
+    public function setIoTools(IOTools $ioTools): void
     {
         foreach ($this->stepInstallers as $stepInstaller){
             $stepInstaller->setIoTools($ioTools);
@@ -55,7 +58,7 @@ abstract class ChainStepInstaller extends AbstractStepInstaller implements Inter
         parent::setIoTools($ioTools);
     }
 
-    public function setLogger($logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         foreach ($this->stepInstallers as $stepInstaller){
             $stepInstaller->setLogger($logger);
@@ -63,7 +66,7 @@ abstract class ChainStepInstaller extends AbstractStepInstaller implements Inter
         parent::setLogger($logger);
     }
 
-    public function sync()
+    public function sync(): void
     {
         foreach ($this->stepInstallers as $stepInstaller){
             $stepInstaller->sync();

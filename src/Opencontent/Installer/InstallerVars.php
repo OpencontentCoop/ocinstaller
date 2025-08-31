@@ -3,6 +3,8 @@
 namespace Opencontent\Installer;
 
 
+use Psr\Log\LoggerInterface;
+
 class InstallerVars extends \ArrayObject
 {
     public static $useExceptions = true;
@@ -23,7 +25,7 @@ class InstallerVars extends \ArrayObject
     /**
      * @param Logger $logger
      */
-    public function setLogger($logger)
+    public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }

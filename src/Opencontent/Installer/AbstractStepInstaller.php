@@ -7,6 +7,7 @@ use eZDBInterface;
 use Opencontent\Opendata\Api\ContentRepository;
 use Opencontent\Opendata\Api\EnvironmentLoader;
 use Opencontent\Opendata\Rest\Client\PayloadBuilder;
+use Psr\Log\LoggerInterface;
 
 abstract class AbstractStepInstaller implements InterfaceStepInstaller
 {
@@ -38,7 +39,7 @@ abstract class AbstractStepInstaller implements InterfaceStepInstaller
     /**
      * @return Logger
      */
-    public function getLogger()
+    public function getLogger(): LoggerInterface
     {
         return $this->logger;
     }
@@ -46,7 +47,7 @@ abstract class AbstractStepInstaller implements InterfaceStepInstaller
     /**
      * @param Logger $logger
      */
-    public function setLogger($logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }
@@ -54,7 +55,7 @@ abstract class AbstractStepInstaller implements InterfaceStepInstaller
     /**
      * @return InstallerVars
      */
-    public function getInstallerVars()
+    public function getInstallerVars(): InstallerVars
     {
         return $this->installerVars;
     }
@@ -62,7 +63,7 @@ abstract class AbstractStepInstaller implements InterfaceStepInstaller
     /**
      * @param InstallerVars $installerVars
      */
-    public function setInstallerVars($installerVars)
+    public function setInstallerVars(InstallerVars $installerVars): void
     {
         $this->installerVars = $installerVars;
     }
@@ -70,7 +71,7 @@ abstract class AbstractStepInstaller implements InterfaceStepInstaller
     /**
      * @return IOTools
      */
-    public function getIoTools()
+    public function getIoTools(): IOTools
     {
         return $this->ioTools;
     }
@@ -78,7 +79,7 @@ abstract class AbstractStepInstaller implements InterfaceStepInstaller
     /**
      * @param IOTools $ioTools
      */
-    public function setIoTools($ioTools)
+    public function setIoTools(IOTools $ioTools): void
     {
         $this->ioTools = $ioTools;
     }
@@ -110,7 +111,7 @@ abstract class AbstractStepInstaller implements InterfaceStepInstaller
     /**
      * @return eZDBInterface
      */
-    public function getDb()
+    public function getDb(): eZDBInterface
     {
         return $this->db;
     }
@@ -118,12 +119,12 @@ abstract class AbstractStepInstaller implements InterfaceStepInstaller
     /**
      * @param eZDBInterface $db
      */
-    public function setDb($db)
+    public function setDb(eZDBInterface $db): void
     {
         $this->db = $db;
     }
 
-    public function sync()
+    public function sync(): void
     {
     }
 
@@ -155,8 +156,8 @@ abstract class AbstractStepInstaller implements InterfaceStepInstaller
                                             'custom_attributes' => [
                                                 'html' => '',
                                             ],
-                                            'valid_items' => []
-                                        ]
+                                            'valid_items' => [],
+                                        ],
                                     ],
                                 ],
                             ]);

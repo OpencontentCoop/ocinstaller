@@ -6,7 +6,7 @@ use Opencontent\OpenApi\Exception;
 
 class PhpCallable extends AbstractStepInstaller
 {
-    public function dryRun()
+    public function dryRun(): void
     {
         $identifier = $this->step['identifier'];
         if (!is_callable($identifier)){
@@ -15,7 +15,7 @@ class PhpCallable extends AbstractStepInstaller
         $this->logger->info("Install callable $identifier");
     }
 
-    public function install()
+    public function install(): void
     {
         $identifier = $this->step['identifier'];
         if (!is_callable($identifier)){

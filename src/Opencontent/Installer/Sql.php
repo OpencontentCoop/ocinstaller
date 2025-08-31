@@ -5,7 +5,7 @@ use eZDB;
 
 class Sql extends AbstractStepInstaller implements InterfaceStepInstaller
 {
-    public function dryRun()
+    public function dryRun(): void
     {
         $identifier = $this->step['identifier'];
         if ($this->step['type'] == 'sql_copy_from_tsv'){
@@ -17,7 +17,7 @@ class Sql extends AbstractStepInstaller implements InterfaceStepInstaller
         }
     }
 
-    public function install()
+    public function install(): void
     {
         $identifier = $this->step['identifier'];
         if ($this->step['type'] == 'sql_copy_from_tsv'){

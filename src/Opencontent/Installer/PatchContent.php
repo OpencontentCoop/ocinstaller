@@ -8,7 +8,7 @@ use Opencontent\Opendata\Api\PublicationProcess;
 
 class PatchContent extends AbstractStepInstaller implements InterfaceStepInstaller
 {
-    public function dryRun()
+    public function dryRun(): void
     {
         $identifier = $this->step['identifier'];
         $object = eZContentObject::fetchByRemoteID($identifier);
@@ -26,7 +26,7 @@ class PatchContent extends AbstractStepInstaller implements InterfaceStepInstall
 
     }
 
-    public function install()
+    public function install(): void
     {
         $identifier = $this->step['identifier'];
         $this->logger->info("Patch content " . $identifier);

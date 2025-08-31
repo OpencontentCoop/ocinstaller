@@ -47,7 +47,7 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
         $ini->setVariable('SchemaSettings', 'SchemaPaths', $schemaPaths);
     }
 
-    public function dryRun()
+    public function dryRun(): void
     {
         if ($this->cleanDb) {
             $this->logger->info('Cleanup db');
@@ -95,7 +95,7 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
         }
     }
 
-    public function install()
+    public function install(): void
     {
         if ($this->cleanDb) {
             $this->cleanup();

@@ -13,7 +13,7 @@ class Tag extends TagTree
 {
     private $deprecatedTagRoot;
 
-    public function dryRun()
+    public function dryRun(): void
     {
         $type = $this->step['type'];
 
@@ -60,7 +60,7 @@ class Tag extends TagTree
         }
     }
 
-    public function install()
+    public function install(): void
     {
         $type = $this->step['type'];
 

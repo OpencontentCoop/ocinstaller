@@ -7,7 +7,7 @@ use Opencontent\Opendata\Api\ContentRepository;
 
 class MoveContent extends AbstractStepInstaller implements InterfaceStepInstaller
 {
-    public function dryRun()
+    public function dryRun(): void
     {
         $identifier = $this->step['identifier'];
         $moveTo = $this->step['target'];
@@ -26,7 +26,7 @@ class MoveContent extends AbstractStepInstaller implements InterfaceStepInstalle
         $this->logger->info("Move " . $object->attribute('name') . " content to " . $parentNode->attribute('name'));
     }
 
-    public function install()
+    public function install(): void
     {
         $identifier = $this->step['identifier'];
         $moveTo = $this->step['target'];

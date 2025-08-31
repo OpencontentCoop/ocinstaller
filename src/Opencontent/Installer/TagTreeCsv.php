@@ -24,7 +24,7 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
         $this->languages = ['ita-IT' => 'it', 'eng-GB' => 'en', 'ita-PA' => 'pa', 'ger-DE' => 'de']; //@todo
     }
 
-    public function dryRun()
+    public function dryRun(): void
     {
         $updater = new TagTreeCsv\Updater($this->languages, $this->getFiles());
         if ($this->logger->isVerbose) {
@@ -61,7 +61,7 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
     /**
      * @throws Exception
      */
-    public function install()
+    public function install(): void
     {
         $identifiers = (array)$this->step['identifiers'];
         $updater = new TagTreeCsv\Updater($this->languages, $this->getFiles());
@@ -81,7 +81,7 @@ class TagTreeCsv extends AbstractStepInstaller implements InterfaceStepInstaller
         $this->logger->resetPrefix();
     }
 
-    public function sync()
+    public function sync(): void
     {
         throw new Exception('Not yet implemented');
     }

@@ -4,12 +4,12 @@ namespace Opencontent\Installer;
 
 class Renamer extends AbstractStepInstaller implements InterfaceStepInstaller
 {
-    public function dryRun()
+    public function dryRun(): void
     {
         $this->getLogger()->debug('Do rename...');
     }
 
-    public function install()
+    public function install(): void
     {
         $cli = \eZCLI::instance();
 

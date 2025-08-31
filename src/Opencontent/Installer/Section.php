@@ -10,7 +10,7 @@ class Section extends AbstractStepInstaller implements InterfaceStepInstaller
 {
     private $sectionDefinition;
 
-    public function dryRun()
+    public function dryRun(): void
     {
         $identifier = $this->step['identifier'];
         $sectionDefinition = $this->ioTools->getJsonContents("sections/{$identifier}.yml");
@@ -18,7 +18,7 @@ class Section extends AbstractStepInstaller implements InterfaceStepInstaller
         $this->installerVars['section_' . $sectionDefinition['identifier']] = 0;
     }
 
-    public function install()
+    public function install(): void
     {
         $identifier = $this->step['identifier'];
         $sectionDefinition = $this->ioTools->getJsonContents("sections/{$identifier}.yml");

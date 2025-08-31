@@ -1,0 +1,12 @@
+group_name:
+  ita-IT: 'Lock'
+group_identifier: opencity_lock
+states:
+  -
+    identifier: not_locked
+    name:
+      ita-IT: 'Not locked'
+  -
+    identifier: locked
+    name:
+      ita-IT: 'Locked'

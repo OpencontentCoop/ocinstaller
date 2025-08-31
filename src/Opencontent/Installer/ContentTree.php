@@ -17,7 +17,7 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
 
     private $doRemoveLocations = false;
 
-    public function dryRun()
+    public function dryRun(): void
     {
         $this->identifier = $this->step['identifier'];
         $contents = [];
@@ -53,7 +53,7 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
         }
     }
 
-    public function install()
+    public function install(): void
     {
         $this->identifier = $this->step['identifier'];
 
@@ -285,7 +285,7 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
         $node->store();
     }
 
-    public function sync()
+    public function sync(): void
     {
         $this->identifier = $this->step['identifier'];
         if (is_dir($this->ioTools->getDataDir() . "/contenttrees/{$this->identifier}")) {

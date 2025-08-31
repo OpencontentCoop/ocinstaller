@@ -11,7 +11,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class States extends AbstractStepInstaller implements InterfaceStepInstaller
 {
-    public function dryRun()
+    public function dryRun(): void
     {
         $identifiers = (array)$this->step['identifiers'];
         $this->logger->info("Install state groups " . implode(', ', $identifiers));
@@ -23,7 +23,7 @@ class States extends AbstractStepInstaller implements InterfaceStepInstaller
         }
     }
 
-    public function install()
+    public function install(): void
     {
         $identifiers = (array)$this->step['identifiers'];
         foreach ($identifiers as $identifier) {
@@ -87,7 +87,7 @@ class States extends AbstractStepInstaller implements InterfaceStepInstaller
         }
     }
 
-    public function sync()
+    public function sync(): void
     {
         $identifiers = (array)$this->step['identifiers'];
         $isModified = false;
@@ -97,7 +97,7 @@ class States extends AbstractStepInstaller implements InterfaceStepInstaller
             $definitionData = Yaml::parseFile($filePath);
 
             $stateGroup = eZContentObjectStateGroup::fetchByIdentifier($definitionData['group_identifier']);
-            /** @var eZContentObjectStateGroupLanguage $translation */
+            /** @var \eZContentObjectStateGroupLanguage $translation */
             foreach($stateGroup->allTranslations() as $translation){
                 $language = $translation->attribute('language');
                 if ($language->attribute('locale') !== 'ita-IT' && $language->attribute('locale') !== 'ita-PA'){

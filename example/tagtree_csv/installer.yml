@@ -1,0 +1,9 @@
+name: 'Example tagtree_csv type'
+version: 0.0.0
+type: module
+enable_gui: false
+variables:
+steps:
+    -   type: tagtree_csv
+        identifiers:
+            - example

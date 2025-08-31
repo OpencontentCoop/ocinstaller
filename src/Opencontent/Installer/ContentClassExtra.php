@@ -9,13 +9,13 @@ use OCClassExtraParametersManager;
 
 class ContentClassExtra extends AbstractStepInstaller implements InterfaceStepInstaller
 {
-    public function dryRun()
+    public function dryRun(): void
     {
         $identifier = $this->step['identifier'];
         $this->logger->info("Install classextra $identifier");
     }
 
-    public function install()
+    public function install(): void
     {
         $identifier = $this->step['identifier'];
         $this->logger->info("Install classextra $identifier");
@@ -30,7 +30,7 @@ class ContentClassExtra extends AbstractStepInstaller implements InterfaceStepIn
         OCClassExtraParametersManager::instance($class)->sync($data);
     }
 
-    public function sync()
+    public function sync(): void
     {
         $identifier = $this->step['identifier'];
         $sourcePath = "classextra/{$identifier}.yml";

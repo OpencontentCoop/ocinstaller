@@ -1,0 +1,16 @@
+name: 'Example steps type'
+version: 0.0.0
+type: module
+enable_gui: false
+variables:
+steps:
+    -   type: steps
+        steps:
+            -   type: class
+                identifier: folder
+                current_version_eq: 0.0.0
+            -   type: steps
+                steps:
+                    -   type: class
+                        identifier: user
+                        condition: false

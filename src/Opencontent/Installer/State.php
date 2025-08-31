@@ -15,7 +15,7 @@ class State extends AbstractStepInstaller implements InterfaceStepInstaller
 
     private $identifier;
 
-    public function dryRun()
+    public function dryRun(): void
     {
         $identifier = $this->step['identifier'];
         $stateDefinition = $this->ioTools->getJsonContents("states/{$identifier}.yml");
@@ -28,7 +28,7 @@ class State extends AbstractStepInstaller implements InterfaceStepInstaller
     /**
      * @throws Exception
      */
-    public function install()
+    public function install(): void
     {
         $this->identifier = $this->step['identifier'];
         $stateDefinition = $this->ioTools->getJsonContents("states/{$this->identifier}.yml");

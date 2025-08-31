@@ -7,7 +7,7 @@ use Opencontent\Opendata\Api\EnvironmentLoader;
 
 class ImagesFromUrl extends AbstractStepInstaller implements InterfaceStepInstaller
 {
-    public function dryRun()
+    public function dryRun(): void
     {
         $urlList = (array)$this->step['urls'];
         if (!empty($urlList)) {
@@ -25,7 +25,7 @@ class ImagesFromUrl extends AbstractStepInstaller implements InterfaceStepInstal
         }
     }
 
-    public function install()
+    public function install(): void
     {
         $doUpdate = isset($this->step['update']) && $this->step['update'] == 1;
 

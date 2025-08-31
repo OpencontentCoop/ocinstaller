@@ -15,7 +15,7 @@ class TagTree extends AbstractStepInstaller implements InterfaceStepInstaller
 
     private $rootTag;
 
-    public function dryRun()
+    public function dryRun(): void
     {
         if (isset($this->step['source'])) {
             $remoteUrl = $this->step['source'];
@@ -31,7 +31,7 @@ class TagTree extends AbstractStepInstaller implements InterfaceStepInstaller
     /**
      * @throws Exception
      */
-    public function install()
+    public function install(): void
     {
         if (isset($this->step['source'])){
             $this->installFromRemote();

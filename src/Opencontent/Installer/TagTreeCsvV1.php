@@ -23,7 +23,7 @@ class TagTreeCsvV1 extends AbstractStepInstaller implements InterfaceStepInstall
         $this->tagRepository = new TagRepository();
     }
 
-    public function dryRun()
+    public function dryRun(): void
     {
         self::createTagList();
         self::refreshTagList();
@@ -41,7 +41,7 @@ class TagTreeCsvV1 extends AbstractStepInstaller implements InterfaceStepInstall
     /**
      * @throws Exception
      */
-    public function install()
+    public function install(): void
     {
         self::createTagList();
         self::refreshTagList();
@@ -477,7 +477,7 @@ class TagTreeCsvV1 extends AbstractStepInstaller implements InterfaceStepInstall
         }
     }
 
-    public function sync()
+    public function sync(): void
     {
         self::createTagList();
         self::refreshTagList();

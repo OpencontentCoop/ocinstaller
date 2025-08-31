@@ -9,7 +9,7 @@ use eZSolr;
 
 class Reindex extends AbstractStepInstaller implements InterfaceStepInstaller
 {
-    public function dryRun()
+    public function dryRun(): void
     {
         $identifier = $this->step['identifier'];
         if (!eZContentClass::fetchByIdentifier($identifier)) {
@@ -18,7 +18,7 @@ class Reindex extends AbstractStepInstaller implements InterfaceStepInstaller
         $this->logger->info("Reindex $identifier objects");
     }
 
-    public function install()
+    public function install(): void
     {
         $identifier = $this->step['identifier'];
         $class = eZContentClass::fetchByIdentifier($identifier);

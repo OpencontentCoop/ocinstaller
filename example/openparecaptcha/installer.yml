@@ -1,0 +1,9 @@
+name: 'Example openparecaptcha type'
+version: 0.0.0
+type: module
+enable_gui: false
+variables:
+steps:
+    -   type: openparecaptcha
+        private: example
+        public: example

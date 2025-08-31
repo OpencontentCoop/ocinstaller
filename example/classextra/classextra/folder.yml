@@ -1,0 +1,39 @@
+bootstrapitalia_icon:
+    enabled:
+        '*': '1'
+    icon:
+        '*': it-folder
+search_form:
+    enabled:
+        '*': '1'
+    show:
+        description: '1'
+        name: '1'
+        publish_date: '1'
+        short_description: '1'
+        short_name: '1'
+        show_children: '1'
+        tags: '1'
+table_view:
+    enabled:
+        '*': '1'
+    in_overview:
+        short_description: '1'
+    show:
+        description: '1'
+        publish_date: '1'
+        short_description: '1'
+    show_label:
+        description: '1'
+        name: '1'
+        publish_date: '1'
+        short_description: '1'
+        short_name: '1'
+        show_children: '1'
+        tags: '1'
+card_small_view:
+    enabled:
+        '*': '1'
+    show:
+        short_description: '1'
+        content_show_read_more: '1'

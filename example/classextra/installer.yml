@@ -1,0 +1,8 @@
+name: 'Example classextra type'
+version: 0.0.0
+type: module
+enable_gui: false
+variables:
+steps:
+    -   type: classextra
+        identifier: folder

@@ -9,7 +9,7 @@ use Exception;
 
 class TagDescription extends AbstractStepInstaller implements InterfaceStepInstaller
 {
-    public function dryRun()
+    public function dryRun(): void
     {
         $identifier = $this->step['identifier'];
         $definition = $this->ioTools->getJsonContents("tagdescription/{$identifier}.yml");
@@ -21,7 +21,7 @@ class TagDescription extends AbstractStepInstaller implements InterfaceStepInsta
         $this->logger->info("Install $identifier tagdescription for tags child of " . $parentTag->attribute('keyword'));
     }
 
-    public function install()
+    public function install(): void
     {
         $identifier = $this->step['identifier'];
         $definition = $this->ioTools->getJsonContents("tagdescription/{$identifier}.yml");

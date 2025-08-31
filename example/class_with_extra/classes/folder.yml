@@ -1,0 +1,152 @@
+identifier: folder
+contentobject_name: '<short_name|name>'
+serialized_name_list:
+    always-available: ita-IT
+    ger-DE: Ordner
+    ita-IT: Cartella
+    eng-GB: Folder
+serialized_description_list:
+    0: ''
+    always-available: false
+    ger-DE: 'Für den Betrieb der Plattform notwendige Datenstruktur'
+    ita-IT: 'Struttura dati necessaria al funzionamento della piattaforma'
+    eng-GB: 'Necessary data structure for the website to function'
+always_available: 1
+sort_field: 9
+is_container: 1
+data_map:
+    name:
+        identifier: name
+        serialized_description_list:
+            always-available: eng-GB
+            eng-GB: ''
+            ita-IT: ''
+        serialized_name_list:
+            always-available: ita-IT
+            ger-DE: Titel
+            ita-IT: Titolo
+            eng-GB: Title
+        data_type_string: ezstring
+        placement: 1
+        is_searchable: 1
+        is_required: 1
+        can_translate: 1
+        data_int1: 255
+        data_text1: Folder
+        serialized_data_text:
+            always-available: ita-IT
+            ita-IT: ''
+    short_name:
+        identifier: short_name
+        serialized_description_list:
+            always-available: eng-GB
+            eng-GB: ''
+            ita-IT: ''
+        serialized_name_list:
+            always-available: ita-IT
+            ger-DE: 'Kurzer Titel'
+            ita-IT: 'Titolo breve'
+            eng-GB: 'Short title'
+        data_type_string: ezstring
+        placement: 2
+        is_searchable: 1
+        can_translate: 1
+        data_int1: 100
+        serialized_data_text:
+            always-available: ita-IT
+            ita-IT: ''
+    short_description:
+        identifier: short_description
+        serialized_description_list:
+            always-available: eng-GB
+            eng-GB: 'Content summary: maximum three lines'
+            ger-DE: 'Inhaltsangabe: maximal drei Zeilen'
+            ita-IT: 'Sintesi del contenuto: massimo tre righe'
+        serialized_name_list:
+            always-available: ita-IT
+            ger-DE: Kurzbeschreibung
+            ita-IT: 'Descrizione breve'
+            eng-GB: 'Short description'
+        data_type_string: ezxmltext
+        placement: 3
+        is_searchable: 1
+        can_translate: 1
+        data_int1: 5
+        serialized_data_text:
+            always-available: ita-IT
+            ita-IT: ''
+    description:
+        identifier: description
+        serialized_description_list:
+            always-available: eng-GB
+            eng-GB: ''
+            ita-IT: ''
+        serialized_name_list:
+            always-available: ita-IT
+            ger-DE: Beschreibung
+            ita-IT: Descrizione
+            eng-GB: Description
+        data_type_string: ezxmltext
+        placement: 4
+        is_searchable: 1
+        can_translate: 1
+        data_int1: 20
+        serialized_data_text:
+            always-available: ita-IT
+            ita-IT: ''
+    show_children:
+        identifier: show_children
+        serialized_description_list:
+            always-available: eng-GB
+            eng-GB: ''
+            ita-IT: ''
+        serialized_name_list:
+            always-available: ita-IT
+            ger-DE: 'Inhaltselemente anzeigen'
+            ita-IT: 'Visualizza elementi contenuti'
+            eng-GB: 'View content items'
+        data_type_string: ezboolean
+        placement: 5
+        data_int3: 1
+        category: meta
+        serialized_data_text:
+            always-available: ita-IT
+            ita-IT: ''
+    tags:
+        identifier: tags
+        serialized_description_list:
+            always-available: eng-GB
+            eng-GB: ''
+            ita-IT: ''
+        serialized_name_list:
+            always-available: ita-IT
+            ger-DE: Schlüsselwörter
+            ita-IT: 'Parole chiave'
+            eng-GB: Keywords
+        data_type_string: ezkeyword
+        placement: 6
+        can_translate: 1
+        category: taxonomy
+        serialized_data_text:
+            always-available: eng-GB
+            eng-GB: ''
+    publish_date:
+        identifier: publish_date
+        serialized_description_list:
+            always-available: eng-GB
+            eng-GB: ''
+            ita-IT: ''
+        serialized_name_list:
+            always-available: ita-IT
+            ger-DE: Veröffentlichungsdatum
+            ita-IT: 'Data di inizio pubblicazione'
+            eng-GB: 'Date first published'
+        data_type_string: ezdatetime
+        placement: 7
+        can_translate: 1
+        category: meta
+        serialized_data_text:
+            always-available: eng-GB
+            eng-GB: ''
+groups:
+    - Content

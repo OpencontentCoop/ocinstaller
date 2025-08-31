@@ -96,7 +96,9 @@ class Installer
             $this->logger,
             $this->installerVars,
             $this->ioTools,
-            $this->db
+            $this->db,
+            $this->getCurrentVersion(),
+            $this->isWaitForUser
         );
     }
 
@@ -307,278 +309,24 @@ class Installer
             }
         }
 
+        /** @var Steps $stepsInstaller */
+        $stepsInstaller = $this->installerFactory->factoryByType('steps');
         foreach ($steps as $index => $step) {
             $stepName = isset($step['identifier']) ? $step['type'] . ' ' . $step['identifier'] : $step['type'];
             if (!in_array($index, $onlySteps)) {
                 $this->logger->debug("(skip) [$index] $stepName");
                 continue;
             }
-
-            $installer = $this->buildInstallerByType($step['type']);
-            $this->installStep($step, $installer, $index, $stepName);
+            $stepsInstaller->appendStep($step);
         }
 
-        if (!$this->dryRun) {
+        if ($this->dryRun) {
+            $stepsInstaller->dryRun();
+        } else {
+            $stepsInstaller->install();
             $this->storeVersion();
         }
     }
-
-    /**
-     * @param $step
-     * @return AbstractStepInstaller
-     * @throws Exception
-     */
-    protected function buildInstallerByType($type): AbstractStepInstaller
-    {
-        switch ($type) {
-            case 'rename':
-                $installer = new Renamer();
-                break;
-
-            case 'tagtree_csv':
-                $installer = new TagTreeCsv();
-                break;
-
-            case 'class_with_extra':
-                $installer = new ContentClassWithExtra();
-                break;
-
-            case 'tagtree':
-                $installer = new TagTree();
-                break;
-
-            case 'state':
-                $installer = new State();
-                break;
-
-            case 'states':
-                $installer = new States();
-                break;
-
-            case 'section':
-                $installer = new Section();
-                break;
-
-            case 'sections':
-                $installer = new Sections();
-                break;
-
-            case 'class':
-                $installer = new ContentClass();
-                break;
-
-            case 'content':
-                $installer = new Content();
-                break;
-
-            case 'role':
-                $installer = new Role();
-                break;
-
-            case 'workflow':
-                $installer = new Workflow();
-                break;
-
-            case 'contenttree':
-                $installer = new ContentTree();
-                break;
-
-            case 'classextra':
-                $installer = new ContentClassExtra();
-                break;
-
-            case 'openparecaptcha':
-                $installer = new OpenPARecaptcha();
-                break;
-            case 'openparecaptcha_v3':
-                $installer = new OpenPARecaptcha(3);
-                break;
-
-            case 'sql':
-            case 'sql_copy_from_tsv':
-                $installer = new Sql();
-                break;
-
-            case 'add_tag':
-            case 'remove_tag':
-            case 'move_tag':
-            case 'rename_tag':
-                $installer = new Tag();
-                break;
-
-            case 'patch_content':
-                $installer = new PatchContent();
-                break;
-
-            case 'change_state':
-                $installer = new ChangeState();
-                break;
-
-            case 'change_section':
-                $installer = new ChangeSection();
-                break;
-
-            case 'tag_description':
-                $installer = new TagDescription();
-                break;
-
-            case 'reindex':
-                $installer = new Reindex();
-                break;
-
-            case 'deprecate_topic':
-                $installer = new DeprecateTopic();
-                break;
-
-            case 'php_callable':
-                $installer = new PhpCallable();
-                break;
-
-            case 'images_from_url':
-                $installer = new ImagesFromUrl();
-                break;
-
-            case 'move_content':
-                $installer = new MoveContent();
-                break;
-
-            default:
-                throw new Exception("Step type $type not handled");
-        }
-
-        return $installer;
-    }
-
-    /**
-     * @param $step
-     * @param $installer
-     * @param $index
-     * @param $stepName
-     * @return void
-     * @throws Throwable
-     */
-    protected function installStep($step, $installer, $index, $stepName)
-    {
-        if ($installer instanceof AbstractStepInstaller) {
-            $installer = $this->installerFactory->factory($installer);
-            $ignoreError = false;
-            if (isset($step['ignore_error'])) {
-                $ignoreError = (bool)$step['ignore_error'];
-            }
-            if (isset($step['condition']) && $step['condition'] == '$is_install_from_scratch' && !$this->installerVars['is_install_from_scratch']) {
-                $ignoreError = true;
-            }
-            try {
-                $canInstallByVersionConstraint = $this->isStepInstallableByVersionConstraint($step, $index, $stepName);
-
-                if ($canInstallByVersionConstraint) {
-                    $installer->setStep($step);
-
-                    $skip = false;
-                    if (isset($installer->getStep()['condition']) && (bool)$installer->getStep()['condition'] !== true) {
-                        $this->logger->debug("[$index] $stepName skipped by condition parameter");
-                        $skip = true;
-                    }
-
-                    if (!$skip) {
-                        $this->logger->debug("[$index] $stepName");
-                        if ($this->dryRun) {
-                            $installer->dryRun();
-                            if ($this->isWaitForUser && !$this->waitForUser('  -> next step?')) {
-                                throw new \RuntimeException('Aborted');
-                            }
-                        } elseif ($this->isWaitForUser) {
-                            $installer->dryRun();
-                            if ($this->waitForUser(' -> install step?')) {
-                                $installer->install();
-                            }
-                        } else {
-                            $installer->install();
-                        }
-                    }
-                }
-            } catch (Throwable $e) {
-                if ($ignoreError) {
-                    $this->getLogger()->error($e->getMessage());
-                } else {
-                    throw $e;
-                }
-            }
-        }
-    }
-
-    private function isStepInstallableByVersionConstraint($step, $index, $stepName): bool
-    {
-        $skip = false;
-        $currentVersion = $this->getCurrentVersion();
-        $countVersionCheck = 0;
-        $versionCheckValidCount = 0;
-        $skipByVersionDebug = [];
-
-        $availableConditions = [
-            [
-                'directive' => 'current_version_lt',
-                'string_operator' => 'lt',
-                'operator' => '<',
-            ],
-            [
-                'directive' => 'current_version_le',
-                'string_operator' => 'le',
-                'operator' => '<=',
-            ],
-            [
-                'directive' => 'current_version_eq',
-                'string_operator' => 'eq',
-                'operator' => '=',
-            ],
-            [
-                'directive' => 'current_version_ge',
-                'string_operator' => 'ge',
-                'operator' => '>=',
-            ],
-            [
-                'directive' => 'current_version_gt',
-                'string_operator' => 'gt',
-                'operator' => '>',
-            ],
-        ];
-
-        foreach($availableConditions as $condition){
-            $directive = $condition['directive'];
-            if (isset($step[$directive])) {
-                $check = version_compare(
-                    $currentVersion,
-                    $step[$directive],
-                    $condition['string_operator']
-                );
-                if ($check) {
-                    $versionCheckValidCount++;
-                }
-                $skipByVersionDebug['current_version_lt'] = implode(' ', [
-                    $currentVersion,
-                    $condition['operator'],
-                    $step[$directive],
-                    '->',
-                    (int)$check
-                ]);
-                $countVersionCheck++;
-            }
-        }
-        if ($countVersionCheck > 0) {
-            foreach ($skipByVersionDebug as $skipCond => $skipDebug) {
-                $this->logger->debug("[$index] version compare: $skipCond $skipDebug");
-            }
-            $skip = $countVersionCheck != $versionCheckValidCount;
-            if ($skip) {
-                $this->logger->debug(
-                    "[$index] $stepName skipped by version compare parameters ($versionCheckValidCount/$countVersionCheck)"
-                );
-            }
-        }
-
-        return $skip === false;
-    }
-
     /**
      * @return void
      * @throws Exception
@@ -616,17 +364,7 @@ class Installer
     {
         $this->logger->info("Wait mode enabled");
         $this->isWaitForUser = true;
-    }
-
-    private function waitForUser(string $question)
-    {
-        return \ezcConsoleDialogViewer::displayDialog(
-                \ezcConsoleQuestionDialog::YesNoQuestion(
-                    new \ezcConsoleOutput(),
-                    $question,
-                    'y'
-                )
-            ) === 'y';
+        $this->installerFactory->setIsWaitForUser($this->isWaitForUser);
     }
 
     public static function parseDataDir(?string $dataDir = null): string

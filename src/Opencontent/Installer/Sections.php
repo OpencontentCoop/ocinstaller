@@ -8,7 +8,7 @@ use Opencontent\Opendata\Api\SectionRepository;
 
 class Sections extends AbstractStepInstaller implements InterfaceStepInstaller
 {
-    public function dryRun()
+    public function dryRun(): void
     {
         $identifiers = (array)$this->step['identifiers'];
         $this->logger->info("Install sections " . implode(', ', $identifiers));
@@ -17,7 +17,7 @@ class Sections extends AbstractStepInstaller implements InterfaceStepInstaller
         }
     }
 
-    public function install()
+    public function install(): void
     {
         $identifiers = (array)$this->step['identifiers'];
         foreach ($identifiers as $identifier) {

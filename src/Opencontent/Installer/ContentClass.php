@@ -11,7 +11,7 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
 {
     private $identifier;
 
-    public function dryRun()
+    public function dryRun(): void
     {
         $identifier = $this->step['identifier'];
         $this->logger->info("Install class $identifier");
@@ -30,7 +30,7 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
         $this->installerVars['class_' . $identifier] = 0;
     }
 
-    public function install()
+    public function install(): void
     {
         $this->identifier = $this->step['identifier'];
         $sourcePath = "classes/{$this->identifier}.yml";
@@ -152,7 +152,7 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
         return false;
     }
 
-    public function sync()
+    public function sync(): void
     {
         $this->identifier = $this->step['identifier'];
         $sourcePath = "classes/{$this->identifier}.yml";

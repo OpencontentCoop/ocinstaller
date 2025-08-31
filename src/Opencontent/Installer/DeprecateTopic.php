@@ -12,7 +12,7 @@ class DeprecateTopic extends AbstractStepInstaller implements InterfaceStepInsta
 {
     private static $topicTreeObjectList = [];
 
-    public function dryRun()
+    public function dryRun(): void
     {
         $identifier = $this->step['identifier'];
         $source = eZContentObject::fetchByRemoteID($identifier);
@@ -41,7 +41,7 @@ class DeprecateTopic extends AbstractStepInstaller implements InterfaceStepInsta
         }
     }
 
-    public function install()
+    public function install(): void
     {
         $identifier = $this->step['identifier'];
         $sourceTopic = eZContentObject::fetchByRemoteID($identifier);

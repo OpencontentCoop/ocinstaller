@@ -7,14 +7,14 @@ use OpenPASectionTools;
 
 class ChangeSection extends AbstractStepInstaller implements InterfaceStepInstaller
 {
-    public function dryRun()
+    public function dryRun(): void
     {
         $identifier = $this->step['identifier'];
         $definition = $this->ioTools->getJsonContents("changesection/{$identifier}.yml");
         $this->logger->info("Install $identifier change section rules");
     }
 
-    public function install()
+    public function install(): void
     {
         $identifier = $this->step['identifier'];
         $definition = $this->ioTools->getJsonContents("changesection/{$identifier}.yml");

@@ -18,7 +18,7 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
 
     private $doUpdate = false;
 
-    public function dryRun()
+    public function dryRun(): void
     {
         $identifier = $this->step['identifier'];
 
@@ -59,7 +59,7 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
         return $this->installerVars->parseVarValue($item);
     }
 
-    public function install()
+    public function install(): void
     {
         $needLock = $this->step['lock'] ?? false;
         $lockLog = $needLock ? ' and lock' : '';
@@ -168,7 +168,7 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
         $node->store();
     }
 
-    public function sync()
+    public function sync(): void
     {
         $this->identifier = $this->step['identifier'];
         $sourcePath = "contents/{$this->identifier}.yml";

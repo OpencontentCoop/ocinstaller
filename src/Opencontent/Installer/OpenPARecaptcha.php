@@ -12,12 +12,12 @@ class OpenPARecaptcha extends AbstractStepInstaller implements InterfaceStepInst
         $this->version = $version ? (int)$version : 2;
     }
 
-    public function dryRun()
+    public function dryRun(): void
     {
         $this->logger->info("Install recaptcha {$this->version} keys");
     }
 
-    public function install()
+    public function install(): void
     {
         $this->logger->info("Install recaptcha {$this->version} keys");
         $public = trim($this->step['public']);

@@ -1,0 +1,7 @@
+name: 'Example rename type'
+version: 0.0.0
+type: module
+enable_gui: false
+variables:
+steps:
+    -   type: rename

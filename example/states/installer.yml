@@ -1,0 +1,9 @@
+name: 'Example states type'
+version: 0.0.0
+type: module
+enable_gui: false
+variables:
+steps:
+    -   type: states
+        identifiers:
+            - opencity_lock

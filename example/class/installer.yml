@@ -1,0 +1,8 @@
+name: 'Example class type'
+version: 0.0.0
+type: module
+enable_gui: false
+variables:
+steps:
+    -   type: class
+        identifier: folder

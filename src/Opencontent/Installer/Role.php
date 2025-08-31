@@ -8,7 +8,7 @@ use Opencontent\Installer\Serializer\RoleSerializer;
 
 class Role extends AbstractStepInstaller implements InterfaceStepInstaller
 {
-    public function dryRun()
+    public function dryRun(): void
     {
         $identifier = $this->step['identifier'];
         $roleDefinition = $this->ioTools->getJsonContents("roles/{$identifier}.yml");
@@ -19,7 +19,7 @@ class Role extends AbstractStepInstaller implements InterfaceStepInstaller
         $this->installerVars['role_' . $roleIdentifier] = 0;
     }
 
-    public function install()
+    public function install(): void
     {
         $identifier = $this->step['identifier'];
         $loadPolicies = isset($this->step['load_policies']) ? $this->step['load_policies'] : true;

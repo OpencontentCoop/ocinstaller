@@ -39,9 +39,7 @@ class InstallerSynchronizer extends Installer
 
             $stepName = isset($step['identifier']) ? $step['type'] . ' ' . $step['identifier'] : $step['type'];
 
-            $installer = $this->installerFactory->factory(
-                $this->buildInstallerByType($step['type'])
-            );
+            $installer = $this->installerFactory->factoryByType($step['type']);
             $installer->setStep($step);
             $this->logger->debug("[$index] $stepName");
             $installer->sync();
