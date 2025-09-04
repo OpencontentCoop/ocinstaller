@@ -61,7 +61,7 @@ class InstallerVars extends \ArrayObject
                 if (method_exists($class, $method)) {
                     $value = $class::{$method}();
                 }else{
-                    $this->getLogger()->warning("$value not callable");
+                    $this->getLogger()->error("$value not callable");
                 }
             }
 

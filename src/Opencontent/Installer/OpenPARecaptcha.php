@@ -26,7 +26,7 @@ class OpenPARecaptcha extends AbstractStepInstaller implements InterfaceStepInst
             $recaptcha = new \OpenPARecaptcha($this->version);
             $recaptcha->store($public, $private);
         }else{
-            $this->getLogger()->error('Recaptcha keys are empty');
+            $this->getLogger()->notice('Recaptcha keys are empty');
         }
     }
 

@@ -94,7 +94,7 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
                 $result = $contentRepository->update($content);
                 $nodeId = $result['content']['metadata']['mainNodeId'];
             }else{
-                $this->getLogger()->error(' -> already exists');
+                $this->getLogger()->info(' -> already exists');
                 $nodeId = $alreadyExists->mainNode()->attribute('node_id');
             }
             $isUpdate = true;
@@ -129,8 +129,8 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
         $this->installerVars['content_' . $this->identifier . '_object'] = $node->attribute('contentobject_id');
         $this->installerVars['content_' . $this->identifier . '_path_string'] = $node->attribute('path_string');
 
-        if ($needLock){
-            $this->lockContentByRemoteId($content['metadata']['remoteId']);
+        if ($needLock && $this->lockContentByRemoteId($content['metadata']['remoteId'])){
+            $this->getLogger()->info(' -> locked');
         }
     }
 

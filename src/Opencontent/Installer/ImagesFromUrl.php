@@ -63,7 +63,7 @@ class ImagesFromUrl extends AbstractStepInstaller implements InterfaceStepInstal
                         $result = $contentRepository->update($content);
                         $nodeId = $result['content']['metadata']['mainNodeId'];
                     } else {
-                        $this->getLogger()->error(' -> already exists');
+                        $this->getLogger()->info(' -> already exists');
                         $nodeId = $alreadyExists->mainNode()->attribute('node_id');
                     }
                 } else {

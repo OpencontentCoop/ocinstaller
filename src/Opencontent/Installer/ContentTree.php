@@ -159,7 +159,7 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
                         $nodeId = eZContentObject::fetchByRemoteID($payload['metadata']['remoteId'])->mainNodeID();
                     }
                 } else {
-                    $this->getLogger()->error(' -> already exists');
+                    $this->getLogger()->info('   -> already exists');
                     $node = $alreadyExists->mainNode();
                     if ($node instanceof \eZContentObjectTreeNode) {
                         $nodeId = $node->attribute('node_id');
@@ -197,8 +197,8 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
                 'path_string'
             );
 
-            if ($needLock) {
-                $this->lockContentByNode($node);
+            if ($needLock && $this->lockContentByNode($node)) {
+                $this->getLogger()->info('   -> locked');
             }
         }
     }
@@ -265,8 +265,8 @@ class ContentTree extends AbstractStepInstaller implements InterfaceStepInstalle
                     'path_string'
                 );
 
-                if ($needLock){
-                    $this->lockContentByNode($node);
+                if ($needLock && $this->lockContentByNode($node)){
+                    $this->getLogger()->info('   -> locked');
                 }
 
             } catch (\Exception $e) {

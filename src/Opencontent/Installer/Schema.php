@@ -188,7 +188,7 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
         } catch (\eZDBException $e) {
             $this->db->rollback();
             if (strpos($e->getMessage(), 'already exists') !== false) {
-                $this->getLogger()->error(' -> already installed');
+                $this->getLogger()->info(' -> already installed');
                 $this->installerVars['schema_already_exists'] = true;
                 $this->installerVars['is_install_from_scratch'] = false;
             } else {
@@ -215,7 +215,7 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
             } catch (\eZDBException $e) {
                 $this->db->rollback();
                 if (strpos($e->getMessage(), 'already exists') !== false) {
-                    $this->getLogger()->error(' -> already installed');
+                    $this->getLogger()->info(' -> already installed');
                 } else {
                     throw $e;
                 }
@@ -238,7 +238,7 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
         } catch (\eZDBException $e) {
             $this->db->rollback();
             if (strpos($e->getMessage(), 'already exists') !== false) {
-                $this->getLogger()->error(' -> already installed');
+                $this->getLogger()->info(' -> already installed');
             } else {
                 throw $e;
             }
@@ -274,7 +274,7 @@ class Schema extends AbstractStepInstaller implements InterfaceStepInstaller
                 } catch (\eZDBException $e) {
                     $this->db->rollback();
                     if (strpos($e->getMessage(), 'already exists') !== false) {
-                        $this->getLogger()->error(' -> already installed');
+                        $this->getLogger()->info(' -> already installed');
                     } else {
                         throw $e;
                     }

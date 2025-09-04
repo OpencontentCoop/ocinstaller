@@ -184,7 +184,7 @@ abstract class AbstractStepInstaller implements InterfaceStepInstaller
     protected function lockContentByNode(\eZContentObjectTreeNode $node)
     {
         eZContentObject::clearCache();
-        $this->lockContent($node->object());
+        return $this->lockContent($node->object());
     }
 
     protected function lockContent(eZContentObject $object)
@@ -193,8 +193,9 @@ abstract class AbstractStepInstaller implements InterfaceStepInstaller
         if ($stateGroup instanceof \eZContentObjectStateGroup) {
             $state = \eZContentObjectState::fetchByIdentifier('locked', $stateGroup->attribute('id'));
             $object->assignState($state);
-            $this->getLogger()->warning(' -> Lock content');
+            return true;
         }
+        return false;
     }
 
     protected function lockContentByRemoteId($remoteId)
@@ -202,8 +203,9 @@ abstract class AbstractStepInstaller implements InterfaceStepInstaller
         eZContentObject::clearCache();
         $object = eZContentObject::fetchByRemoteID($remoteId);
         if ($object instanceof eZContentObject) {
-            $this->lockContent($object);
+            return $this->lockContent($object);
         }
+        return false;
     }
 
     public static function getStepName(array $step) : string

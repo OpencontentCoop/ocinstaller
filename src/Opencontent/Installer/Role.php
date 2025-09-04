@@ -35,6 +35,7 @@ class Role extends AbstractStepInstaller implements InterfaceStepInstaller
             $name = $this->step['identifier'];
             $roleDefinition = ['policies' => []];
             $role = eZRole::fetchByName($name);
+            $this->logger->info("Load role " . $name);
         }
 
         if (!$role instanceof eZRole) {
