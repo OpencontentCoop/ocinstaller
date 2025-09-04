@@ -36,7 +36,7 @@ class Steps extends AbstractStepInstaller implements InterfaceStepInstaller
             }
         }
         if (!is_array($steps)) {
-            throw new InvalidArgumentException('Steps parameter must be a string or an array');
+            throw new InvalidArgumentException('Steps not found');
         }
         $this->steps = $steps;
     }
@@ -129,6 +129,9 @@ class Steps extends AbstractStepInstaller implements InterfaceStepInstaller
                     }
                 }
             }
+        }catch (InvalidArgumentException $e) {
+            // InvalidArgumentException are always thrown
+            throw $e;
         } catch (Throwable $e) {
             if ($ignoreError) {
                 $this->getLogger()->error($e->getMessage());
