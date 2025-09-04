@@ -3,14 +3,26 @@ version: 0.0.0
 type: module
 enable_gui: false
 variables:
+    -   name: test_is_missing
+        value: 'is_content_missing(test)'
 steps:
+    -   type: section
+        identifier: standard
     -   type: steps
+        identifier: main
         steps:
             -   type: class
                 identifier: folder
                 current_version_eq: 0.0.0
             -   type: steps
+#                condition: $test_is_missing
+                identifier: sub-1
                 steps:
-                    -   type: class
-                        identifier: user
-                        condition: false
+                    -   type: content
+                        identifier: test
+                    -   type: section
+                        identifier: standard
+    -   type: content
+        identifier: test
+    -   type: steps
+        identifier: example-steps-file

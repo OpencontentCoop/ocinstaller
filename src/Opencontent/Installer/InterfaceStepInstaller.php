@@ -32,4 +32,12 @@ interface InterfaceStepInstaller
     public function getDb(): eZDBInterface;
 
     public function setDb(eZDBInterface $db): void;
+
+    public function getStepIndex(): ?string;
+
+    public function setStepIndex(string $stepIndex): void;
+
+    public function getParentStepInstaller(): ?InterfaceStepInstaller;
+
+    public function setParentStepInstaller(?InterfaceStepInstaller $parentStepInstaller): void;
 }

@@ -125,7 +125,6 @@ class InstallerVars extends \ArrayObject
                 $var = trim(array_shift($rightParts));
                 $expressionResult = \eZContentClassAttribute::classAttributeIDByIdentifier($var);
                 $value = $expressionResult !== false;
-
             }
 
             if (strpos($value, 'classattributeid_list(') !== false) {
@@ -149,6 +148,12 @@ class InstallerVars extends \ArrayObject
                     throw new \Exception("Object with remote_id $var not found");
                 }
                 $value = $object->mainNode()->attribute('node_id');
+            }
+
+            if (strpos($value, 'is_content_missing(') !== false) {
+                $var = trim(substr($value, 19, -1));
+                $object = \eZContentObject::fetchByRemoteID($var);
+                $value = !$object instanceof \eZContentObject;
             }
 
             if (strpos($value, 'base64(') !== false) {

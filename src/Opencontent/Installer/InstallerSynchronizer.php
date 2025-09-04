@@ -37,7 +37,7 @@ class InstallerSynchronizer extends Installer
 
         foreach ($steps as $index => $step) {
 
-            $stepName = isset($step['identifier']) ? $step['type'] . ' ' . $step['identifier'] : $step['type'];
+            $stepName = AbstractStepInstaller::getStepName($step);
 
             $installer = $this->installerFactory->factoryByType($step['type']);
             $installer->setStep($step);

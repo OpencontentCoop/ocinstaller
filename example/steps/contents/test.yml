@@ -1,0 +1,12 @@
+metadata:
+    remoteId: test
+    classIdentifier: link
+    sectionIdentifier: standard
+    languages:
+        - ita-IT
+    parentNodes:
+        - 2
+data:
+    ita-IT:
+        name: 'Test'
+        

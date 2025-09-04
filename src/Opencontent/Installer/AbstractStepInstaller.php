@@ -36,6 +36,13 @@ abstract class AbstractStepInstaller implements InterfaceStepInstaller
      */
     protected $db;
 
+    protected $stepIndex = false;
+
+    /**
+     * @var ?InterfaceStepInstaller
+     */
+    private $parentStepInstaller = null;
+
     /**
      * @return Logger
      */
@@ -197,6 +204,35 @@ abstract class AbstractStepInstaller implements InterfaceStepInstaller
         if ($object instanceof eZContentObject) {
             $this->lockContent($object);
         }
+    }
+
+    public static function getStepName(array $step) : string
+    {
+        return isset($step['identifier']) ? $step['type'] . ' ' . $step['identifier'] : $step['type'];
+    }
+
+    public function getStepIndex(): string
+    {
+        if ($this->getParentStepInstaller() instanceof InterfaceStepInstaller
+            && !empty($this->getParentStepInstaller()->getStepIndex())) {
+            return $this->getParentStepInstaller()->getStepIndex() . '.' . $this->stepIndex;
+        }
+        return $this->stepIndex;
+    }
+
+    public function setStepIndex(string $stepIndex): void
+    {
+        $this->stepIndex = $stepIndex;
+    }
+
+    public function getParentStepInstaller(): ?InterfaceStepInstaller
+    {
+        return $this->parentStepInstaller;
+    }
+
+    public function setParentStepInstaller(?InterfaceStepInstaller $parentStepInstaller): void
+    {
+        $this->parentStepInstaller = $parentStepInstaller;
     }
 
 //    protected function unlockObject(eZContentObject $object)

@@ -6,6 +6,8 @@ use Exception;
 use eZCharTransform;
 use eZContentObjectTrashNode;
 use eZDBInterface;
+use eZDir;
+use eZINI;
 use eZSiteData;
 use eZUser;
 use Symfony\Component\Yaml\Yaml;
@@ -67,6 +69,7 @@ class Installer
      * OpenContentInstaller constructor.
      * @param eZDBInterface $db
      * @param $dataDir
+     * @param LoggerInterface|null $logger
      * @throws Exception
      */
     public function __construct(eZDBInterface $db, $dataDir, ?LoggerInterface $logger = null)
@@ -180,6 +183,9 @@ class Installer
         return $this->installerData['name'];
     }
 
+    /**
+     * @throws Exception
+     */
     public function getVariables()
     {
         $installerVariables = $this->installerData['variables'];
@@ -190,9 +196,9 @@ class Installer
         return $installerVariables;
     }
 
-    public function canUpdate()
+    public function canUpdate(): bool
     {
-        if (\eZINI::instance('openpa.ini')->hasVariable('CreditsSettings', 'IsArchived')){
+        if (eZINI::instance('openpa.ini')->hasVariable('CreditsSettings', 'IsArchived')){
             return false;
         }
         return $this->getCurrentVersion() !== '0.0.0' && version_compare(
@@ -286,7 +292,7 @@ class Installer
         $onlyStep = $options['only-step'];
 
         $steps = $this->installerData['steps'];
-        $onlySteps = array_keys($steps);
+        $onlySteps = [];
 
         if ($onlyStep !== null) {
             $onlySteps = explode(',', $onlyStep);
@@ -300,7 +306,7 @@ class Installer
 
         $this->loadDataVariables();
 
-        if (isset($options['vars']) && !empty($options['vars'])) {
+        if (!empty($options['vars'])) {
             $keyValueList = explode(',', $options['vars']);
             foreach ($keyValueList as $keyValue) {
                 [$key, $value] = explode(':', $keyValue);
@@ -311,14 +317,8 @@ class Installer
 
         /** @var Steps $stepsInstaller */
         $stepsInstaller = $this->installerFactory->factoryByType('steps');
-        foreach ($steps as $index => $step) {
-            $stepName = isset($step['identifier']) ? $step['type'] . ' ' . $step['identifier'] : $step['type'];
-            if (!in_array($index, $onlySteps)) {
-                $this->logger->debug("(skip) [$index] $stepName");
-                continue;
-            }
-            $stepsInstaller->appendStep($step);
-        }
+        $stepsInstaller->setRunOnlySteps($onlySteps);
+        $stepsInstaller->setSteps($steps);
 
         if ($this->dryRun) {
             $stepsInstaller->dryRun();
@@ -327,6 +327,7 @@ class Installer
             $this->storeVersion();
         }
     }
+
     /**
      * @return void
      * @throws Exception
@@ -367,6 +368,9 @@ class Installer
         $this->installerFactory->setIsWaitForUser($this->isWaitForUser);
     }
 
+    /**
+     * @throws Exception
+     */
     public static function parseDataDir(?string $dataDir = null): string
     {
         if (!$dataDir) {
@@ -413,22 +417,21 @@ class Installer
         return realpath($installerDirectory);
     }
 
-    private static function findModules(string $baseDir)
+    private static function findModules(string $baseDir): array
     {
-        $dirs = \eZDir::findSubitems($baseDir . '/modules', 'd');
+        $dirs = eZDir::findSubitems($baseDir . '/modules', 'd');
         sort($dirs);
 
         return $dirs;
     }
 
-    public function getCurrentVersions()
+    public function getCurrentVersions(): array
     {
         $list = [];
         $installerDirectory = $this->dataDir;
         if (strpos($installerDirectory, '/modules/')) {
             $installerDirectory = realpath(rtrim($installerDirectory . '/') . '/../..');
         }
-        $list = [];
         $installerData = Yaml::parse(file_get_contents($installerDirectory . '/installer.yml'));
         $list['version'] = [
             'name' => $installerData['name'],
