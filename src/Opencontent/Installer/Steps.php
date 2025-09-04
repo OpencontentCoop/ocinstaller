@@ -36,7 +36,9 @@ class Steps extends AbstractStepInstaller implements InterfaceStepInstaller
             }
         }
         if (!is_array($steps)) {
-            throw new InvalidArgumentException('Steps not found');
+            throw new InvalidArgumentException(
+                'Steps definitions not found in step ' . ($step['identifier'] ?? $this->getStepIndex())
+            );
         }
         $this->steps = $steps;
     }
@@ -68,7 +70,7 @@ class Steps extends AbstractStepInstaller implements InterfaceStepInstaller
             $installer->setStepIndex($index);
             $installer->setParentStepInstaller($this);
             $stepIndex = $installer->getStepIndex();
-            if ($installer instanceof Steps){
+            if ($installer instanceof Steps) {
                 $installer->setRunOnlySteps($this->runOnlySteps);
             }
 
@@ -129,7 +131,7 @@ class Steps extends AbstractStepInstaller implements InterfaceStepInstaller
                     }
                 }
             }
-        }catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             // InvalidArgumentException are always thrown
             throw $e;
         } catch (Throwable $e) {
