@@ -3,6 +3,7 @@
 namespace Opencontent\Installer;
 
 
+use eZSiteAccess;
 use Psr\Log\LoggerInterface;
 
 class InstallerVars extends \ArrayObject
@@ -153,6 +154,18 @@ class InstallerVars extends \ArrayObject
             if (strpos($value, 'has_module(') !== false) {
                 $var = trim(substr($value, 11, -1));
                 $value = Installer::getModuleVersion($var) !== null;
+            }
+
+            if (strpos($value, 'site_name(') !== false) {
+                $siteaccess = \eZSiteAccess::current();
+                $siteaccessName = str_replace('_backend', '_frontend', $siteaccess['name']);
+                $value = eZSiteAccess::getIni($siteaccessName)->variable('SiteSettings','SiteName');
+            }
+
+            if (strpos($value, 'site_url(') !== false) {
+                $siteaccess = \eZSiteAccess::current();
+                $siteaccessName = str_replace('_backend', '_frontend', $siteaccess['name']);
+                $value = eZSiteAccess::getIni($siteaccessName)->variable('SiteSettings','SiteURL');
             }
         }
 
