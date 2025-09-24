@@ -226,7 +226,12 @@ class Installer
     private function getCurrentVersion()
     {
         if ($this->currentVersion === null) {
-            $version = eZSiteData::fetchByName($this->getSiteDataName());
+            try {
+                $version = eZSiteData::fetchByName($this->getSiteDataName());
+            }catch (\eZDBException $e){
+                // probably eZSiteData table does not exist
+                $version = null;
+            }
             if (!$version instanceof eZSiteData) {
                 $this->currentVersion = '0.0.0';
             } else {
