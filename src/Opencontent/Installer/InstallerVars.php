@@ -114,6 +114,14 @@ class InstallerVars extends \ArrayObject
                 $value = \eZContentClass::classIDByIdentifier($var);
             }
 
+            if (strpos($value, 'classattributeid(') !== false) {
+                $parts = explode('lassattributeid(', $value);
+                $rightParts = explode(')', $parts[1]);
+                $var = trim(array_shift($rightParts));
+                $expressionResult = \eZContentClassAttribute::classAttributeIDByIdentifier($var);
+                $value = trim(substr($parts[0], 0, -1)) . $expressionResult . implode(')', $rightParts);
+            }
+
             if (strpos($value, 'classexists(') !== false) {
                 $var = trim(substr($value, 12, -1));
                 $value = \eZContentClass::classIDByIdentifier($var) instanceof \eZContentClass;
