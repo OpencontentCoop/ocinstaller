@@ -51,7 +51,7 @@ class IOTools
         return false;
     }
 
-    public function getJsonContents($source, $parentSource = null)
+    public function getJsonContents($source, $parentSource = null, array $options = [])
     {
         $filePath = $this->getFile($source);
 
@@ -76,11 +76,11 @@ class IOTools
                             throw new \Exception("Found import recursion {$import['resource']} in {$avoidRecursionKey}");
                         }
                         self::$avoidImportRecursion[$avoidRecursionKey] = $import['resource'];
-                        $importData = $this->getJsonContents($import['resource'], $avoidRecursionKey);
+                        $importData = $this->getJsonContents($import['resource'], $avoidRecursionKey, $options);
                         if (!$importData){
                             throw new \Exception("Fail importing resource {$import['resource']}");
                         }
-                        $json = $this->array_merge_recursive_distinct($importData, $json);
+                        $json = $this->array_merge_recursive_distinct($importData, $json, $options);
                     }
                 }
                 unset($json['imports']);
@@ -95,15 +95,24 @@ class IOTools
         return false;
     }
 
-    private function array_merge_recursive_distinct(array &$array1, array &$array2)
+    private function array_merge_recursive_distinct(array &$array1, array &$array2, array $options = [])
     {
+        $checkNumericKeys = $options['merge_numeric_keys'] ?? false;
+        $uniqueValues = $options['unique_values'] ?? false;
         $merged = $array1;
 
         foreach ($array2 as $key => &$value) {
-            if (is_array($value) && isset ($merged[$key]) && is_array($merged[$key])) {
-                $merged[$key] = $this->array_merge_recursive_distinct($merged[$key], $value);
-            } else {
-                $merged[$key] = $value;
+            if ($checkNumericKeys && is_numeric($key)) {
+                $merged[] = $value;
+                if ($uniqueValues) {
+                    $merged = array_unique($merged);
+                }
+            }else {
+                if (is_array($value) && isset ($merged[$key]) && is_array($merged[$key])) {
+                    $merged[$key] = $this->array_merge_recursive_distinct($merged[$key], $value, $options);
+                } else {
+                    $merged[$key] = $value;
+                }
             }
         }
 

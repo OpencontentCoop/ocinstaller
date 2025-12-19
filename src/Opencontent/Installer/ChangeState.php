@@ -17,7 +17,10 @@ class ChangeState extends AbstractStepInstaller implements InterfaceStepInstalle
     public function install(): void
     {
         $identifier = $this->step['identifier'];
-        $definition = $this->ioTools->getJsonContents("changestate/{$identifier}.yml");
+        $definition = $this->ioTools->getJsonContents("changestate/{$identifier}.yml", null, [
+            'merge_numeric_keys' => true,
+            'unique_values' => true,
+        ]);
         $this->logger->info("Install $identifier change state rules");
         $stateTools = new OpenPAStateTools();
         OpenPAStateTools::storeRulesBackup();
