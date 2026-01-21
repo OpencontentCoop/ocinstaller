@@ -189,6 +189,9 @@ class ContentClassSerializer
         foreach ($data['data_map'] as $identifier => $values) {
             $DataMap[$identifier] = $this->unserializeField($values);
         }
+        usort($DataMap, function ($a, $b) {
+            return $a['Position'] < $b['Position'] ? -1 : 1;
+        });
         $unserializedData['DataMap'] = [$DataMap];
 
         $unserializedData['InGroups'] = [];
