@@ -75,6 +75,10 @@ class Workflow extends AbstractStepInstaller implements InterfaceStepInstaller
             $ingroup = eZWorkflowGroupLink::create($workflow->attribute('id'), $workflow->attribute('version'), 1, 'Standard');
             $ingroup->store();
         }
+        if (!$workflow->attribute('is_enabled')){
+            $workflow->setAttribute('is_enabled', 1);
+            $workflow->store();
+        }
         $eventsTypes = array_column($events, 'workflow_type_string');
         $workflowEventList = $workflow->fetchEvents();
         $removeEvents = [];
