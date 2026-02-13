@@ -21,10 +21,14 @@ class ChangeState extends AbstractStepInstaller implements InterfaceStepInstalle
             'merge_numeric_keys' => true,
             'unique_values' => true,
         ]);
-        $this->logger->info("Install $identifier change state rules");
         $stateTools = new OpenPAStateTools();
+        $mergedRules = [
+            'ruleDefinitions' => array_merge($stateTools->getRuleDefinitions(), $definition['ruleDefinitions']),
+            'ruleApplications' => array_replace_recursive($stateTools->getRuleApplications(), $definition['ruleApplications']),
+        ];
+        $this->logger->info("Install $identifier change state rules");
         OpenPAStateTools::storeRulesBackup();
-        $stateTools->store($definition);
+        $stateTools->store($mergedRules);
     }
 
 }
