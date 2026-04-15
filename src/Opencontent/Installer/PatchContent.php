@@ -13,13 +13,15 @@ class PatchContent extends AbstractStepInstaller implements InterfaceStepInstall
         $identifier = $this->step['identifier'];
         $object = eZContentObject::fetchByRemoteID($identifier);
         if (!$object instanceof eZContentObject) {
-            throw new \Exception("Content $identifier not found");
+            $this->logger->error("Content $identifier not found");
+            return;
         }
         $dataMap = $object->dataMap();
         $fields = $this->step['attributes'];
         foreach ($fields as $field => $value) {
             if (!isset($dataMap[$field])) {
-                throw new \Exception("Attribute $field not found");
+                $this->logger->error("Attribute $field not found");
+                return;
             }
         }
         $this->logger->info("Patch content " . $identifier);
@@ -32,13 +34,15 @@ class PatchContent extends AbstractStepInstaller implements InterfaceStepInstall
         $this->logger->info("Patch content " . $identifier);
         $object = eZContentObject::fetchByRemoteID($identifier);
         if (!$object instanceof eZContentObject) {
-            throw new \Exception("Content $identifier not found");
+            $this->logger->error("Content $identifier not found");
+            return;
         }
         $dataMap = $object->dataMap();
         $fields = $this->step['attributes'];
         foreach ($fields as $field => $value) {
             if (!isset($dataMap[$field])) {
-                throw new \Exception("Attribute $field not found");
+                $this->logger->error("Attribute $field not found");
+                return;
             }
         }
         if (count($fields) > 0) {
