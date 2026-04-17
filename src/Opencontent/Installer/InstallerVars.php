@@ -3,6 +3,7 @@
 namespace Opencontent\Installer;
 
 
+use eZDB;
 use eZSiteAccess;
 use Psr\Log\LoggerInterface;
 
@@ -111,27 +112,27 @@ class InstallerVars extends \ArrayObject
 
             if (strpos($value, 'classid(') !== false) {
                 $var = trim(substr($value, 8, -1));
-                $value = \eZContentClass::classIDByIdentifier($var);
+                $value = $this->classIDByIdentifier($var, true);
             }
 
             if (strpos($value, 'classattributeid(') !== false) {
                 $parts = explode('lassattributeid(', $value);
                 $rightParts = explode(')', $parts[1]);
                 $var = trim(array_shift($rightParts));
-                $expressionResult = \eZContentClassAttribute::classAttributeIDByIdentifier($var);
+                $expressionResult = $this->classAttributeIDByIdentifier($var, true);
                 $value = trim(substr($parts[0], 0, -1)) . $expressionResult . implode(')', $rightParts);
             }
 
             if (strpos($value, 'classexists(') !== false) {
                 $var = trim(substr($value, 12, -1));
-                $value = \eZContentClass::classIDByIdentifier($var) instanceof \eZContentClass;
+                $value = $this->classIDByIdentifier($var) !== false;
             }
 
             if (strpos($value, 'classattributeexists(') !== false) {
                 $parts = explode('lassattributeexists(', $value);
                 $rightParts = explode(')', $parts[1]);
                 $var = trim(array_shift($rightParts));
-                $expressionResult = \eZContentClassAttribute::classAttributeIDByIdentifier($var);
+                $expressionResult = $this->classAttributeIDByIdentifier($var);
                 $value = $expressionResult !== false;
             }
 
@@ -142,7 +143,7 @@ class InstallerVars extends \ArrayObject
                 $vars = explode(',', $valuable);
                 $list = [];
                 foreach ($vars as $var){
-                    $id = \eZContentClassAttribute::classAttributeIDByIdentifier(trim($var));
+                    $id = $this->classAttributeIDByIdentifier(trim($var), true);
                     if ($id) $list[] = $id;
                 }
                 $expressionResult = implode(',', $list);
@@ -188,6 +189,45 @@ class InstallerVars extends \ArrayObject
         }
 
         return $value;
+    }
+
+    private function classIDByIdentifier(string $identifier, $throwException = false)
+    {
+        $db = \eZDB::instance();
+        $identifier = $db->escapeString($identifier);
+        $query = "SELECT id FROM ezcontentclass WHERE identifier = '$identifier' AND version=0";
+        $row = $db->arrayQuery($query);
+        if (empty($row[0]['id'])) {
+            if ($throwException) {
+                throw new \Exception("Class $identifier not found");
+            }
+            return false;
+        }
+        return (int)$row[0]['id'];
+    }
+
+    private function classAttributeIDByIdentifier(string $identifier)
+    {
+        $db = \eZDB::instance();
+        [$classIdentifier, $attributeIdentifier] = explode('/', $identifier);
+        $classIdentifier = $db->escapeString($classIdentifier);
+        $attributeIdentifier = $db->escapeString($attributeIdentifier);
+        $query = "SELECT 
+                ezcontentclass_attribute.id as attribute_id, 
+                ezcontentclass_attribute.identifier as attribute_identifier, 
+                ezcontentclass.identifier as class_identifier
+            FROM ezcontentclass_attribute, ezcontentclass
+            WHERE ezcontentclass.id = ezcontentclass_attribute.contentclass_id
+                AND ezcontentclass.identifier = '$classIdentifier'
+                AND ezcontentclass_attribute.identifier = '$attributeIdentifier'";
+        $row = $db->arrayQuery($query);
+        if (empty($row[0]['attribute_id'])) {
+            if ($throwException) {
+                throw new \Exception("Attribute $identifier not found");
+            }
+            return false;
+        }
+        return (int)$row[0]['attribute_id'];
     }
 
     public function recursiveParseVarValue($value)
