@@ -2,6 +2,9 @@
 
 require_once 'autoload.php';
 
+eZINI::instance('file.ini')
+    ->setVariable('ClusteringSettings', 'FileHandler', 'eZFSFileHandler');
+
 $cli = eZCLI::instance();
 $script = eZScript::instance(array('description' => ("Install pgcrypto if needed"),
     'use-session' => false,
