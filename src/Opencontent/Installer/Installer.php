@@ -89,6 +89,8 @@ class Installer
             throw new Exception("Invalid installer type $this->type");
         }
 
+        $this->checkRequirements();
+
         $this->logger->info(
             sprintf($this->initLogMessage, $this->installerData['name'], $this->installerData['version'])
         );
@@ -176,6 +178,75 @@ class Installer
         }
 
         return 'ocinstaller_version';
+    }
+
+    /**
+     * @return string absolute path to the main installer's directory, derived
+     *                from this package's own dataDir (main: dataDir itself;
+     *                a module: two levels up, e.g. .../installer/modules/x -> .../installer)
+     */
+    private function getRootDir(): string
+    {
+        if ($this->type === self::INSTALLER_TYPE_DEFAULT) {
+            return $this->dataDir;
+        }
+
+        return dirname(dirname($this->dataDir));
+    }
+
+    /**
+     * Validates the `requires` entries declared in this package's manifest,
+     * if any, against what's currently applied on this tenant. Throws on the
+     * first unmet requirement instead of proceeding — a package must never
+     * install/update against a dependency that isn't in the expected state
+     * (see: eZURLAliasML/eztags scoping silently degrading on tenants that
+     * never received a prerequisite, ticket #31817).
+     *
+     * @throws Exception if a requirement is not satisfied
+     */
+    private function checkRequirements(): void
+    {
+        $requirements = $this->installerData['requires'] ?? [];
+        if (empty($requirements)) {
+            return;
+        }
+
+        $resolver = new PackageResolver($this->getRootDir());
+
+        foreach ($requirements as $requirement) {
+            $package = $requirement['package'];
+            $constraint = $requirement['version'];
+
+            $dependencyManifest = PackageManifestReader::read($resolver->resolvePackageDir($package));
+
+            $dependencySiteDataName = $package === 'main'
+                ? 'ocinstaller_version'
+                : sprintf(
+                    'ocinstaller_%s_version',
+                    eZCharTransform::instance()->transformByGroup($dependencyManifest['name'], 'identifier')
+                );
+
+            try {
+                $dependencyVersionRow = eZSiteData::fetchByName($dependencySiteDataName);
+            } catch (\eZDBException $e) {
+                $dependencyVersionRow = null;
+            }
+
+            $dependencyCurrentVersion = $dependencyVersionRow instanceof eZSiteData
+                ? $dependencyVersionRow->attribute('value')
+                : '0.0.0';
+
+            if (!RequirementChecker::isSatisfied($dependencyCurrentVersion, $dependencyManifest['version'], $constraint)) {
+                throw new Exception(sprintf(
+                    "'%s' requires package '%s' at version %s, but the tenant currently has it at %s. Update '%s' and try again.",
+                    $this->installerData['name'],
+                    $dependencyManifest['name'],
+                    $constraint,
+                    $dependencyCurrentVersion,
+                    $dependencyManifest['name']
+                ));
+            }
+        }
     }
 
     public function getName()
