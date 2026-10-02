@@ -94,6 +94,10 @@ class StepInstallerFactory
                 $installer = new ContentClass();
                 break;
 
+            case 'rename_class_attribute':
+                $installer = new RenameClassAttribute();
+                break;
+
             case 'content':
                 $installer = new Content();
                 break;

@@ -1,7 +1,7 @@
 # Design: step `rename_class_attribute` per ocinstaller
 
-**Data**: 2026-06-30  
-**Stato**: analisi corner case completata — in attesa di risposta su domanda aperta
+**Data**: 2026-06-30 (aggiornato 2026-09-30)  
+**Stato**: implementato — `src/Opencontent/Installer/RenameClassAttribute.php` + `RenameClassAttributeDecision.php`
 
 ---
 
@@ -52,12 +52,15 @@ $handler->setTimestamp('class-identifier-cache', -1);
 ```
 Stesso pattern già usato in `ContentClass.php:66`.
 
-### CC3 — Search index (Solr + Meilisearch)
-I field name in Solr e Meilisearch sono basati sull'identifier dell'attributo.
+### CC3 — Search index (Solr)
+I field name in Solr sono basati sull'identifier dell'attributo.
 Dopo il rename, i documenti già indicizzati hanno il vecchio field name e la ricerca
 per il nuovo attributo non funziona finché non si reindicizza.
-Lo step deve **loggare un warning esplicito**; non deve triggare il reindex da solo
-(ci sono già step `reindex` per quello, da aggiungere in `installer.yml` dopo questo step).
+**Deciso**: invece di un warning testuale (scartato — "nessuno guarda tutto quel log"),
+lo step accetta un'opzione `reindex: true` che richiama direttamente lo step `Reindex`
+esistente per la classe, ma solo quando il rename viene effettivamente eseguito (mai
+sul ramo skip). Meilisearch è fuori tema per questo step (nessun meccanismo di reindex
+verso Meilisearch esiste oggi in ocinstaller).
 
 ### CC4 — Hardcoded string references nel codice (fuori scope)
 In `occsvimport/ocm_public_service.php` (righe 50, 205, 296, 482) l'identifier `ife_event`
@@ -70,12 +73,13 @@ PHP, semplicemente l'attributo sbagliato viene letto/scritto.
 Dopo rename deve essere aggiornato manualmente.
 **Fuori scope per lo step** — il dev deve aggiornare il codice.
 
-### CC6 — YAML installer da aggiornare (warning)
+### CC6 — YAML installer da aggiornare (fuori scope per lo step)
 Dopo il rename nel DB, il file `classes/public_service.yml` contiene ancora il vecchio
 identifier. Al prossimo run dell'installer lo step `class` vede il vecchio identifier come
 attributo mancante e ne crea uno nuovo duplicato.
-Lo step deve **loggare un warning esplicito**: aggiornare il YAML della classe prima
-di rieseguire lo step `class` per quella classe.
+**Deciso**: nessun warning runtime (stessa ragione di CC3) — resta documentato qui e nel
+docblock della classe. Il dev deve aggiornare il YAML della classe prima di rieseguire
+lo step `class` per quella classe.
 
 ### CC7 — Idempotenza (re-run safety)
 Se l'installer viene rieseguito dopo un rename già completato, lo step non deve esplodere.
@@ -107,15 +111,27 @@ va tenuto presente nel processo di release.
   class: public_service
   from: ife_event
   to: life_events
+  reindex: true   # opzionale, default false — reindicizza la classe in Solr
+                   # solo quando il rename viene eseguito davvero (mai sullo skip)
 ```
 
-Da inserire in `installer.yml` **prima** dello step `class` che aggiorna il YAML della classe,
-e **seguito** da uno step `reindex` se si usa la ricerca.
+Da inserire in `installer.yml` **prima** dello step `class` che aggiorna il YAML della classe.
+Se non si usa l'opzione `reindex`, va seguito manualmente da uno step `reindex` a parte.
+
+**Idempotenza**: al primo run esegue il rename (+ reindex se abilitato). Ai run successivi
+il vecchio identifier non esiste più → skip silenzioso, nessuna azione, nessun reindex anche
+se l'opzione è abilitata (il reindex è legato all'azione di rename, non una verifica indipendente
+ad ogni run). Lo step resta dichiarato in `installer.yml` come tutti gli altri step one-shot.
 
 ---
 
-## Domanda aperta (da rispondere prima di procedere)
+## Implementazione
 
-Lo step deve limitarsi al **solo rename sul DB** (e lasciare al dev il reindex, l'aggiornamento
-del YAML e del codice), oppure deve includere un **check pre-esecuzione** che avvisa
-esplicitamente di tutti i side-effect trovati (YAML da aggiornare, reindex necessario, ecc.)?
+- `src/Opencontent/Installer/RenameClassAttributeDecision.php` — logica pura di decisione
+  (CC7/CC8), testata (`tests/RenameClassAttributeDecisionTest.php`).
+- `src/Opencontent/Installer/RenameClassAttribute.php` — step vero e proprio: query di
+  esistenza scopate per `contentclass_id` (CC9), UPDATE senza filtro su `version` (CC1),
+  invalidazione `class-identifier-cache` (CC2), reindex opzionale riusando lo step `Reindex`
+  esistente (CC3). Non testato con harness leggero: tocca `eZDB`/`eZExpiryHandler`, coerente
+  col resto della classe `Installer`.
+- Registrato in `StepInstallerFactory::factoryByType()` come `rename_class_attribute`.
