@@ -12,6 +12,7 @@ $testFiles = [
     __DIR__ . '/PackageResolverTest.php',
     __DIR__ . '/PackageManifestReaderTest.php',
     __DIR__ . '/RenameClassAttributeDecisionTest.php',
+    __DIR__ . '/ReindexTest.php',
 ];
 
 $allPassed = true;
