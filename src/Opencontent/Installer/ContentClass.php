@@ -25,6 +25,8 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
             $this->logCompare($tools->getData());
         } catch (\Exception $e) {
             $this->logger->warning('    ' . $e->getMessage());
+        } finally {
+            $this->removeJsonFile($definitionJsonFile);
         }
 
         $this->installerVars['class_' . $identifier] = 0;
@@ -47,12 +49,20 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
             $this->logger->info(' - removing extra attributes');
         }
 
-        $tools = new OCClassTools($definitionData['identifier'], true, [], $definitionJsonFile);
+        try {
+            $tools = new OCClassTools($definitionData['identifier'], true, [], $definitionJsonFile);
 
-        $tools->compare();
-        $this->logCompare($tools->getData());
+            $tools->compare();
+            $this->logCompare($tools->getData());
 
-        $tools->sync($force, $removeExtras);
+            $tools->sync($force, $removeExtras);
+        } finally {
+            $this->removeJsonFile($definitionJsonFile);
+        }
+
+        // la classe appena sincronizzata può essere già presente nella cache in memoria del processo:
+        // senza invalidarla, gli step successivi (es. il calcolo del nome degli oggetti) possono leggere una definizione stantia
+        \eZContentClass::expireCache();
 
         $class = $tools->getLocale();
         $this->installerVars['class_' . $this->identifier] = $class->attribute('id');
@@ -62,8 +72,6 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
 
         $handler = \eZExpiryHandler::instance();
         $handler->setTimestamp('class-identifier-cache', -1);
-
-        @unlink($definitionJsonFile);
     }
 
     private function logCompare($result)
@@ -142,14 +150,32 @@ class ContentClass extends AbstractStepInstaller implements InterfaceStepInstall
         $data = $serializer->unserialize($data);
 
         if ($data) {
-            $filePath = $this->ioTools->getFile($source);
-            $destinationFilePath = substr($filePath, 0, -4) . '.json';
-            \eZFile::create(basename($destinationFilePath), dirname($destinationFilePath), json_encode($data));
+            // file di confronto univoco per processo: non va mai scritto dentro la cartella del pacchetto,
+            // che è condivisa tra utenti di sistema (CLI/web), tenant e processi concorrenti
+            $destinationFilePath = tempnam(sys_get_temp_dir(), 'ocinstaller_class_');
+            if ($destinationFilePath === false) {
+                throw new \Exception(
+                    "Impossibile creare il file temporaneo di confronto per la classe $source in " . sys_get_temp_dir()
+                );
+            }
+            if (file_put_contents($destinationFilePath, json_encode($data)) === false) {
+                $this->removeJsonFile($destinationFilePath);
+                throw new \Exception(
+                    "Impossibile scrivere il file temporaneo di confronto per la classe $source: $destinationFilePath"
+                );
+            }
 
             return $destinationFilePath;
         }
 
         return false;
+    }
+
+    private function removeJsonFile($filePath): void
+    {
+        if (is_string($filePath) && file_exists($filePath)) {
+            @unlink($filePath);
+        }
     }
 
     public function sync(): void

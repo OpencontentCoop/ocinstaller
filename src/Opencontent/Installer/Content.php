@@ -139,7 +139,16 @@ class Content extends AbstractStepInstaller implements InterfaceStepInstaller
         \eZContentObject::clearCache([$node->attribute('contentobject_id')]);
         $object = \eZContentObject::fetch((int)$node->attribute('contentobject_id'));
         $class = $object->contentClass();
-        $object->setName($class->contentObjectName($object));
+        $name = $class->contentObjectName($object);
+        if (trim((string)$name) === '') {
+            $this->logger->warning(
+                " -> nome vuoto calcolato per l'oggetto #{$object->attribute('id')} "
+                . "(classe {$class->attribute('identifier')}): non sovrascrivo il nome esistente"
+            );
+
+            return;
+        }
+        $object->setName($name);
         $object->store();
     }
 
