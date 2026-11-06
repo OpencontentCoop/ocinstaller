@@ -107,6 +107,16 @@ $optionsConfigList = [
         'help' => 'Ignore version check',
     ],
     [
+        'identifier' => 'ignore-requires',
+        'config' => '[ignore-requires]',
+        'help' => 'Go on, after an explicit confirmation, if a package `requires` constraint is not satisfied (a warning is logged)',
+    ],
+    [
+        'identifier' => 'ignore-conflicts',
+        'config' => '[ignore-conflicts]',
+        'help' => 'Go on, after an explicit confirmation, if a package declared in `conflicts` is already installed (a warning is logged)',
+    ],
+    [
         'identifier' => 'only-step',
         'config' => '[only-step:]',
         'help' => 'Step index (comma separated): install only data step without base and extension schema',
@@ -224,7 +234,35 @@ try {
     $dataDir = Installer::parseDataDir($options['arguments'][0]);
 
     // install
-    $installer = new Installer($db, $dataDir);
+    $confirmIgnore = function (string $message, string $kind) use ($interactive, $output, $cli): bool {
+        $cli->warning('');
+        $cli->warning('WARNING: ' . $message);
+        if ($kind === 'conflicts') {
+            $cli->warning(
+                'Installing these packages together is not supported: classes, contents and settings may overlap or overwrite each other, and the result can be hard to undo.'
+            );
+        } else {
+            $cli->warning(
+                'Proceeding without the required package can leave the tenant in an inconsistent state: the package may expect classes, tags or data that are missing or outdated, and fail silently.'
+            );
+        }
+        if (!$interactive) {
+            $cli->warning('Running with --no-interaction: proceeding because --ignore-' . $kind . ' was given.');
+            return true;
+        }
+        $question = ezcConsoleQuestionDialog::YesNoQuestion($output, 'Ignore this check and continue anyway?', 'n');
+
+        return ezcConsoleDialogViewer::displayDialog($question) == 'y';
+    };
+
+    $installer = new Installer(
+        $db,
+        $dataDir,
+        null,
+        (bool)$options['ignore-requires'],
+        (bool)$options['ignore-conflicts'],
+        $confirmIgnore
+    );
     if ($doListVariables) {
         $table = new ezcConsoleTable($output, 300);
         foreach ($installer->getVariables() as $index => $variable) {
