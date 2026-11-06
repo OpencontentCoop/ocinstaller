@@ -70,9 +70,21 @@ class Installer
      * @param eZDBInterface $db
      * @param $dataDir
      * @param LoggerInterface|null $logger
+     * @param bool $ignoreRequirements if true, unmet `requires` entries are logged as warnings instead of stopping the installer
+     * @param bool $ignoreConflicts if true, `conflicts` entries already installed are logged as warnings instead of stopping the installer
+     * @param callable|null $confirmIgnore function(string $message, string $kind): bool called before ignoring a violated
+     *                                     constraint ($kind is 'requires' or 'conflicts'); returning false aborts the installer.
+     *                                     When null the constraint is ignored without asking.
      * @throws Exception
      */
-    public function __construct(eZDBInterface $db, $dataDir, ?LoggerInterface $logger = null)
+    public function __construct(
+        eZDBInterface $db,
+        $dataDir,
+        ?LoggerInterface $logger = null,
+        bool $ignoreRequirements = false,
+        bool $ignoreConflicts = false,
+        ?callable $confirmIgnore = null
+    )
     {
         $this->logger = $logger ?? new Logger();
         $this->installerVars = new InstallerVars();
@@ -89,7 +101,7 @@ class Installer
             throw new Exception("Invalid installer type $this->type");
         }
 
-        $this->checkRequirements();
+        $this->checkRequirements($ignoreRequirements, $ignoreConflicts, $confirmIgnore);
 
         $this->logger->info(
             sprintf($this->initLogMessage, $this->installerData['name'], $this->installerData['version'])
@@ -202,12 +214,25 @@ class Installer
      * (see: eZURLAliasML/eztags scoping silently degrading on tenants that
      * never received a prerequisite, ticket #31817).
      *
-     * @throws Exception if a requirement is not satisfied
+     * The optional `conflicts` list works the other way round: it names
+     * packages that must NOT be installed on the tenant (e.g. two alternative
+     * variants of the same module), and installation stops if one is present.
+     *
+     * With $ignoreRequirements / $ignoreConflicts the check is still evaluated,
+     * but a violated constraint is (after $confirmIgnore, if given, agrees)
+     * logged as a warning and the installer goes on.
+     *
+     * @throws Exception if a constraint is violated and not ignored, or the ignore is not confirmed
      */
-    private function checkRequirements(): void
+    private function checkRequirements(
+        bool $ignoreRequirements = false,
+        bool $ignoreConflicts = false,
+        ?callable $confirmIgnore = null
+    ): void
     {
         $requirements = $this->installerData['requires'] ?? [];
-        if (empty($requirements)) {
+        $conflicts = $this->installerData['conflicts'] ?? [];
+        if (empty($requirements) && empty($conflicts)) {
             return;
         }
 
@@ -219,34 +244,99 @@ class Installer
 
             $dependencyManifest = PackageManifestReader::read($resolver->resolvePackageDir($package));
 
-            $dependencySiteDataName = $package === 'main'
-                ? 'ocinstaller_version'
-                : sprintf(
-                    'ocinstaller_%s_version',
-                    eZCharTransform::instance()->transformByGroup($dependencyManifest['name'], 'identifier')
-                );
-
-            try {
-                $dependencyVersionRow = eZSiteData::fetchByName($dependencySiteDataName);
-            } catch (\eZDBException $e) {
-                $dependencyVersionRow = null;
-            }
-
-            $dependencyCurrentVersion = $dependencyVersionRow instanceof eZSiteData
-                ? $dependencyVersionRow->attribute('value')
-                : '0.0.0';
+            $dependencyCurrentVersion = $this->getAppliedVersion($package, $dependencyManifest['name']);
 
             if (!RequirementChecker::isSatisfied($dependencyCurrentVersion, $dependencyManifest['version'], $constraint)) {
-                throw new Exception(sprintf(
-                    "'%s' requires package '%s' at version %s, but the tenant currently has it at %s. Update '%s' and try again.",
+                $message = sprintf(
+                    "'%s' requires package '%s' at version %s, but the tenant currently has it at %s.",
                     $this->installerData['name'],
                     $dependencyManifest['name'],
                     $constraint,
-                    $dependencyCurrentVersion,
+                    $dependencyCurrentVersion
+                );
+
+                if ($this->shouldIgnore($ignoreRequirements, $message, 'requires', $confirmIgnore)) {
+                    continue;
+                }
+
+                throw new Exception(sprintf(
+                    "%s Update '%s' and try again (or use --ignore-requires to skip this check).",
+                    $message,
                     $dependencyManifest['name']
                 ));
             }
         }
+
+        foreach ($conflicts as $package) {
+            $conflictManifest = PackageManifestReader::read($resolver->resolvePackageDir($package));
+            $conflictCurrentVersion = $this->getAppliedVersion($package, $conflictManifest['name']);
+
+            if (ConflictChecker::isInstalled($conflictCurrentVersion)) {
+                $message = sprintf(
+                    "'%s' conflicts with package '%s', which is already installed on this tenant (version %s).",
+                    $this->installerData['name'],
+                    $conflictManifest['name'],
+                    $conflictCurrentVersion
+                );
+
+                if ($this->shouldIgnore($ignoreConflicts, $message, 'conflicts', $confirmIgnore)) {
+                    continue;
+                }
+
+                throw new Exception(sprintf(
+                    "%s The two packages cannot be installed together (or use --ignore-conflicts to skip this check).",
+                    $message
+                ));
+            }
+        }
+    }
+
+    /**
+     * @param bool $flagEnabled whether the matching --ignore-* option was given
+     * @param string $message description of the violated constraint
+     * @param string $kind 'requires' or 'conflicts'
+     * @param callable|null $confirmIgnore asked before ignoring; null means "don't ask"
+     * @return bool true if the violation must be ignored, false if it must stop the installer
+     * @throws Exception if the user declines to ignore it
+     */
+    private function shouldIgnore(bool $flagEnabled, string $message, string $kind, ?callable $confirmIgnore): bool
+    {
+        if (!$flagEnabled) {
+            return false;
+        }
+
+        if ($confirmIgnore !== null && !$confirmIgnore($message, $kind)) {
+            throw new Exception('Aborted by user: ' . $message);
+        }
+
+        $this->logger->warning(sprintf('%s Ignored by --ignore-%s.', $message, $kind));
+
+        return true;
+    }
+
+    /**
+     * @param string $package 'main' or a module folder name
+     * @param string $packageName the `name` declared in that package's manifest
+     * @return string version applied on this tenant, '0.0.0' if never installed
+     */
+    private function getAppliedVersion(string $package, string $packageName): string
+    {
+        $siteDataName = $package === 'main'
+            ? 'ocinstaller_version'
+            : sprintf(
+                'ocinstaller_%s_version',
+                eZCharTransform::instance()->transformByGroup($packageName, 'identifier')
+            );
+
+        try {
+            $versionRow = eZSiteData::fetchByName($siteDataName);
+        } catch (\eZDBException $e) {
+            $versionRow = null;
+        }
+
+        return $versionRow instanceof eZSiteData
+            ? $versionRow->attribute('value')
+            : '0.0.0';
     }
 
     public function getName()
