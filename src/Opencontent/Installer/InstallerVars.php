@@ -165,6 +165,12 @@ class InstallerVars extends \ArrayObject
                 $value = !$object instanceof \eZContentObject;
             }
 
+            if (strpos($value, 'content_exists(') !== false) {
+                $var = trim(substr($value, 15, -1));
+                $object = \eZContentObject::fetchByRemoteID($var);
+                $value = $object instanceof \eZContentObject;
+            }
+
             if (strpos($value, 'base64(') !== false) {
                 $var = trim(substr($value, 7, -1));
                 $value = base64_encode(file_get_contents($var));
