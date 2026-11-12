@@ -105,6 +105,15 @@ class InstallerVars extends \ArrayObject
                 }
             }
 
+            if (strpos($value, 'tag_id_from_remote_id(') !== false) {
+                $var = trim(substr($value, 22, -1));
+                $tag = \eZTagsObject::fetchByRemoteID($var);
+                if (!$tag instanceof \eZTagsObject) {
+                    throw new \Exception("Tag with remote_id $var not found");
+                }
+                $value = $tag->attribute('id');
+            }
+
             if (strpos($value, 'ezcrc32(') !== false) {
                 $var = trim(substr($value, 8, -1));
                 $value = \eZSys::ezcrc32($var);
