@@ -10,6 +10,7 @@
 $testFiles = [
     __DIR__ . '/RequirementCheckerTest.php',
     __DIR__ . '/ConflictCheckerTest.php',
+    __DIR__ . '/ConstraintEvaluatorTest.php',
     __DIR__ . '/PackageResolverTest.php',
     __DIR__ . '/PackageManifestReaderTest.php',
     __DIR__ . '/RenameClassAttributeDecisionTest.php',
