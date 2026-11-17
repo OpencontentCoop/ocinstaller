@@ -230,64 +230,39 @@ class Installer
         ?callable $confirmIgnore = null
     ): void
     {
-        $requirements = $this->installerData['requires'] ?? [];
-        $conflicts = $this->installerData['conflicts'] ?? [];
-        if (empty($requirements) && empty($conflicts)) {
+        if (empty($this->installerData['requires']) && empty($this->installerData['conflicts'])) {
             return;
         }
 
-        $resolver = new PackageResolver($this->getRootDir());
+        $violations = ConstraintEvaluator::evaluate(
+            $this->installerData,
+            $this->getRootDir(),
+            [self::class, 'getAppliedVersion']
+        );
 
-        foreach ($requirements as $requirement) {
-            $package = $requirement['package'];
-            $constraint = $requirement['version'];
+        foreach ($violations as $violation) {
+            $isRequirement = $violation['kind'] === ConstraintEvaluator::KIND_REQUIRES;
+            $message = $violation['message'];
 
-            $dependencyManifest = PackageManifestReader::read($resolver->resolvePackageDir($package));
+            if ($this->shouldIgnore(
+                $isRequirement ? $ignoreRequirements : $ignoreConflicts,
+                $message,
+                $violation['kind'],
+                $confirmIgnore
+            )) {
+                continue;
+            }
 
-            $dependencyCurrentVersion = $this->getAppliedVersion($package, $dependencyManifest['name']);
-
-            if (!RequirementChecker::isSatisfied($dependencyCurrentVersion, $dependencyManifest['version'], $constraint)) {
-                $message = sprintf(
-                    "'%s' requires package '%s' at version %s, but the tenant currently has it at %s.",
-                    $this->installerData['name'],
-                    $dependencyManifest['name'],
-                    $constraint,
-                    $dependencyCurrentVersion
-                );
-
-                if ($this->shouldIgnore($ignoreRequirements, $message, 'requires', $confirmIgnore)) {
-                    continue;
-                }
-
-                throw new Exception(sprintf(
+            throw new Exception($isRequirement
+                ? sprintf(
                     "%s Update '%s' and try again (or use --ignore-requires to skip this check).",
                     $message,
-                    $dependencyManifest['name']
-                ));
-            }
-        }
-
-        foreach ($conflicts as $package) {
-            $conflictManifest = PackageManifestReader::read($resolver->resolvePackageDir($package));
-            $conflictCurrentVersion = $this->getAppliedVersion($package, $conflictManifest['name']);
-
-            if (ConflictChecker::isInstalled($conflictCurrentVersion)) {
-                $message = sprintf(
-                    "'%s' conflicts with package '%s', which is already installed on this tenant (version %s).",
-                    $this->installerData['name'],
-                    $conflictManifest['name'],
-                    $conflictCurrentVersion
-                );
-
-                if ($this->shouldIgnore($ignoreConflicts, $message, 'conflicts', $confirmIgnore)) {
-                    continue;
-                }
-
-                throw new Exception(sprintf(
+                    $violation['package_name']
+                )
+                : sprintf(
                     "%s The two packages cannot be installed together (or use --ignore-conflicts to skip this check).",
                     $message
                 ));
-            }
         }
     }
 
@@ -319,7 +294,7 @@ class Installer
      * @param string $packageName the `name` declared in that package's manifest
      * @return string version applied on this tenant, '0.0.0' if never installed
      */
-    private function getAppliedVersion(string $package, string $packageName): string
+    public static function getAppliedVersion(string $package, string $packageName): string
     {
         $siteDataName = $package === 'main'
             ? 'ocinstaller_version'
@@ -609,6 +584,11 @@ class Installer
             'enable_gui' => $installerData['enable_gui'] ?? true,
             'type' => 'main',
             'data_dir' => $installerDirectory,
+            'constraint_violations' => ConstraintEvaluator::evaluate(
+                $installerData,
+                $installerDirectory,
+                [self::class, 'getAppliedVersion']
+            ),
         ];
         $modules = self::findModules($installerDirectory);
         foreach ($modules as $module) {
@@ -630,6 +610,11 @@ class Installer
                     'enable_gui' => $installerData['enable_gui'] ?? true,
                     'type' => 'module',
                     'data_dir' => $installerDirectory . '/modules/' . $module,
+                    'constraint_violations' => ConstraintEvaluator::evaluate(
+                        $installerData,
+                        $installerDirectory,
+                        [self::class, 'getAppliedVersion']
+                    ),
                 ];
             }
         }
